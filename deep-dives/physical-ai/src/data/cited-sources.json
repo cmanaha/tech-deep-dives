@@ -7,6 +7,7 @@
   "title": "the edge formula",
   "sections": [
    1,
+   8,
    12,
    13,
    20,
@@ -114,6 +115,7 @@
   "sections": [
    1,
    2,
+   9,
    10,
    13,
    20,
@@ -189,6 +191,7 @@
   "venue": null,
   "title": "Capacity Blocks list",
   "sections": [
+   13,
    24,
    26,
    28,
@@ -756,11 +759,12 @@
   "url": "https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html",
   "local": null,
   "venue": null,
-  "title": "EC2 accelerated computing specifications",
+  "title": "EC2 instance types, single-GPU sizes",
   "sections": [
    1,
    2,
    10,
+   11,
    13,
    20,
    21,
@@ -776,6 +780,7 @@
   "venue": null,
   "title": "checkpointing",
   "sections": [
+   13,
    24,
    28,
    29
@@ -2054,6 +2059,16 @@
  },
  {
   "tier": 1,
+  "url": "https://docs.isaacsim.omniverse.nvidia.com/6.2.0/assets/usd_assets_nurec.html",
+  "local": null,
+  "venue": null,
+  "title": "Isaac Sim 6.2.0 docs, neural volume rendering",
+  "sections": [
+   14
+  ]
+ },
+ {
+  "tier": 1,
   "url": "https://docs.isaacsim.omniverse.nvidia.com/6.2.0/installation/requirements.html",
   "local": null,
   "venue": null,
@@ -2061,7 +2076,9 @@
   "sections": [
    1,
    2,
+   11,
    13,
+   14,
    23,
    29
   ]
@@ -2110,6 +2127,7 @@
    1,
    2,
    10,
+   11,
    20,
    21,
    22,
@@ -2134,6 +2152,7 @@
   "venue": null,
   "title": "Jetson Linux guide, software encode in Orin Nano",
   "sections": [
+   9,
    20
   ]
  },
@@ -2173,7 +2192,7 @@
   "url": "https://docs.nvidia.com/nsight-compute/ProfilingGuide/index.html",
   "local": null,
   "venue": null,
-  "title": "Nsight Compute Profiling Guide",
+  "title": "Nsight Compute, multiprocessor units",
   "sections": [
    1,
    2,
@@ -2408,9 +2427,8 @@
   "url": "https://github.com/google-deepmind/mujoco_playground/blob/084e7957842792725d70866ee840d8fd79f17bbe/mujoco_playground/_src/objects/assets/primitive/plane.xml",
   "local": null,
   "venue": null,
-  "title": "MuJoCo Playground plane.xml",
+  "title": "MuJoCo Playground, Sim config",
   "sections": [
-   8,
    12
   ]
  },
@@ -2421,6 +2439,7 @@
   "venue": null,
   "title": "SO-101 constant.py",
   "sections": [
+   12,
    14
   ]
  },
@@ -2429,8 +2448,9 @@
   "url": "https://github.com/google-deepmind/mujoco_playground/blob/084e7957842792725d70866ee840d8fd79f17bbe/mujoco_playground/robots/so101/sim/scene.py",
   "local": null,
   "venue": null,
-  "title": "MuJoCo Playground, SO-101 scene.py, actuator setup",
+  "title": "MuJoCo Playground, SO-101 scene.py",
   "sections": [
+   12,
    14
   ]
  },
@@ -2439,8 +2459,10 @@
   "url": "https://github.com/google-deepmind/mujoco_playground/blob/084e7957842792725d70866ee840d8fd79f17bbe/mujoco_playground/tasks/manipulation/pick_cube/so101/deploy/README.md",
   "local": null,
   "venue": null,
-  "title": "MuJoCo Playground, SO-101 deploy README",
+  "title": "MuJoCo Playground SO-101 deploy README",
   "sections": [
+   8,
+   11,
    14
   ]
  },
@@ -2451,6 +2473,7 @@
   "venue": null,
   "title": "SO-101 task.py, resetters",
   "sections": [
+   8,
    13,
    14
   ]
@@ -2513,9 +2536,10 @@
   "url": "https://github.com/google-deepmind/mujoco/blob/4ed093a9f06b170bd1564942fa37e1bb907d93e3/doc/computation/index.rst",
   "local": null,
   "venue": null,
-  "title": "MuJoCo docs, simulation pipeline",
+  "title": "MuJoCo docs, friction loss",
   "sections": [
    12,
+   14,
    20
   ]
  },
@@ -2524,7 +2548,7 @@
   "url": "https://github.com/google-deepmind/mujoco/blob/4ed093a9f06b170bd1564942fa37e1bb907d93e3/doc/mjwarp/index.rst",
   "local": null,
   "venue": null,
-  "title": "MuJoCo Warp render benchmark",
+  "title": "GPU physics, what it loads",
   "sections": [
    12,
    13,
@@ -2790,7 +2814,8 @@
   "venue": null,
   "title": "LeRobot configuration_act.py",
   "sections": [
-   4
+   4,
+   5
   ]
  },
  {
@@ -2929,12 +2954,23 @@
  },
  {
   "tier": 1,
+  "url": "https://github.com/huggingface/lerobot/releases/tag/v0.7.0",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot v0.7.0 release notes and PEFT guide",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 1,
   "url": "https://github.com/huggingface/lerobot/tree/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/policies",
   "local": null,
   "venue": null,
   "title": "LeRobot vqbet config",
   "sections": [
-   5
+   5,
+   6
   ]
  },
  {
@@ -2965,8 +3001,9 @@
   "url": "https://github.com/isaac-sim/IsaacLab/blob/e3f7d9ff1f5d7f8280de3ece9000b7117f66bcf4/docs/source/_static/benchmarks/environment-performance-release.csv",
   "local": null,
   "venue": null,
-  "title": "Isaac Lab v3.0.0 benchmark file",
+  "title": "Kuka-Allegro rows",
   "sections": [
+   8,
    12,
    13,
    20
@@ -2989,6 +3026,7 @@
   "venue": null,
   "title": "Isaac Lab v3.0.0 docs, renderers",
   "sections": [
+   11,
    13
   ]
  },
@@ -2999,9 +3037,20 @@
   "venue": null,
   "title": "Isaac Lab 3.0 installation guide",
   "sections": [
+   11,
    12,
    13,
    29
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/isaac-sim/IsaacLab/blob/e3f7d9ff1f5d7f8280de3ece9000b7117f66bcf4/docs/source/policy_deployment/06_so101_typing/so101_typing_policy.rst",
+  "local": null,
+  "venue": null,
+  "title": "Isaac Lab v3.0.0 docs, SO-101 typing policy",
+  "sections": [
+   14
   ]
  },
  {
@@ -3027,11 +3076,23 @@
  },
  {
   "tier": 1,
+  "url": "https://github.com/isaac-sim/IsaacLab/blob/e3f7d9ff1f5d7f8280de3ece9000b7117f66bcf4/source/isaaclab/isaaclab/envs/mdp/events.py",
+  "local": null,
+  "venue": null,
+  "title": "Isaac Lab v3.0.0 events.py",
+  "sections": [
+   11,
+   14
+  ]
+ },
+ {
+  "tier": 1,
   "url": "https://github.com/isaac-sim/IsaacLab/releases/tag/v3.0.0",
   "local": null,
   "venue": null,
   "title": "Isaac Lab v3.0.0 release",
   "sections": [
+   11,
    12
   ]
  },
@@ -3150,6 +3211,16 @@
  },
  {
   "tier": 1,
+  "url": "https://github.com/newton-physics/newton/tree/425db81f01e402b51f96f560e154d529d645c6de",
+  "local": null,
+  "venue": null,
+  "title": "Newton v1.8.0 README",
+  "sections": [
+   13
+  ]
+ },
+ {
+  "tier": 1,
   "url": "https://github.com/nv-tlabs/3dgrut/tree/0a5832248698ab8456b181d6ea17fe02eda58637",
   "local": null,
   "venue": null,
@@ -3195,10 +3266,20 @@
   "url": "https://github.com/NVIDIA/cosmos-framework/blob/82d6f4e7c08b04f4cfa7c6de103d9be2e30af213/packages/diffusers-cpu-offloading/README.md",
   "local": null,
   "venue": null,
-  "title": "NVIDIA cosmos-framework, CPU offloading README",
+  "title": "CPU offloading README",
   "sections": [
    6,
    11
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/NVIDIA/Isaac-GR00T/blob/708617f5716c63fc0a327391492ea2b91977ae90/examples/SO100/README.md",
+  "local": null,
+  "venue": null,
+  "title": "Isaac-GR00T SO100 and SO101 fine-tuning guide",
+  "sections": [
+   5
   ]
  },
  {
@@ -3218,6 +3299,16 @@
   "local": null,
   "venue": null,
   "title": "Isaac-GR00T gr00t_n1d7.py and the released checkpoint config",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/NVIDIA/Isaac-GR00T/blob/708617f5716c63fc0a327391492ea2b91977ae90/scripts/deployment/README.md",
+  "local": null,
+  "venue": null,
+  "title": "Isaac-GR00T deployment README, benchmark results",
   "sections": [
    5
   ]
@@ -3302,6 +3393,16 @@
   "title": "openpi pi0.py",
   "sections": [
    4
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/TheRobotStudio/SO-ARM100/blob/141aea7bcac2744d92998e30268c413202a56f96/Simulation/SO101/README.md",
+  "local": null,
+  "venue": null,
+  "title": "SO-ARM100 simulation README, motor parameters",
+  "sections": [
+   14
   ]
  },
  {
@@ -3413,9 +3514,10 @@
   "url": "https://google-deepmind.github.io/mujoco_warp/nightly/",
   "local": null,
   "venue": null,
-  "title": "MuJoCo Warp nightly benchmarks, humanoid",
+  "title": "MuJoCo Warp nightly benchmarks, system",
   "sections": [
    12,
+   13,
    20
   ]
  },
@@ -3424,21 +3526,12 @@
   "url": "https://huggingface.co/api/datasets/lerobot/svla_so101_pickplace/tree/f641879e22172be7e8161d5e6c1503c2d2feb657?recursive=true",
   "local": null,
   "venue": null,
-  "title": "Hugging Face hub file listing of the example dataset",
+  "title": "Hugging Face hub, svla_so101_pickplace",
   "sections": [
    2,
    9,
+   11,
    18
-  ]
- },
- {
-  "tier": 1,
-  "url": "https://huggingface.co/api/models?author=lerobot&search=smolvla&sort=createdAt&direction=-1",
-  "local": null,
-  "venue": null,
-  "title": "Hugging Face model list, lerobot/smolvla",
-  "sections": [
-   5
   ]
  },
  {
@@ -3449,16 +3542,6 @@
   "title": "info.json of the example dataset",
   "sections": [
    9
-  ]
- },
- {
-  "tier": 1,
-  "url": "https://huggingface.co/nvidia/Cosmos3-Nano",
-  "local": null,
-  "venue": null,
-  "title": "Cosmos3-Nano model card",
-  "sections": [
-   11
   ]
  },
  {
@@ -3498,7 +3581,7 @@
   "url": "https://raw.githubusercontent.com/facebookresearch/vjepa2/204698b45b3712590f06245fbfba32d3be539812/app/vjepa/train.py",
   "local": null,
   "venue": null,
-  "title": "vjepa2 app/vjepa/train.py, lines 429 to 450",
+  "title": "vjepa2 app/vjepa/train.py, lines 471 to 480",
   "sections": [
    7
   ]
@@ -3518,7 +3601,7 @@
   "url": "https://raw.githubusercontent.com/facebookresearch/vjepa2/204698b45b3712590f06245fbfba32d3be539812/notebooks/utils/world_model_wrapper.py",
   "local": null,
   "venue": null,
-  "title": "vjepa2 notebooks/utils/world_model_wrapper.py, lines 20 to 29",
+  "title": "vjepa2 notebooks, world_model_wrapper.py and mpc_utils.py",
   "sections": [
    7
   ]
@@ -3561,7 +3644,9 @@
   "venue": null,
   "title": "MuJoCo Playground env_rl_config.py",
   "sections": [
-   8
+   8,
+   12,
+   14
   ]
  },
  {
@@ -3593,8 +3678,19 @@
   "title": "LeRobot hardware guide, benchmark table",
   "sections": [
    2,
+   10,
    15,
    20
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/docs/source/hil_data_collection.mdx",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot human-in-the-loop data collection guide",
+  "sections": [
+   9
   ]
  },
  {
@@ -3612,10 +3708,11 @@
   "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/docs/source/il_robots.mdx",
   "local": null,
   "venue": null,
-  "title": "LeRobot imitation learning tutorial, cameras",
+  "title": "LeRobot imitation-learning guide",
   "sections": [
    3,
-   9
+   9,
+   11
   ]
  },
  {
@@ -3628,6 +3725,7 @@
    1,
    2,
    3,
+   12,
    17,
    18,
    20
@@ -3648,7 +3746,7 @@
   "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/docs/source/lerobot-dataset-v3.mdx",
   "local": null,
   "venue": null,
-  "title": "LeRobot v0.7.0 lerobot-dataset-v3.mdx",
+  "title": "LeRobot dataset v3 docs, migration",
   "sections": [
    2,
    9,
@@ -3685,9 +3783,10 @@
   "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/docs/source/so101.mdx",
   "local": null,
   "venue": null,
-  "title": "LeRobot SO-101 guide, USB ports",
+  "title": "LeRobot SO-101 docs, calibrate",
   "sections": [
-   3
+   3,
+   14
   ]
  },
  {
@@ -3697,7 +3796,8 @@
   "venue": null,
   "title": "LeRobot streaming video encoding docs, section 3",
   "sections": [
-   9
+   9,
+   10
   ]
  },
  {
@@ -3705,9 +3805,9 @@
   "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/docs/source/training_dataset_streaming.mdx",
   "local": null,
   "venue": null,
-  "title": "LeRobot v0.7.0 training_dataset_streaming.mdx",
+  "title": "raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/docs/source/training_dataset_streaming.mdx",
   "sections": [
-   10
+   11
   ]
  },
  {
@@ -3740,7 +3840,10 @@
    1,
    2,
    3,
+   7,
    9,
+   10,
+   11,
    20
   ]
  },
@@ -3751,7 +3854,8 @@
   "venue": null,
   "title": "LeRobot v0.7.0 configs/train.py",
   "sections": [
-   10
+   10,
+   11
   ]
  },
  {
@@ -3774,6 +3878,16 @@
   "local": null,
   "venue": null,
   "title": "LeRobot dataset_metadata.py, line 64",
+  "sections": [
+   9
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/datasets/dataset_reader.py",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot dataset_reader.py, lines 429 to 446",
   "sections": [
    9
   ]
@@ -3809,6 +3923,7 @@
    2,
    9,
    10,
+   11,
    20
   ]
  },
@@ -3819,7 +3934,18 @@
   "venue": null,
   "title": "LeRobot motors_bus.py, _normalize()",
   "sections": [
-   3
+   3,
+   14
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/policies/gaussian_actor/configuration_gaussian_actor.py",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot v0.7.0 gaussian_actor and SAC configuration",
+  "sections": [
+   8
   ]
  },
  {
@@ -3861,7 +3987,8 @@
   "venue": null,
   "title": "LeRobot lerobot_record.py, record_loop()",
   "sections": [
-   3
+   3,
+   9
   ]
  },
  {
@@ -3891,6 +4018,7 @@
   "venue": null,
   "title": "LeRobot transforms.py",
   "sections": [
+   10,
    11
   ]
  },
@@ -3945,7 +4073,8 @@
   "venue": null,
   "title": "LeRobot video benchmark README at v0.4.0",
   "sections": [
-   9
+   9,
+   10
   ]
  },
  {
@@ -3973,7 +4102,7 @@
   "url": "https://raw.githubusercontent.com/isaac-sim/IsaacLab/e3f7d9ff1f5d7f8280de3ece9000b7117f66bcf4/docs/source/features/imitation-learning/humanoids_imitation.rst",
   "local": null,
   "venue": null,
-  "title": "humanoid figures",
+  "title": "Isaac Lab v3.0.0 docs, humanoid imitation figures",
   "sections": [
    11
   ]
@@ -3983,7 +4112,7 @@
   "url": "https://raw.githubusercontent.com/isaac-sim/IsaacLab/e3f7d9ff1f5d7f8280de3ece9000b7117f66bcf4/docs/source/features/imitation-learning/skillgen.rst",
   "local": null,
   "venue": null,
-  "title": "Isaac Lab v3.0.0 docs, SkillGen",
+  "title": "SkillGen",
   "sections": [
    11
   ]
@@ -3993,7 +4122,7 @@
   "url": "https://raw.githubusercontent.com/isaac-sim/IsaacLab/e3f7d9ff1f5d7f8280de3ece9000b7117f66bcf4/docs/source/features/imitation-learning/teleop_imitation.rst",
   "local": null,
   "venue": null,
-  "title": "Isaac Lab v3.0.0 docs",
+  "title": "Isaac Lab v3.0.0 docs, data generation figures",
   "sections": [
    11
   ]
@@ -4043,7 +4172,7 @@
   "url": "https://raw.githubusercontent.com/nvidia-cosmos/cosmos-transfer2.5/2ff49d0717af02057ae79bc75c00fbff9da1b4e7/docs/inference.md",
   "local": null,
   "venue": null,
-  "title": "Cosmos-Transfer2.5 inference docs",
+  "title": "raw.githubusercontent.com/nvidia-cosmos/cosmos-transfer2.5/2ff49d0717af02057ae79bc75c00fbff9da1b4e7/docs/inference.md",
   "sections": [
    11
   ]
@@ -4117,7 +4246,7 @@
   "url": "https://raw.githubusercontent.com/NVIDIA/Cosmos/0eab578a8935e26aa41c2b7dc9f5ab00f790a037/docs/reference/inference_benchmarks/cosmos3-nano-generator.md",
   "local": null,
   "venue": null,
-  "title": "Cosmos3-Nano benchmarks",
+  "title": "NVIDIA Cosmos inference benchmarks, Cosmos3-Nano",
   "sections": [
    6,
    7,
@@ -4149,9 +4278,10 @@
   "url": "https://raw.githubusercontent.com/NVIDIA/Cosmos/0eab578a8935e26aa41c2b7dc9f5ab00f790a037/docs/reference/models.md",
   "local": null,
   "venue": null,
-  "title": "NVIDIA Cosmos models reference, architecture",
+  "title": "Cosmos 3 models reference, architecture",
   "sections": [
-   6
+   6,
+   11
   ]
  },
  {
@@ -4159,7 +4289,7 @@
   "url": "https://raw.githubusercontent.com/NVIDIA/cosmos/0eab578a8935e26aa41c2b7dc9f5ab00f790a037/README.md",
   "local": null,
   "venue": null,
-  "title": "NVIDIA Cosmos README, models",
+  "title": "Cosmos README",
   "sections": [
    11
   ]
@@ -4227,7 +4357,8 @@
   "venue": null,
   "title": "SO-ARM100 README, camera mounts",
   "sections": [
-   3
+   3,
+   14
   ]
  },
  {
@@ -4297,9 +4428,10 @@
   "url": "https://www.nvidia.com/en-us/data-center/products/a10-gpu/",
   "local": null,
   "venue": null,
-  "title": "NVIDIA product pages, GPUs of the EC2 G families",
+  "title": "NVIDIA product pages",
   "sections": [
    2,
+   11,
    13
   ]
  },
@@ -4450,6 +4582,8 @@
   "title": "AWS Machine Learning Blog",
   "sections": [
    2,
+   8,
+   11,
    13,
    23,
    29
@@ -4669,6 +4803,7 @@
   "venue": null,
   "title": "NVIDIA Developer, ray tracing page",
   "sections": [
+   11,
    13,
    20
   ]
@@ -4712,7 +4847,9 @@
   "venue": null,
   "title": "LeRobot pull request 4549",
   "sections": [
-   10
+   9,
+   10,
+   11
   ]
  },
  {
@@ -4886,7 +5023,7 @@
   "url": "https://www.nvidia.com/en-us/data-center/tensor-cores/",
   "local": null,
   "venue": null,
-  "title": "NVIDIA Tensor Cores page; Nsight Compute pipeline glossary",
+  "title": "NVIDIA Tensor Cores page and Nsight Compute pipelines",
   "sections": [
    1,
    2,
@@ -4910,8 +5047,9 @@
   "url": "https://arxiv.org/abs/1703.06907v1",
   "local": null,
   "venue": "preprint",
-  "title": "Tobin et al., domain randomization paper, abstract",
+  "title": "Tobin et al., domain randomisation, abstract",
   "sections": [
+   13,
    14
   ]
  },
@@ -4950,7 +5088,7 @@
   "url": "https://arxiv.org/abs/2301.08243v3",
   "local": null,
   "venue": null,
-  "title": "I-JEPA paper, section 3",
+  "title": "I-JEPA paper, section 2, and the position paper, section 4.3",
   "sections": [
    7,
    15
@@ -5026,8 +5164,19 @@
   "venue": "preprint",
   "title": "SIMPLER paper, Table I",
   "sections": [
+   11,
    14,
    16
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2406.01967v1",
+  "local": null,
+  "venue": "RSS 2024, per the arXiv comment",
+  "title": "DrEureka paper, abstract and section V",
+  "sections": [
+   14
   ]
  },
  {
@@ -5035,7 +5184,7 @@
   "url": "https://arxiv.org/abs/2410.21845v3",
   "local": null,
   "venue": "preprint",
-  "title": "HIL-SERL paper, abstract and section 4",
+  "title": "HIL-SERL paper, section 3.2",
   "sections": [
    8
   ]
@@ -5067,8 +5216,10 @@
   "url": "https://arxiv.org/abs/2502.08844v1",
   "local": null,
   "venue": "preprint",
-  "title": "MuJoCo Playground paper, vision time breakdown",
+  "title": "MuJoCo Playground paper, appendix D.3",
   "sections": [
+   8,
+   12,
    13
   ]
  },
@@ -5206,8 +5357,9 @@
   "url": "https://arxiv.org/abs/2510.10274v1",
   "local": null,
   "venue": "preprint",
-  "title": "X-VLA paper, appendix G",
+  "title": "X-VLA paper, abstract",
   "sections": [
+   5,
    15
   ]
  },
@@ -5236,9 +5388,11 @@
   "url": "https://arxiv.org/abs/2511.04831v1",
   "local": null,
   "venue": "preprint",
-  "title": "Isaac Lab paper, section 2.3",
+  "title": "Isaac Lab paper, section 5.3",
   "sections": [
    1,
+   11,
+   12,
    13,
    14,
    20,
@@ -5282,9 +5436,10 @@
   "url": "https://arxiv.org/abs/2512.24497v4",
   "local": null,
   "venue": "TMLR",
-  "title": "JEPA-WMs paper, section 1",
+  "title": "JEPA-WMs paper, section 7",
   "sections": [
-   6
+   6,
+   7
   ]
  },
  {
@@ -5403,6 +5558,16 @@
   "title": "AgenticRobotics paper v2, section 5",
   "sections": [
    19
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2609.03611v1",
+  "local": null,
+  "venue": "preprint",
+  "title": "FailBench paper, abstract",
+  "sections": [
+   8
   ]
  },
  {

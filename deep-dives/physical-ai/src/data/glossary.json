@@ -1,5 +1,11 @@
 [
  {
+  "term": "3DGRUT",
+  "expansion": null,
+  "meaning": "NVIDIA's splat reconstruction code, with a ray-traced method (3DGRT) and a rasterised one (3DGUT).",
+  "section": 14
+ },
+ {
   "term": "aarch64",
   "expansion": null,
   "meaning": "The 64-bit Arm processor architecture, used by AWS Graviton and the NVIDIA DGX Spark.",
@@ -64,6 +70,12 @@
   "expansion": null,
   "meaning": "The program that runs the current policy on the arm and sends what happened to the learner.",
   "section": 8
+ },
+ {
+  "term": "Actuator network",
+  "expansion": null,
+  "meaning": "An actuator model that is a neural network trained on hardware data, used in Isaac Lab in place of an ideal PD loop.",
+  "section": 14
  },
  {
   "term": "Advantage",
@@ -150,10 +162,22 @@
   "section": 2
  },
  {
+  "term": "Attempt (trial, rollout)",
+  "expansion": null,
+  "meaning": "One try at the task played out by the current policy; an episode with the policy driving.",
+  "section": 8
+ },
+ {
   "term": "attemptDurationSeconds",
   "expansion": null,
   "meaning": "The AWS Batch job timeout; a job has none unless this is set.",
   "section": 19
+ },
+ {
+  "term": "Attention",
+  "expansion": null,
+  "meaning": "The transformer operation in which one token reads from others; the action head uses it to read the backbone's results.",
+  "section": 5
  },
  {
   "term": "Augment",
@@ -264,6 +288,12 @@
   "section": 21
  },
  {
+  "term": "Balanced accuracy",
+  "expansion": null,
+  "meaning": "The average of a judge's detection rate on successes and its detection rate on failures; 0.5 is chance.",
+  "section": 8
+ },
+ {
   "term": "Behaviour cloning",
   "expansion": null,
   "meaning": "Supervised learning on (observation, action) pairs from demonstrations: the network is trained to output the action the person took for each observation.",
@@ -286,6 +316,12 @@
   "expansion": "bfloat16",
   "meaning": "A 16-bit number format that takes 2 bytes per weight.",
   "section": 6
+ },
+ {
+  "term": "Bias force",
+  "expansion": null,
+  "meaning": "The term c in the equation of motion: the pull of gravity and of the body's own motion.",
+  "section": 12
  },
  {
   "term": "Bookkeeping columns",
@@ -312,9 +348,15 @@
   "section": 4
  },
  {
+  "term": "Broad phase",
+  "expansion": null,
+  "meaning": "The first, cheapest phase of collision detection, which picks out the pairs of bodies that could be touching.",
+  "section": 12
+ },
+ {
   "term": "BVH",
   "expansion": "bounding-volume hierarchy",
-  "meaning": "A tree of nested boxes around the triangles of a scene that a ray tracer walks to find which triangle a ray lands on.",
+  "meaning": "A tree of nested boxes around the triangles of a scene; a ray tracer walks it to find which triangle a ray lands on first.",
   "section": 13
  },
  {
@@ -356,8 +398,8 @@
  {
   "term": "Capacity Block for ML",
   "expansion": null,
-  "meaning": "A reservation of GPU instances for a fixed window, booked ahead and paid up front.",
-  "section": 24
+  "meaning": "An EC2 reservation of a block of GPU instances for a fixed window; the list read on 2026-11-20 holds P and Trainium types and no G type.",
+  "section": 13
  },
  {
   "term": "Capacity Blocks for ML",
@@ -390,6 +432,12 @@
   "section": 7
  },
  {
+  "term": "Characteristic function",
+  "expansion": null,
+  "meaning": "A fingerprint of a distribution, estimated for a batch by averaging cos(t p) and sin(t p) over its values p; SIGReg compares it with a standard Gaussian's.",
+  "section": 7
+ },
+ {
   "term": "Checkpoint",
   "expansion": null,
   "meaning": "The copy of a model saved to storage during a training run, from which a stopped run resumes.",
@@ -412,6 +460,12 @@
   "expansion": null,
   "meaning": "A numbered folder (chunk-000) that holds up to 1,000 data or video files by default.",
   "section": 9
+ },
+ {
+  "term": "Clip range",
+  "expansion": null,
+  "meaning": "PPO's limit on how far the probability of an action may move from the policy that collected the batch before the change stops being rewarded.",
+  "section": 8
  },
  {
   "term": "Clock cycle",
@@ -450,6 +504,12 @@
   "section": 28
  },
  {
+  "term": "Co-training",
+  "expansion": null,
+  "meaning": "In PolaRiS, fine-tuning a policy briefly on simulated demonstrations from other scanned scenes so it is used to the simulator's rendering.",
+  "section": 14
+ },
+ {
   "term": "Codec",
   "expansion": null,
   "meaning": "A method for compressing video into a file (the encoder half) and turning it back into frames (the decoder half).",
@@ -476,7 +536,7 @@
  {
   "term": "Collision detection",
   "expansion": null,
-  "meaning": "The search, repeated every physics step, for which shapes in the scene touch.",
+  "meaning": "The search, repeated every physics step, for which shapes in the scene touch, in a broad, a mid and a near phase.",
   "section": 12
  },
  {
@@ -548,13 +608,13 @@
  {
   "term": "Constraint Jacobian",
   "expansion": null,
-  "meaning": "A table that says how far each joint's motion moves each contact point, used to turn contact forces into joint torques.",
+  "meaning": "A table with one row per constraint that says how far each joint's motion moves it; transposed, it turns constraint forces into joint forces.",
   "section": 12
  },
  {
   "term": "Constraint solve",
   "expansion": null,
-  "meaning": "The numerical search inside every physics step for the contact forces that keep all constraints true at once.",
+  "meaning": "The iterative search inside every physics step for the constraint forces that keep all constraints true at once.",
   "section": 12
  },
  {
@@ -580,12 +640,6 @@
   "expansion": null,
   "meaning": "Latents of different inputs that a loss term pushes apart to block collapse; an older method.",
   "section": 7
- },
- {
-  "term": "Control decimation",
-  "expansion": null,
-  "meaning": "The number of physics substeps per policy step; 20 in the SO-101 vision pick-cube task.",
-  "section": 12
  },
  {
   "term": "Control period",
@@ -630,6 +684,12 @@
   "section": 18
  },
  {
+  "term": "Correction collection",
+  "expansion": null,
+  "meaning": "Recording in which a trained policy drives the arm and a person takes over before a failure, so the recovery becomes training data.",
+  "section": 9
+ },
+ {
   "term": "Cosine similarity",
   "expansion": null,
   "meaning": "A comparison of two output vectors that is 1 when they point the same way; the compiled model is expected to reach 0.999 or higher against the original.",
@@ -652,6 +712,12 @@
   "expansion": null,
   "meaning": "Whether a job's pieces must exchange data while they run.",
   "section": 1
+ },
+ {
+  "term": "Covariance (of two latent dimensions)",
+  "expansion": null,
+  "meaning": "Whether two dimensions rise and fall together across a batch; 0 when they carry unrelated information.",
+  "section": 7
  },
  {
   "term": "CPU back end",
@@ -678,9 +744,15 @@
   "section": 28
  },
  {
+  "term": "CUDA",
+  "expansion": null,
+  "meaning": "NVIDIA's programming layer for running code on its GPUs.",
+  "section": 10
+ },
+ {
   "term": "Curation",
   "expansion": null,
-  "meaning": "Choosing which recordings a model learns from, by filtering, embedding and deduplicating them.",
+  "meaning": "Choosing which recordings a model learns from, by dropping failed attempts, still clips and near copies.",
   "section": 10
  },
  {
@@ -740,7 +812,7 @@
  {
   "term": "Decode",
   "expansion": null,
-  "meaning": "Turning compressed video back into frames, the arrays of pixels a model reads; it is repeated every time a frame is read.",
+  "meaning": "Turning compressed video back into frames of pixels; it is repeated every time training reads a frame.",
   "section": 10
  },
  {
@@ -758,7 +830,7 @@
  {
   "term": "Deduplication",
   "expansion": null,
-  "meaning": "Comparing clip embeddings and removing clips that sit almost on top of another, so near-identical recordings do not outweigh the rest.",
+  "meaning": "Clustering clip embeddings and dropping clips that sit too close to another, so near-identical recordings do not outweigh the rest.",
   "section": 10
  },
  {
@@ -780,22 +852,16 @@
   "section": 3
  },
  {
-  "term": "Demonstration multiplication",
-  "expansion": null,
-  "meaning": "Replaying a few human demonstrations in a simulator from new object positions and keeping the runs that still succeed.",
-  "section": 11
- },
- {
-  "term": "Denoising",
-  "expansion": null,
-  "meaning": "Producing an output by starting from random noise and cleaning it over a number of passes; the diffusion idea, built in section 4.",
-  "section": 6
- },
- {
   "term": "Denoising iteration",
   "expansion": null,
   "meaning": "One round in which the network predicts the noise in the current chunk and part of it is subtracted.",
   "section": 4
+ },
+ {
+  "term": "Denoising pass",
+  "expansion": null,
+  "meaning": "One run of a generator's transformer over all its tokens, cleaning them a little; a video generator makes tens of them per clip. Section 4 builds diffusion and flow matching.",
+  "section": 6
  },
  {
   "term": "Denoising step",
@@ -822,6 +888,12 @@
   "section": 17
  },
  {
+  "term": "Diffusers",
+  "expansion": null,
+  "meaning": "A second inference library for generative models, benchmarked by NVIDIA beside its PyTorch path.",
+  "section": 11
+ },
+ {
   "term": "Diffusion policy",
   "expansion": null,
   "meaning": "A policy that starts from a chunk of random noise and removes predicted noise over many iterations until an action chunk remains.",
@@ -838,6 +910,18 @@
   "expansion": null,
   "meaning": "A latent world model built on a frozen pretrained image encoder.",
   "section": 7
+ },
+ {
+  "term": "Direct lighting",
+  "expansion": null,
+  "meaning": "Light that reaches a surface straight from a lamp, with no bounce off other surfaces; all that Isaac Lab's Newton Warp renderer computes.",
+  "section": 13
+ },
+ {
+  "term": "discrete (integrator)",
+  "expansion": null,
+  "meaning": "A MuJoCo integrator its documentation recommends when stiff springs, position servos or strong damping interact with contacts.",
+  "section": 12
  },
  {
   "term": "DiT",
@@ -860,8 +944,8 @@
  {
   "term": "Domain randomisation",
   "expansion": null,
-  "meaning": "Drawing each uncertain simulator parameter from a range at the start of every episode, so the real world falls inside what the policy trained on.",
-  "section": 14
+  "meaning": "Changing the simulated arm and scene at the start of every episode so the real arm falls inside the range the policy trained on.",
+  "section": 8
  },
  {
   "term": "DRA",
@@ -886,6 +970,12 @@
   "expansion": null,
   "meaning": "NVIDIA's February 2026 world-action model, the paper that coined the term.",
   "section": 6
+ },
+ {
+  "term": "DrEureka",
+  "expansion": null,
+  "meaning": "A 2024 method in which a language model writes the reward and proposes domain-randomisation ranges.",
+  "section": 14
  },
  {
   "term": "Drift",
@@ -1028,7 +1118,7 @@
  {
   "term": "Encoder (video)",
   "expansion": null,
-  "meaning": "The program or circuit that compresses video at recording time; a different thing from the joint-angle encoder of section 3.",
+  "meaning": "The program or circuit that compresses video at recording time; the word's meaning from section 9 to the end of section 11, where section 3 used \"encoder\" for a joint's angle sensor.",
   "section": 9
  },
  {
@@ -1036,6 +1126,12 @@
   "expansion": null,
   "meaning": "The tool at the end of the arm; on the SO-101, the gripper.",
   "section": 3
+ },
+ {
+  "term": "End-effector action",
+  "expansion": null,
+  "meaning": "An action that gives the pose of the gripper, which must pass through inverse kinematics into joint angles before an arm can follow it (built in section 3).",
+  "section": 9
  },
  {
   "term": "End-effector space",
@@ -1064,7 +1160,7 @@
  {
   "term": "Environment",
   "expansion": null,
-  "meaning": "One simulated copy of the scene: an arm, a table and a cube.",
+  "meaning": "One simulated copy of the scene (an arm, a table, a cube); a GPU advances thousands of them in one batch.",
   "section": 8
  },
  {
@@ -1084,6 +1180,12 @@
   "expansion": null,
   "meaning": "A short straight step along the current velocity, after which the velocity is asked for again.",
   "section": 4
+ },
+ {
+  "term": "Excitation episode",
+  "expansion": null,
+  "meaning": "One teleoperated recording driven so that every fitted constant acts in the data: small corrections, fast motion, starts and stops, and moves from rest on every joint.",
+  "section": 14
  },
  {
   "term": "Expert",
@@ -1122,16 +1224,16 @@
   "section": 25
  },
  {
+  "term": "finalize()",
+  "expansion": null,
+  "meaning": "The dataset call that closes the Parquet writers; without it the Parquet files are corrupt.",
+  "section": 9
+ },
+ {
   "term": "Fisher's exact test",
   "expansion": null,
   "meaning": "A test that says how often two policies with the same true success rate would show a gap at least as large as the one observed.",
   "section": 16
- },
- {
-  "term": "Fleet",
-  "expansion": null,
-  "meaning": "Many collection rigs and many people run as one data operation.",
-  "section": 9
  },
  {
   "term": "Fleet provisioning",
@@ -1190,8 +1292,14 @@
  {
   "term": "Friction loss",
   "expansion": null,
-  "meaning": "A constant resistance inside a joint that the motor must overcome before the joint moves.",
-  "section": 14
+  "meaning": "Dry friction inside a joint, which MuJoCo models as a constraint; the SO-101 scene sets it on every joint.",
+  "section": 12
+ },
+ {
+  "term": "from_timestamp",
+  "expansion": null,
+  "meaning": "The time at which an episode begins inside a camera's shared MP4 file; added to a row's timestamp to find its frame.",
+  "section": 9
  },
  {
   "term": "Front end",
@@ -1208,8 +1316,8 @@
  {
   "term": "Frozen",
   "expansion": null,
-  "meaning": "Said of a network whose weights are not updated while the rest of the model trains.",
-  "section": 6
+  "meaning": "Said of weights that a fine-tune does not update, so they need no gradient and no optimiser state in GPU memory.",
+  "section": 5
  },
  {
   "term": "Frozen backbone",
@@ -1228,6 +1336,12 @@
   "expansion": null,
   "meaning": "AWS's managed Lustre, a file system that many processes read in parallel.",
   "section": 15
+ },
+ {
+  "term": "Full attention",
+  "expansion": null,
+  "meaning": "A transformer layer in which every position on the grid is compared with every other, so its work grows faster than the number of positions.",
+  "section": 11
  },
  {
   "term": "Full fine-tuning",
@@ -1280,7 +1394,7 @@
  {
   "term": "Gauss-Newton least squares",
   "expansion": null,
-  "meaning": "A fitting method that repeatedly nudges each parameter, re-simulates, and steps toward a smaller sum of squared mismatches.",
+  "meaning": "A fitting method for sums of squared misses: work out how each miss changes with each parameter, then step all parameters at once to where the squared misses would be smallest.",
   "section": 14
  },
  {
@@ -1298,14 +1412,14 @@
  {
   "term": "General compute cores",
   "expansion": null,
-  "meaning": "The units of a GPU that run ordinary GPU code, such as batched physics or a ray tracer written as code.",
+  "meaning": "The units of a GPU that run ordinary GPU code, such as batched physics, a ray tracer written as code, a network's code beside its matrix multiplies, and the lighting and shading of an RTX renderer.",
   "section": 13
  },
  {
   "term": "General GPU compute",
   "expansion": null,
-  "meaning": "The integer and floating-point units of a GPU that run ordinary GPU code, such as batched physics.",
-  "section": 20
+  "meaning": "A GPU's ordinary arithmetic units, as opposed to its tensor cores or ray-tracing cores.",
+  "section": 8
  },
  {
   "term": "Generative head",
@@ -1340,8 +1454,8 @@
  {
   "term": "GPU utilisation",
   "expansion": null,
-  "meaning": "The share of research wall-clock time during which the station's GPU is in use.",
-  "section": 19
+  "meaning": "In nvidia-smi, the percentage of the sample period during which at least one kernel was executing on the GPU.",
+  "section": 10
  },
  {
   "term": "GPU utilisation (nvidia-smi)",
@@ -1386,6 +1500,12 @@
   "section": 19
  },
  {
+  "term": "Gradient-based planning",
+  "expansion": null,
+  "meaning": "Computing through the predictor which way to change the candidate actions, where a search only samples them.",
+  "section": 6
+ },
+ {
   "term": "Gradients",
   "expansion": null,
   "meaning": "The corrections to the weights that a training step computes; in multi-node training every node exchanges them at every step.",
@@ -1406,7 +1526,7 @@
  {
   "term": "GRPO",
   "expansion": "Group Relative Policy Optimization",
-  "meaning": "An RL algorithm that scores each attempt against the others in its group, so it needs no separate value model.",
+  "meaning": "An RL algorithm that scores each attempt against the others collected with it.",
   "section": 8
  },
  {
@@ -1542,10 +1662,10 @@
   "section": 11
  },
  {
-  "term": "Imagination",
+  "term": "ImageNet",
   "expansion": null,
-  "meaning": "The field's word for running rollouts inside a world model while the real robot does nothing.",
-  "section": 6
+  "meaning": "A public set of labelled photos; ACT's ResNet-18 image backbone starts from weights trained on it.",
+  "section": 5
  },
  {
   "term": "IMEX",
@@ -1554,9 +1674,15 @@
   "section": 26
  },
  {
-  "term": "In distribution",
+  "term": "implicitfast",
   "expansion": null,
-  "meaning": "A test where the object starts in positions the demonstrations covered.",
+  "meaning": "MuJoCo's recommended integrator, which rescales the acceleration using how speed-dependent forces such as damping change with speed.",
+  "section": 12
+ },
+ {
+  "term": "In distribution, out of distribution",
+  "expansion": null,
+  "meaning": "A test where the object starts in positions the demonstrations covered, against one where it starts somewhere new.",
   "section": 5
  },
  {
@@ -1608,9 +1734,9 @@
   "section": 28
  },
  {
-  "term": "Intervention",
+  "term": "Intervention (takeover)",
   "expansion": null,
-  "meaning": "A person taking over the arm for a moment during an autonomous attempt to correct it.",
+  "meaning": "A person taking over the arm for a moment during an autonomous attempt; the person's action replaces the policy's and is stored.",
   "section": 8
  },
  {
@@ -1652,8 +1778,8 @@
  {
   "term": "Isaac Sim",
   "expansion": null,
-  "meaning": "NVIDIA's full simulator application, with PhysX physics and RTX rendering.",
-  "section": 12
+  "meaning": "NVIDIA's simulator application; it draws simulated cameras with a ray tracer that needs RT cores.",
+  "section": 11
  },
  {
   "term": "Isotropic Gaussian",
@@ -1662,10 +1788,22 @@
   "section": 7
  },
  {
+  "term": "JAX",
+  "expansion": null,
+  "meaning": "Google's array library for Python, in which MJX-JAX is written.",
+  "section": 12
+ },
+ {
   "term": "JEPA",
   "expansion": "Joint-Embedding Predictive Architecture",
   "meaning": "A design that predicts a compact summary of the scene in place of its pixels.",
   "section": 2
+ },
+ {
+  "term": "JEPA-WMs",
+  "expansion": null,
+  "meaning": "The name a peer-reviewed 2026 study gives to world models trained only by a predictive loss in latent space; it compares their planners.",
+  "section": 7
  },
  {
   "term": "JetPack",
@@ -1688,7 +1826,7 @@
  {
   "term": "Jetson Thor",
   "expansion": null,
-  "meaning": "NVIDIA's onboard computer for robots, the newest of the Jetson line named in this section.",
+  "meaning": "An NVIDIA onboard computer for robots; the GR00T N1.7 model card names it Jetson AGX Thor.",
   "section": 5
  },
  {
@@ -1732,6 +1870,18 @@
   "expansion": null,
   "meaning": "Stating an action as one target angle per motor.",
   "section": 3
+ },
+ {
+  "term": "Joint-reading bias",
+  "expansion": null,
+  "meaning": "An offset the task adds to the simulated joint readings each episode, to stand in for calibration error.",
+  "section": 14
+ },
+ {
+  "term": "K-Means",
+  "expansion": null,
+  "meaning": "A clustering algorithm that groups vectors around a chosen number of centres.",
+  "section": 10
  },
  {
   "term": "KAI Scheduler",
@@ -1794,6 +1944,18 @@
   "section": 4
  },
  {
+  "term": "Lane",
+  "expansion": null,
+  "meaning": "One of the three supplies of attempts for robot RL: a simulator, a pretrained policy, or the real arm.",
+  "section": 8
+ },
+ {
+  "term": "Latency and throughput",
+  "expansion": null,
+  "meaning": "The time of one step, which CPU MuJoCo minimises, against the total steps per unit of time, which MuJoCo Warp maximises.",
+  "section": 12
+ },
+ {
   "term": "Latency budget",
   "expansion": null,
   "meaning": "The time from the capture of a camera frame to the moment the action computed from it reaches the servos, split into the links that add up to it.",
@@ -1802,14 +1964,20 @@
  {
   "term": "Latent",
   "expansion": null,
-  "meaning": "The compressed form of a frame or clip that an encoder outputs: a grid or vector of numbers.",
+  "meaning": "The internal code an encoder makes of a frame or clip: a grid or vector of numbers. Both families have one; the pixel family's is built to be decoded back into pixels.",
   "section": 6
  },
  {
-  "term": "Latent space",
+  "term": "Latent family",
   "expansion": null,
-  "meaning": "The space of all possible latents; predicting in latent space means predicting the encoder's output for the next frame, with no image made.",
+  "meaning": "World models that predict the encoder's summary of the next frames and never draw a picture.",
   "section": 6
+ },
+ {
+  "term": "Latent-action model",
+  "expansion": null,
+  "meaning": "The second kind of model the DreamGen paper names for recovering actions from generated video.",
+  "section": 11
  },
  {
   "term": "Launch template",
@@ -1988,13 +2156,13 @@
  {
   "term": "MIG",
   "expansion": "Multi-Instance GPU",
-  "meaning": "An NVIDIA feature that divides one card into isolated slices.",
+  "meaning": "NVIDIA's way of dividing one GPU into isolated slices; on a split card nvidia-smi cannot report decoder or GPU utilisation.",
   "section": 10
  },
  {
   "term": "MimicGen",
   "expansion": null,
-  "meaning": "The 2023 system that introduced demonstration multiplication in simulation.",
+  "meaning": "The 2023 system that introduced replaying a few human demonstrations in simulation from new object positions.",
   "section": 11
  },
  {
@@ -2012,7 +2180,7 @@
  {
   "term": "MJX",
   "expansion": null,
-  "meaning": "MuJoCo's JAX interface, over two engines: MJX-JAX and MJX-Warp.",
+  "meaning": "MuJoCo's JAX interface, over two engines: MJX-JAX, a rewrite in JAX, and MJX-Warp, which calls MuJoCo Warp.",
   "section": 12
  },
  {
@@ -2034,6 +2202,12 @@
   "section": 4
  },
  {
+  "term": "Model (in a simulator)",
+  "expansion": null,
+  "meaning": "The text file of typed-in values that describes every link, joint, servo and shape of a scene.",
+  "section": 12
+ },
+ {
   "term": "Momentum (m)",
   "expansion": null,
   "meaning": "The fraction of its old value a target weight keeps at each EMA update; 0.99925 in V-JEPA 2.",
@@ -2050,12 +2224,6 @@
   "expansion": null,
   "meaning": "The driver that presents an S3 bucket as a volume in a pod.",
   "section": 28
- },
- {
-  "term": "MP4",
-  "expansion": null,
-  "meaning": "The common container file for compressed video.",
-  "section": 9
  },
  {
   "term": "MPC",
@@ -2084,8 +2252,8 @@
  {
   "term": "MuJoCo",
   "expansion": null,
-  "meaning": "Google DeepMind's open-source physics simulator, which steps one world on a CPU with low latency.",
-  "section": 12
+  "meaning": "The physics simulator of section 12; the episode stills and clip in this section are rendered from a simulated SO-101 in it.",
+  "section": 9
  },
  {
   "term": "MuJoCo Menagerie",
@@ -2096,7 +2264,7 @@
  {
   "term": "MuJoCo Playground",
   "expansion": null,
-  "meaning": "Google DeepMind's framework of ready-made robot tasks and training code, which ships the SO-101 pick-cube task.",
+  "meaning": "Google DeepMind's suite of ready-made robot tasks and training code, which ships the SO-101 pick-cube task.",
   "section": 12
  },
  {
@@ -2134,6 +2302,12 @@
   "expansion": null,
   "meaning": "A GPU physics engine built on Warp that offers several solvers, MuJoCo Warp among them.",
   "section": 12
+ },
+ {
+  "term": "Newton Warp",
+  "expansion": null,
+  "meaning": "The lightweight ray tracer in Isaac Lab 3.0's base install, which draws direct lighting only and runs without Isaac Sim.",
+  "section": 11
  },
  {
   "term": "NIM",
@@ -2184,6 +2358,12 @@
   "section": 1
  },
  {
+  "term": "Nominal frame rate",
+  "expansion": null,
+  "meaning": "The rate the recorder was asked to run at (30 fps by default); timestamps are computed from it, whatever rate the loop achieved.",
+  "section": 9
+ },
+ {
   "term": "Nsight Compute",
   "expansion": null,
   "meaning": "NVIDIA's profiler for one GPU kernel, reporting throughput against the GPU's maximum and a roofline chart.",
@@ -2222,8 +2402,8 @@
  {
   "term": "NVFP4",
   "expansion": null,
-  "meaning": "NVIDIA's 4-bit floating-point format with per-block scaling, supported natively by the GPU in Jetson Thor.",
-  "section": 17
+  "meaning": "The name NVIDIA gives the number format of its quantised GR00T N1.7 build.",
+  "section": 5
  },
  {
   "term": "nvidia-smi",
@@ -2268,6 +2448,12 @@
   "section": 24
  },
  {
+  "term": "On-Demand Capacity Reservation",
+  "expansion": null,
+  "meaning": "An EC2 reservation type that, unlike Capacity Blocks, covers G instances.",
+  "section": 13
+ },
+ {
   "term": "One long run",
   "expansion": null,
   "meaning": "A job shape: one machine for hours; a stop costs the work since the last checkpoint.",
@@ -2278,6 +2464,12 @@
   "expansion": "Open Neural Network Exchange",
   "meaning": "A portable file format for a model graph, used as the hand-off between a trained checkpoint and the device.",
   "section": 17
+ },
+ {
+  "term": "Open Duck Mini",
+  "expansion": null,
+  "meaning": "Another robot project whose motor parameters the SO-101 maker's model file adapts.",
+  "section": 14
  },
  {
   "term": "Open-loop evaluation",
@@ -2292,10 +2484,22 @@
   "section": 5
  },
  {
+  "term": "OpenUSD ParticleField",
+  "expansion": null,
+  "meaning": "The geometry type Isaac Sim's scene files use to store Gaussian splats.",
+  "section": 14
+ },
+ {
   "term": "OpenVLA-OFT",
   "expansion": null,
   "meaning": "A 7B robot model whose head was changed from one token at a time to one parallel pass that regresses the whole chunk.",
   "section": 4
+ },
+ {
+  "term": "OptiX",
+  "expansion": null,
+  "meaning": "NVIDIA's ray-tracing library for RTX GPUs; MuJoCo Warp's optional hardware back end is built on it and falls back to the Warp path when it is unavailable.",
+  "section": 13
  },
  {
   "term": "Orchestrator",
@@ -2310,10 +2514,10 @@
   "section": 24
  },
  {
-  "term": "Out of distribution",
+  "term": "OVRTX",
   "expansion": null,
-  "meaning": "A test where the object starts somewhere the demonstrations did not cover.",
-  "section": 5
+  "meaning": "The RTX renderer that Isaac Lab 3.0's documentation recommends; it runs without Isaac Sim and needs RT cores.",
+  "section": 13
  },
  {
   "term": "P family",
@@ -2336,13 +2540,13 @@
  {
   "term": "Parallel environments",
   "expansion": null,
-  "meaning": "Many independent copies of the scene advanced together in one batch on a GPU.",
-  "section": 8
+  "meaning": "Independent copies of one simulated scene that a single GPU steps at the same time.",
+  "section": 11
  },
  {
   "term": "Parquet",
   "expansion": null,
-  "meaning": "A column file format: a table stored column by column, compressed, with its schema inside the file.",
+  "meaning": "A compressed, column-by-column table file format; LeRobot stores the per-tick rows in it.",
   "section": 9
  },
  {
@@ -2360,8 +2564,8 @@
  {
   "term": "Patch",
   "expansion": null,
-  "meaning": "A small square of an image, 16 by 16 pixels in V-JEPA 2.",
-  "section": 7
+  "meaning": "One of the small squares a camera image is cut into, each of which becomes one token.",
+  "section": 5
  },
  {
   "term": "PCS",
@@ -2384,8 +2588,8 @@
  {
   "term": "Pearson correlation (r)",
   "expansion": null,
-  "meaning": "A number between -1 and 1 that says how closely two lists of numbers rise and fall together; 1 means one predicts the other exactly, 0 means no relation.",
-  "section": 16
+  "meaning": "A measure from -1 to 1 of how closely two sets of scores rise and fall together.",
+  "section": 14
  },
  {
   "term": "Pending",
@@ -2398,6 +2602,12 @@
   "expansion": null,
   "meaning": "Training a pretrained checkpoint, or a small policy from random weights, on tens of episodes of one task on one arm; a one-GPU job of minutes to hours.",
   "section": 15
+ },
+ {
+  "term": "Per-world limits",
+  "expansion": null,
+  "meaning": "The maximum contacts and constraints each MuJoCo Warp world reserves up front (64 and 256 in the pick-cube task); memory and computation scale with them.",
+  "section": 12
  },
  {
   "term": "perf",
@@ -2418,6 +2628,12 @@
   "section": 10
  },
  {
+  "term": "Physics engine",
+  "expansion": null,
+  "meaning": "The software that steps a simulated scene forward in time: PhysX, Newton and MuJoCo Warp are the ones met here.",
+  "section": 13
+ },
+ {
   "term": "Physics simulator",
   "expansion": null,
   "meaning": "A program that holds a scene as numbers and computes how it moves, one small time step after another.",
@@ -2432,7 +2648,7 @@
  {
   "term": "PhysX",
   "expansion": null,
-  "meaning": "NVIDIA's physics engine, used by Isaac Sim.",
+  "meaning": "NVIDIA's physics engine, used by Isaac Sim and available to Isaac Lab.",
   "section": 12
  },
  {
@@ -2454,13 +2670,25 @@
   "section": 3
  },
  {
+  "term": "Pixel family",
+  "expansion": null,
+  "meaning": "World models that predict the next camera frames, through a reconstruction code that a decoder turns back into pixels.",
+  "section": 6
+ },
+ {
+  "term": "Plan",
+  "expansion": null,
+  "meaning": "In the two-clocks figure, one backbone pass over the scene and the instruction.",
+  "section": 5
+ },
+ {
   "term": "Planner",
   "expansion": null,
   "meaning": "A slower loop that decides what to do next and hands targets to a faster controller.",
   "section": 3
  },
  {
-  "term": "Planning",
+  "term": "Planning by search",
   "expansion": null,
   "meaning": "Choosing an action by imagining many candidates in a world model, scoring each against a goal and running the best.",
   "section": 6
@@ -2474,7 +2702,7 @@
  {
   "term": "PLDM",
   "expansion": null,
-  "meaning": "A JEPA world model that trains its encoder with variance and covariance terms; named here as the LeWorldModel authors' comparison.",
+  "meaning": "A JEPA world model that trains its encoder with variance and covariance terms; the LeWorldModel authors count six tunable loss coefficients in it.",
   "section": 7
  },
  {
@@ -2494,6 +2722,12 @@
   "expansion": null,
   "meaning": "A loop where each read gives the address of the next, used to measure memory latency.",
   "section": 22
+ },
+ {
+  "term": "PolaRiS",
+  "expansion": null,
+  "meaning": "A research pipeline that builds scanned scenes from a short video and tests policies in them.",
+  "section": 14
  },
  {
   "term": "Policy",
@@ -2528,7 +2762,7 @@
  {
   "term": "PPO",
   "expansion": "Proximal Policy Optimization",
-  "meaning": "An RL algorithm that takes small, bounded update steps from batches of fresh attempts.",
+  "meaning": "An RL algorithm that alternates between collecting a batch of fresh attempts and a bounded update of the policy from it.",
   "section": 8
  },
  {
@@ -2550,22 +2784,10 @@
   "section": 25
  },
  {
-  "term": "Prefetch factor",
-  "expansion": null,
-  "meaning": "The number of batches each dataloader worker keeps ready ahead of the GPU.",
-  "section": 10
- },
- {
   "term": "Prefix",
   "expansion": null,
-  "meaning": "The image tokens and text tokens of one call, which the backbone reads once and caches for the action head.",
+  "meaning": "The row of image tokens and text tokens that enters the backbone on one call; the backbone reads it once and its results are cached for the action head.",
   "section": 5
- },
- {
-  "term": "Pretrained policy",
-  "expansion": null,
-  "meaning": "A policy, here a VLA, already trained on demonstrations before RL starts.",
-  "section": 8
  },
  {
   "term": "Pretraining",
@@ -2578,6 +2800,12 @@
   "expansion": null,
   "meaning": "The Spot allocation strategy that takes the lowest-priced pools among those with the most spare capacity.",
   "section": 28
+ },
+ {
+  "term": "Pseudo-actions",
+  "expansion": null,
+  "meaning": "Action labels inferred from a generated video by a second model, the DreamGen paper's term.",
+  "section": 11
  },
  {
   "term": "Purchase option",
@@ -2600,7 +2828,7 @@
  {
   "term": "qacc",
   "expansion": null,
-  "meaning": "MuJoCo's name for the vector of joint accelerations, the main output of a physics step before integration.",
+  "meaning": "MuJoCo's name for the vector of joint accelerations, the output of the force stages before integration.",
   "section": 12
  },
  {
@@ -2608,6 +2836,12 @@
   "expansion": null,
   "meaning": "Storing a model's numbers in fewer bits so each layer moves less memory and does cheaper arithmetic.",
   "section": 17
+ },
+ {
+  "term": "Quantised",
+  "expansion": null,
+  "meaning": "Said of a model whose numbers are stored at lower precision to make it smaller and faster.",
+  "section": 5
  },
  {
   "term": "Quantising",
@@ -2652,6 +2886,12 @@
   "section": 10
  },
  {
+  "term": "Ray tracer",
+  "expansion": null,
+  "meaning": "A renderer that follows a ray from each pixel into the scene to find what it hits.",
+  "section": 11
+ },
+ {
   "term": "Ray tracing",
   "expansion": null,
   "meaning": "Making an image by following a ray from the camera through each pixel to the surface it lands on, then more rays from that point.",
@@ -2662,6 +2902,12 @@
   "expansion": "RT cores",
   "meaning": "Separate GPU units that follow light rays to draw an image.",
   "section": 1
+ },
+ {
+  "term": "RayCasterCamera",
+  "expansion": null,
+  "meaning": "Isaac Lab's camera that casts its rays with Warp; faster than the tiled camera at low resolutions, by the Isaac Lab paper.",
+  "section": 13
  },
  {
   "term": "Real-to-sim",
@@ -2678,7 +2924,7 @@
  {
   "term": "Recap",
   "expansion": "RL with Experience and Corrections via Advantage-conditioned Policies",
-  "meaning": "Physical Intelligence's method for improving a VLA from its own rollouts and human corrections.",
+  "meaning": "Physical Intelligence's method for improving a VLA from its own attempts and human corrections.",
   "section": 8
  },
  {
@@ -2744,8 +2990,14 @@
  {
   "term": "Replay buffer",
   "expansion": null,
-  "meaning": "A store of past transitions that training samples from repeatedly.",
+  "meaning": "A store of past transitions that training samples from again and again.",
   "section": 8
+ },
+ {
+  "term": "Representation collapse",
+  "expansion": null,
+  "meaning": "The failure in which an encoder scored against encodings gives every input the same vector; section 7 covers what prevents it.",
+  "section": 6
  },
  {
   "term": "Requeue",
@@ -2810,8 +3062,8 @@
  {
   "term": "RoboJEPA",
   "expansion": null,
-  "meaning": "An October 2026 robot world model: action-conditioned predictors up to 8B parameters on a frozen V-JEPA 2.1 encoder.",
-  "section": 7
+  "meaning": "Meta's latent world model for robot arms: predictors of 22M to 8B parameters on a frozen 2B encoder.",
+  "section": 6
  },
  {
   "term": "Robot utilisation",
@@ -2826,16 +3078,28 @@
   "section": 3
  },
  {
+  "term": "Rollout loss",
+  "expansion": null,
+  "meaning": "A loss term that runs the predictor on its own previous output and compares the result with the latent of the frame the robot really reached.",
+  "section": 7
+ },
+ {
   "term": "Roofline chart",
   "expansion": null,
   "meaning": "A chart of a kernel's achieved speed against arithmetic per byte of memory moved, under a roof whose sloped part is the memory bandwidth limit and whose flat part is the peak compute limit.",
   "section": 21
  },
  {
+  "term": "Row",
+  "expansion": null,
+  "meaning": "In a LeRobot dataset, one control tick of one episode; in the curation run's design note, one entry of the recipe's input table.",
+  "section": 10
+ },
+ {
   "term": "RT cores",
   "expansion": "ray-tracing cores",
-  "meaning": "Hardware on some NVIDIA GPUs built to speed up the BVH search; data-centre training GPUs such as the H100 lack it.",
-  "section": 13
+  "meaning": "A unit some NVIDIA GPUs carry that speeds up the costliest step of ray tracing, finding which triangle a ray hits; the H100 and A100 lack it.",
+  "section": 11
  },
  {
   "term": "RTC",
@@ -2946,10 +3210,10 @@
   "section": 14
  },
  {
-  "term": "Search or amortise",
+  "term": "Semi-implicit Euler",
   "expansion": null,
-  "meaning": "A planner pays for search at run time on every decision; a world-action model pays during training and answers in one forward pass.",
-  "section": 6
+  "meaning": "The integration rule that updates the speed first and then moves the position with the new speed.",
+  "section": 12
  },
  {
   "term": "Serial bus",
@@ -3030,6 +3294,18 @@
   "section": 14
  },
  {
+  "term": "SIMPLER",
+  "expansion": null,
+  "meaning": "A 2024 suite for scoring real-robot policies in simulation.",
+  "section": 14
+ },
+ {
+  "term": "Simulated replay",
+  "expansion": null,
+  "meaning": "Replaying a few demonstrations recorded in a simulator from new object positions, and keeping the candidates that physics says succeed.",
+  "section": 11
+ },
+ {
   "term": "Simulator",
   "expansion": null,
   "meaning": "A program that computes how the arm and the objects around it move, so an attempt needs no hardware.",
@@ -3082,6 +3358,18 @@
   "expansion": "simultaneous multithreading",
   "meaning": "One physical core presenting itself as two hardware threads so that it can interleave two programs.",
   "section": 10
+ },
+ {
+  "term": "SO101PickCubeVision",
+  "expansion": null,
+  "meaning": "The Playground task that trains an SO-101 vision policy in simulation to pick a cube up and deploys it zero-shot.",
+  "section": 14
+ },
+ {
+  "term": "Soft prompt",
+  "expansion": null,
+  "meaning": "A set of learned vectors fed to the model for one robot type, X-VLA's way of serving many robot bodies.",
+  "section": 5
  },
  {
   "term": "Speculation",
@@ -3144,6 +3432,12 @@
   "section": 18
  },
  {
+  "term": "Stall torque",
+  "expansion": null,
+  "meaning": "The torque a motor produces when held still at full power; the servo datasheet's figure for its strength.",
+  "section": 14
+ },
+ {
   "term": "STALL_FRONTEND_FLUSH",
   "expansion": null,
   "meaning": "The Arm event that counts cycles the front end spent recovering from a flush, used by the Neoverse V3, Cortex-X925 and Cortex-A725 formulas.",
@@ -3192,16 +3486,16 @@
   "section": 8
  },
  {
-  "term": "State-only dataset",
-  "expansion": null,
-  "meaning": "Generated demonstrations saved as joint and object numbers with no camera images.",
-  "section": 11
- },
- {
   "term": "Station",
   "expansion": null,
   "meaning": "One robot with its cameras, one workstation with a GPU and one coding agent; ENPIRE's fleet has eight.",
   "section": 19
+ },
+ {
+  "term": "Stiff force",
+  "expansion": null,
+  "meaning": "A force that changes quickly with position or speed, which a large timestep applies wrongly and can make unstable.",
+  "section": 12
  },
  {
   "term": "Stop-gradient",
@@ -3222,6 +3516,12 @@
   "section": 9
  },
  {
+  "term": "Streaming reader",
+  "expansion": null,
+  "meaning": "LeRobot's mode that trains from a dataset without downloading it first; Hugging Face reports 2.1 to 2.5 times more samples per second from four workers.",
+  "section": 10
+ },
+ {
   "term": "Subdeployment",
   "expansion": null,
   "meaning": "A Greengrass deployment that targets a smaller group of devices inside a parent deployment's group.",
@@ -3230,7 +3530,7 @@
  {
   "term": "Substep",
   "expansion": null,
-  "meaning": "One of the physics steps the simulator runs between two decisions of the policy.",
+  "meaning": "One of the physics steps the simulator runs between two decisions of the policy; 20 in the SO-101 vision pick-cube task.",
   "section": 12
  },
  {
@@ -3260,13 +3560,13 @@
  {
   "term": "System 1",
   "expansion": null,
-  "meaning": "The fast part of a robot model that turns the slow part's output and the robot state into actions, usually the action head.",
+  "meaning": "NVIDIA's name for the fast side of a robot model, the action head that turns the slow side's output and the robot state into actions.",
   "section": 5
  },
  {
   "term": "System 2",
   "expansion": null,
-  "meaning": "The slow part of a robot model that reads the scene and the instruction, usually the vision-language model.",
+  "meaning": "NVIDIA's name for the slow side of a robot model, the vision-language model that reads the scene and the instruction.",
   "section": 5
  },
  {
@@ -3300,16 +3600,16 @@
   "section": 27
  },
  {
+  "term": "Teacher forcing",
+  "expansion": null,
+  "meaning": "Training a predictor so that every guess starts from the true history and never from its own earlier guesses.",
+  "section": 6
+ },
+ {
   "term": "tegrastats",
   "expansion": null,
   "meaning": "The Jetson's built-in tool that reports processor, GPU, memory and power readings.",
   "section": 22
- },
- {
-  "term": "Teleoperated excitation episode",
-  "expansion": null,
-  "meaning": "One recording in which a person drives the arm through its range with the leader arm so that every parameter leaves a mark in the data.",
-  "section": 14
  },
  {
   "term": "Teleoperation",
@@ -3366,6 +3666,12 @@
   "section": 17
  },
  {
+  "term": "testspeed",
+  "expansion": null,
+  "meaning": "MuJoCo's timing tool: rolls a model out for 10,000 steps by default and prints CPU time, contact and constraint counts; --nthread runs one world per thread.",
+  "section": 12
+ },
+ {
   "term": "Thing",
   "expansion": null,
   "meaning": "AWS IoT's record of one device.",
@@ -3386,7 +3692,13 @@
  {
   "term": "Tiled rendering",
   "expansion": null,
-  "meaning": "Drawing every environment's camera into one tile of a single large GPU image in one pass, then cutting it apart.",
+  "meaning": "Drawing every environment's camera into one tile of a single large GPU image in one pass, then cutting it apart into a tensor the policy reads on the GPU.",
+  "section": 13
+ },
+ {
+  "term": "TiledCamera",
+  "expansion": null,
+  "meaning": "Isaac Lab's camera sensor class that draws every environment's camera in one tiled pass; it scales to several thousand environments.",
   "section": 13
  },
  {
@@ -3404,8 +3716,8 @@
  {
   "term": "Token",
   "expansion": null,
-  "meaning": "One vector a transformer processes; here, one position in the compressed grid.",
-  "section": 6
+  "meaning": "One vector a transformer processes; an image patch or a piece of a word becomes one token.",
+  "section": 5
  },
  {
   "term": "Token (vision)",
@@ -3438,10 +3750,28 @@
   "section": 10
  },
  {
+  "term": "Torque cap (FORCERANGE)",
+  "expansion": null,
+  "meaning": "The largest torque the simulated servo may apply, 2.94 N m, set from the 12 V servo's stall torque and not fitted.",
+  "section": 14
+ },
+ {
+  "term": "Training frames per second",
+  "expansion": null,
+  "meaning": "The throughput figure in Isaac Lab's benchmark: the rate of simulated frames a training run gets through, with the policy's updates included.",
+  "section": 13
+ },
+ {
   "term": "Training plan",
   "expansion": null,
   "meaning": "A SageMaker reservation of GPU instances for a training job or HyperPod cluster, for 1 to 182 days.",
   "section": 15
+ },
+ {
+  "term": "Training step",
+  "expansion": null,
+  "meaning": "In the VLA recipes, one round of collecting attempts and updating the model; a far larger unit than a control step.",
+  "section": 8
  },
  {
   "term": "Trainium",
@@ -3486,12 +3816,6 @@
   "section": 22
  },
  {
-  "term": "Trial (rollout)",
-  "expansion": null,
-  "meaning": "One attempt at the task played out by the current policy; also called an episode.",
-  "section": 8
- },
- {
   "term": "Tubelet",
   "expansion": null,
   "meaning": "A patch extended through time: the same square in 2 consecutive frames, which becomes one token.",
@@ -3534,6 +3858,18 @@
   "section": 23
  },
  {
+  "term": "Update time",
+  "expansion": null,
+  "meaning": "The time the GPU takes for one training step on a batch; LeRobot's guide reports it as update_s beside the data-loading time dataloading_s.",
+  "section": 10
+ },
+ {
+  "term": "USD-Camera",
+  "expansion": null,
+  "meaning": "The Isaac Lab paper's highest-fidelity camera type; it runs out of memory beyond 48 cameras on a 96 GB card.",
+  "section": 13
+ },
+ {
   "term": "User data",
   "expansion": null,
   "meaning": "The script an EC2 instance runs at boot; here it mounts the shared file system.",
@@ -3570,6 +3906,18 @@
   "section": 8
  },
  {
+  "term": "Variance (of a latent dimension)",
+  "expansion": null,
+  "meaning": "How far one dimension's values spread around their average across a batch; 0 when every input gives the same value.",
+  "section": 7
+ },
+ {
+  "term": "vcodec=auto",
+  "expansion": null,
+  "meaning": "A LeRobot encoder setting that picks the first hardware encoder the host offers and falls back to SVT-AV1 when there is none.",
+  "section": 9
+ },
+ {
   "term": "vCPU",
   "expansion": "virtual CPU",
   "meaning": "The unit EC2 counts processor capacity in; on x86 instances with two threads per core, one vCPU is one hardware thread.",
@@ -3600,6 +3948,12 @@
   "section": 16
  },
  {
+  "term": "Visual domain gap",
+  "expansion": null,
+  "meaning": "The difference between how simulated images and real camera images look.",
+  "section": 11
+ },
+ {
   "term": "ViT",
   "expansion": "Vision Transformer",
   "meaning": "A transformer that reads a picture as a sequence of patches, one token per patch.",
@@ -3624,10 +3978,10 @@
   "section": 25
  },
  {
-  "term": "WAM",
-  "expansion": "world-action model",
-  "meaning": "One model that predicts future observations and the robot's actions together, so the world model is the policy.",
-  "section": 6
+  "term": "Warp",
+  "expansion": null,
+  "meaning": "NVIDIA's Python framework for writing GPU code; MuJoCo Warp and the Newton Warp renderer are built on it.",
+  "section": 13
  },
  {
   "term": "Whole-body controller",
@@ -3684,6 +4038,12 @@
   "section": 1
  },
  {
+  "term": "World-action model",
+  "expansion": null,
+  "meaning": "One model that outputs future video and the robot's actions together, so the world model is the policy and nothing is searched.",
+  "section": 6
+ },
+ {
   "term": "World-model evaluation",
   "expansion": null,
   "meaning": "Closed-loop scoring in which a video world model generates what the cameras would show after each action and a vision-language model judges the generated video.",
@@ -3726,7 +4086,7 @@
   "section": 14
  },
  {
-  "term": "Zero-shot (deployment)",
+  "term": "Zero-shot deployment",
   "expansion": null,
   "meaning": "Running a policy trained in simulation on the real arm with no further training.",
   "section": 8
