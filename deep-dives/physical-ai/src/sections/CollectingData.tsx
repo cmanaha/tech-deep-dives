@@ -604,7 +604,7 @@ export function CollectingData() {
             The 257 to 1 is the codec&apos;s work, and its two halves run at different times on different
             machines. The encoder compresses, once,
             on the host beside the robot. The decoder decompresses, every time anyone reads a frame, wherever
-            training runs. (From here on, encoder means the video compressor, not the angle sensor on a joint of section 3.)
+            training runs. (Through section 11, encoder means the video compressor, not section 3&apos;s angle sensor on a joint.)
           </Box>
           <Box variant="p">
             Video compresses that far because consecutive frames are nearly the same picture. The encoder stores
@@ -770,9 +770,10 @@ export function CollectingData() {
             <Cite id="F05-63">LeRobot video benchmark README at v0.4.0</Cite>
           </Box>
           <Box variant="p">
-            The current docs rate <code>libsvtav1</code> &quot;Smallest&quot; and give the reason for AV1 as
-            &quot;the best training performance&quot;. Both can hold, because a CRF of 30 is a different quality in
-            each codec, and either way the default was chosen for the read. The benchmark&apos;s percentages, taken
+            The current docs rate <code>libsvtav1</code> &quot;Smallest&quot;, where the 2024 benchmark found
+            AV1&apos;s file the largest, and give the reason for AV1 as &quot;the best training performance&quot;.
+            The two rankings can both hold, because a CRF of 30 is a different quality in each codec, and either
+            way the default was chosen for the read. The benchmark&apos;s percentages, taken
             against its own images on another dataset, rank the codecs; they do not size a disk.{' '}
             <Cite id="F05-43">LeRobot streaming video encoding docs, Choosing a Codec</Cite>{' '}
             <Cite id="F05-63">LeRobot video benchmark README at v0.4.0</Cite>

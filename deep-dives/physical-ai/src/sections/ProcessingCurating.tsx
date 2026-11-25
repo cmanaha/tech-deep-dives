@@ -524,9 +524,9 @@ export function ProcessingCurating() {
             which lists for each card how many engines it carries and which codecs each one handles, gives the same
             no for the A100 of P4d and the T4 of G4dn (the EC2 family beside each card is our pairing of the matrix
             with the EC2 tables). The matrix had no row for the H200 of P5e and P5en when read on 2026-11-20, so run
-            a decode test before you commit a GPU-decoding pipeline to either family. The encoding partner, NVENC
-            (NVIDIA Encoder), also sits apart from the tensor cores, so a card can train at full load while both
-            engines sit unused.{' '}
+            a decode test before you commit a GPU-decoding pipeline to either family. NVDEC and its encoding partner,
+            NVENC (NVIDIA Encoder), sit apart from the tensor cores, so a card can train at full load while they
+            sit unused; the H100 and the A100 carry no NVENC at all.{' '}
             <Cite id="F05-67">join of the NVIDIA matrix and the EC2 specifications</Cite>{' '}
             <Cite id="F05-47">NVIDIA support matrix, rows NVIDIA H100</Cite>{' '}
             <Cite id="F05-46">NVIDIA support matrix, row NVIDIA A100</Cite>{' '}
