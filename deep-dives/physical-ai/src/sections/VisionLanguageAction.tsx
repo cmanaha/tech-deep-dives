@@ -234,7 +234,7 @@ export function VisionLanguageAction() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            In the models covered here, the parameter count on an announcement is, or is nearly, the sum of two
+            In most of the models covered here, the parameter count on an announcement is, or is nearly, the sum of two
             networks, and the rate in hertz printed beside it can be the speed of neither. The larger of the two,
             the backbone, is a model that already reads images and text. The smaller, the action head, turns what the backbone read into motion.
             Together they are a vision-language-action model (VLA). It is a policy, the trained model that decides

@@ -672,8 +672,8 @@ export function Jepa() {
             peer-reviewed study of the family names it for the squared-error loss its models use: &quot;the MSE
             loss learns the conditional mean of potentially genuinely multi-modal futures&quot;. Its authors add
             that three things soften the effect in their benchmarks: the dynamics there are deterministic, the
-            latent leaves out variation the task does not need, and replanning from the real frame corrects
-            prediction errors.{' '}
+            latent leaves out variation the task does not need, and replanning from the real frame makes the plan
+            robust to prediction errors.{' '}
             <Cite id="F03-110">JEPA-WMs paper, section 7</Cite>
           </Box>
         </SpaceBetween>
@@ -955,7 +955,7 @@ export function Jepa() {
             small (our reading): V-JEPA 2-AC limits each sampled action to about 13 cm of gripper travel, and its
             released notebook and RoboJEPA&apos;s real-arm planner search only the x, y, z move and the gripper,
             with rotation held fixed.{' '}
-            <Cite id="F03-29">vjepa2 notebooks/utils/mpc_utils.py, lines 98 to 104</Cite> The V-JEPA 2 authors
+            <Cite id="F03-29">vjepa2 notebooks, world_model_wrapper.py and mpc_utils.py</Cite> The V-JEPA 2 authors
             also report trying camera positions by hand before settling on one that worked.{' '}
             <Cite id="F03-28">V-JEPA 2 paper, section 4.2</Cite>
           </Box>

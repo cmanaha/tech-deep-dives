@@ -30,7 +30,7 @@ Cosmos 3 generates on a grid 4 times smaller in time and 32 by 32 times smaller 
 Text-to-video at 480p takes 59.83 s on the H100; the clip is 7.875 s of video; 59.83 / 7.875 = 7.6 GPU-seconds per second of video, 7.6 GPU-hours per hour (arithmetic shown) | F05-98
 NIM support matrix floors for Cosmos3-Nano: 58 GiB generation and 64 GiB transfer at 16-bit resident, 44 GiB with 8-bit weights, 31 GiB with layer offload; Super 150 GiB at 16-bit; startup minimums the container checks, per device, not measured peaks, no resolution or frame count given; Nano at full precision is a job for an 80 GB class card, a 48 GB card needs 8-bit weights or offload | F03-121
 Cosmos framework FAQ: 32 GB for Nano, 128 GB for Super, no conditions given; 16 billion parameters at 2 bytes each is 32 GB, so it matches the weights alone | F03-123
-Measured (agent notes file, one H100 80 GB): Nano peaks at 33.8 GiB for one 1280 x 720 image; about 50.6 to 52.1 GiB through TensorRT-LLM after a 189-frame warm-up; no measured peak for a full video through PyTorch | F03-124
+Measured (agent notes file, one H100 80 GB): Nano peaks at 33.8 GiB for one 1280 x 720 image; 50,623 to 52,147 MiB through TensorRT-LLM after a 189-frame warm-up; no measured peak for a full video through PyTorch | F03-124
 Benchmark tables encode memory fit as GPU count: every Nano row one GPU at 720p, Super's primary PyTorch rows eight; measured setups, not requirements | F03-126
 A weight-streaming adapter completed all 21 cases on an RTX 5070 (12 GB) with 128 GB of host memory; inference only | F03-125
 DreamGen on the SO-100: 10 and 13 real demonstrations plus 40 and 50 generated; average success on two tasks from 21% to 45.5% (author reported) | F05-102

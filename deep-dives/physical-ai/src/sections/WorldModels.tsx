@@ -140,8 +140,7 @@ export function WorldModels() {
             A world model predicts what a robot&apos;s cameras will show after it acts, and what it is asked to
             predict sets the price of every prediction. Both kinds first encode the frame into vectors, called a
             latent. The pixel family predicts a latent that must still be able to redraw every pixel, and in
-            NVIDIA&apos;s Cosmos 3 examples produces it by running a transformer of billions of parameters 35
-            times. The latent
+            NVIDIA&apos;s Cosmos 3 examples produces it by running a transformer of billions of parameters tens of times. The latent
             family predicts a latent that is never redrawn, a summary of the frame, in one pass of a predictor.
           </Box>
           <Box variant="p">
@@ -603,7 +602,7 @@ export function WorldModels() {
             caption={
               <>
                 Each bar is one time to imagine one candidate, with its GPU: the top bar as NVIDIA lists it, the
-                others our division of a planning time its authors published by the number of candidates; the
+                others our division of a planning time its authors published by the number of candidates (for the last bar, by the number of candidate steps); the
                 faint end of the last bar is a range. The axis is logarithmic, so each gridline is ten times the one to its left (µs is a
                 microsecond, a millionth of a second). Only the bracketed pair shares a GPU and a planner.
               </>
@@ -875,8 +874,8 @@ export function WorldModels() {
             <li>
               <strong>An action several times a second.</strong> Neither search fits inside a control period. Use
               a model that outputs actions directly. Today that is a VLA such as GR00T N1.7, the newest GR00T with
-              released weights and code, or one of the world-action models LeRobot v0.7.0 packages (section 5,
-              Vision-Language-Action Models, lists both): of the two priced above, DreamZero&apos;s 7 Hz took two
+              released weights and code, or one of the world-action models LeRobot v0.7.0 packages, for none of which this research found a
+              published inference time (section 5, Vision-Language-Action Models, lists both): of the two priced above, DreamZero&apos;s 7 Hz took two
               GB200 GPUs, and GR00T 2 has no code yet.{' '}
               <Cite id="F02-37">Isaac-GR00T N1.7 release</Cite>{' '}
               <Cite id="F02-102">LeRobot v0.7.0 policies directory</Cite>{' '}

@@ -243,8 +243,8 @@ export function RobotRl() {
           <Box variant="p">
             At about 28,000 steps a second the {ARM} recipe&apos;s 196,608,000 steps would take about{' '}
             <Derived>7,000</Derived> s, close to two hours; at about 116,000 a second, about{' '}
-            <Derived>1,700</Derived> s, under half an hour. The robot, the task, the simulator, the environment
-            count and the GPU all differ from the recipe&apos;s, so the pair illustrates the arithmetic and is no
+            <Derived>1,700</Derived> s, under half an hour. The robot, the task, the simulator and the environment
+            count differ from the recipe&apos;s, and the recipe names no GPU, so the pair illustrates the arithmetic and is no
             estimate for this recipe.{' '}
             <Cite id="F04-58">MuJoCo Playground env_rl_config.py</Cite>{' '}
             <Cite id="F04-55">Isaac Lab 3.0 benchmark file, Kuka-Allegro rows</Cite>
@@ -259,7 +259,7 @@ export function RobotRl() {
           <Box variant="p">
             NVIDIA&apos;s figures are training throughput for other robots, from a benchmark its own notes flag as
             &quot;dirty working tree reported&quot;, and its file holds no time to a working policy. Use them for
-            what a camera cost on a manipulation task, about half, knowing that the same file&apos;s Cartpole rows
+            what a camera cost on a manipulation task, about half, knowing that in the same file Newton&apos;s Cartpole rows
             lose a factor of 6.7 to the camera, and measure the rate of your own task.{' '}
             <Cite id="F04-54">Isaac Lab 3.0 benchmark file and README</Cite>{' '}
             <Cite id="F06-48">Isaac Lab 3.0 benchmark file, Cartpole rows</Cite>

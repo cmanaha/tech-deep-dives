@@ -331,7 +331,7 @@ precision or workload given. 16 billion parameters at 2 bytes each is 32 GB, so 
               </li>
               <li>
                 <strong>Measured peaks.</strong> On one H100 80 GB, Nano peaks at 33.8 GiB for a single 1280 x 720
-                image, one frame, and sits at about 50.6 to 52.1 GiB when served through TensorRT-LLM,
+                image, one frame, and sits at 50,623 to 52,147 MiB when served through TensorRT-LLM,
                 NVIDIA&apos;s serving runtime, after a 189-frame warm-up. The figures are from a notes file in
                 NVIDIA&apos;s cosmos-framework repository, written for coding agents and not a product document,
                 and it holds no measured peak for a full 189-frame video through PyTorch. <Cite id="F03-124">NVIDIA cosmos-framework, agent skill notes</Cite>
