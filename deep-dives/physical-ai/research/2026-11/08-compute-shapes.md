@@ -446,6 +446,7 @@ cores are defined in register 06 (F06-56, F06-57). The entries below add the rem
 - Location: synthesis; see the table below
 - Verdict: NEW
 - Wave 2 (2026-11-20, WRONG (G7 superlative)): G7 does not have the most CPU cores per GPU. p6e-gb200.36xlarge has 144 Grace cores for 4 GPUs, 36 per GPU, and g5g.16xlarge has 64 Graviton2 cores for 2 GPUs, 32 per GPU [derived from the same docs page]. Corrected: G7 has twice the physical cores per GPU of every other eight-GPU x86 size (24 against 12).
+- Rewrite check (2026-11-25, CORRECTION (scope)): "every other eight-GPU x86 size" is too wide on this entry's own table. G4dn (g4dn.metal, 96 / 8) and P4d/P4de have 12 vCPUs per GPU, 6 physical cores, so G7's 24 physical cores per GPU are four times theirs. Print it as: twice the physical cores per GPU of the other current eight-GPU x86 sizes in the table (G5, G6, G6e, G7e, P5, P5e/P5en, P6-B200, P6-B300: 24 vCPUs, 12 cores), and four times G4dn's and P4d's. [derived from the table rows]
 - Evidence: entries named in the table | synthesis over Tier 1 and Tier 2 sources | documentation of support | "GPUs without RT Cores (A100, H100) are not supported." (F06-52, Isaac Sim 6.2.0 requirements, quoted there) (accessed 2026-11-20)
 - Use in dive: sections 20, 23, 25.
 
