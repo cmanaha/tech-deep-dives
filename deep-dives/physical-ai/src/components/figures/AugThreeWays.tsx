@@ -174,7 +174,7 @@ function Wide() {
     <g>
       {/* the recorded episode */}
       <T x={20} y={228} bold size={14}>
-        One demonstration
+        One scripted episode
       </T>
       <T x={20} y={247}>
         one overhead frame of it
@@ -273,7 +273,7 @@ function Narrow() {
   return (
     <g>
       <T x={180} y={24} anchor="middle" bold>
-        One demonstration
+        One scripted episode
       </T>
       <Pic id="aug-rec" src={GRID} {...REC} x={80} y={34} w={200} h={150} />
       <T x={180} y={203} anchor="middle" fill={MUTED}>
@@ -361,7 +361,7 @@ export function AugThreeWays() {
   const H = narrow ? 1292 : 700;
   return (
     <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-labelledby="augmentation-fanout-title" style={{ width: '100%', height: 'auto' }}>
-      <title id="augmentation-fanout-title">One demonstration turned into three kinds of extra training data, with the time each takes per new sample</title>
+      <title id="augmentation-fanout-title">One scripted episode beside three kinds of extra training data, with the time each takes per new sample</title>
       <desc>
         One overhead frame of a demonstration feeds three rows. Image transforms show the same frame brighter and
         rotated, darker and shifted, and with its hue shifted; an estimate puts them at milliseconds per image. Replay

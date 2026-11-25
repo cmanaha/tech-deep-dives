@@ -32,8 +32,9 @@ export function Augmentation() {
             fails picks the method, and the method picks the part of the machine that runs out first. Recordings of
             the {ARM} driven to {TASK_STORY} at one bench show one table, one lamp and a few block positions, and
             the policy learns the lamp with the task. A policy that misses the block in a new place needs new
-            positions, and replay in a simulator makes them on a GPU that renders, drawing what each simulated
-            camera sees. A policy that fails under a new lamp needs a new look: image transforms give a little of it
+            positions, and replay makes them: a recorded demonstration re-run in a simulator with the block moved,
+            kept only if the simulated physics says it succeeded. It runs on a GPU that renders, drawing what each
+            simulated camera sees. A policy that fails under a new lamp needs a new look: image transforms give a little of it
             on the CPU cores already feeding training, and a video model repaints whole episodes on GPU memory and
             tensor cores, the units that do a network&apos;s matrix arithmetic.{' '}
             <Cite id="F05-108">the three kinds by machine part</Cite>{' '}
@@ -48,8 +49,8 @@ export function Augmentation() {
             needs 58 GiB of GPU memory at 16-bit precision, more than a 48 GB card holds. Of the cards AWS lists for
             Isaac Sim, only the RTX PRO 6000 Blackwell in G7e passes both tests. It runs both jobs and pays in
             speed: repainting a recorded clip, a new look over the same motion, takes it <Derived>1.65</Derived> to{' '}
-            <Derived>3.3</Derived> times an H100&apos;s time at 480p, depending on the software that runs the
-            model.{' '}
+            <Derived>3.3</Derived> times an H100&apos;s time at 480p on NVIDIA&apos;s benchmark rows, depending on
+            the inference library NVIDIA ran.{' '}
             <Cite id="F06-52">Isaac Sim 6.2.0 requirements</Cite>{' '}
             <Cite id="F03-121">NVIDIA NIM for Cosmos, support matrix</Cite>{' '}
             <Cite id="F06-58">NVIDIA product pages, RT cores and memory</Cite>{' '}
@@ -62,8 +63,10 @@ export function Augmentation() {
               <>
                 Time per new sample on one log scale: one transformed image (an estimate), one replayed demonstration
                 and one generated 720p clip, so each method&apos;s cost reads as milliseconds, seconds or minutes. The
-                stills are renders from MuJoCo, an open-source physics simulator, and row 3 has none because no clip
-                was generated.
+                stills are renders from MuJoCo, an open-source physics simulator. Row 1&apos;s transforms are drawn at
+                illustrative strengths, some beyond LeRobot&apos;s defaults; row 2&apos;s randomised scenes, from a
+                different capture, stand in for simulated replays and also vary colour and light. Row 3 has no
+                still because no clip was generated.
               </>
             }
           >
@@ -109,8 +112,8 @@ export function Augmentation() {
             <Cite id="F05-86">LeRobot dataset docs, available transform types</Cite>
           </Box>
           <Box variant="p">
-            Nothing is written to disk: the dataset keeps the raw frames, so the recipe can change between two
-            training runs without recording again. <Cite id="F05-85">LeRobot dataset docs, image transforms</Cite>{' '}
+            Nothing is written to disk: the stored video stays as recorded and the transforms apply as each frame
+            is loaded, so the recipe can change between two training runs without recording again. <Cite id="F05-85">LeRobot dataset docs, image transforms</Cite>{' '}
             A transform is a function of the picture only, and that is its limit. The block is still where you put
             it and the arm still moves as you moved it, so a policy that fails when the block starts somewhere new
             gains nothing here. Nothing adjusts the actions either, so a rotation range raised far past its 5
@@ -154,8 +157,8 @@ export function Augmentation() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Isaac Lab Mimic is the replay tool in Isaac Lab, NVIDIA&apos;s robot-learning framework built on its
-            simulator, and its documented path starts from a few demonstrations recorded by driving the arm inside
+            Isaac Lab Mimic is the replay tool in Isaac Lab, NVIDIA&apos;s robot-learning framework, which runs
+            on Isaac Sim or, since 3.0, without it, and its documented path starts from a few demonstrations recorded by driving the arm inside
             the simulator. A physics simulator computes, from the
             forces on every body, where the arm and the block are a moment later, and one GPU can step hundreds of
             independent copies of a scene at once, called parallel environments (section 12, Physics Simulation).
@@ -204,10 +207,10 @@ export function Augmentation() {
             Other tasks land far from that hour. For a humanoid pick-and-place NVIDIA gives 65 to 80% success and 18
             to 40 minutes per 1,000 demonstrations, with 19 minutes at 80% on one RTX 6000 Ada, a different card
             from the RTX PRO 6000 Blackwell; for a nut-pouring
-            task with cameras, about 10 hours per 1,000 on the same card. Per demonstration that is{' '}
-            <Derived>1.1</Derived> GPU-seconds against <Derived>36</Derived>. The two runs may differ in cameras as
+            task with cameras, about 10 hours per 1,000 on the same RTX 6000 Ada. Per demonstration that is{' '}
+            <Derived>1.14</Derived> GPU-seconds against <Derived>36</Derived>. The two runs may differ in cameras as
             well as in task, so the gap does not measure difficulty alone, but it shows what a published figure
-            gives: a range <Derived>36 / 1.1 = 33</Derived> times wide, not your task&apos;s cost. That comes from a
+            gives: a range <Derived>36 / 1.14 = 32</Derived> times wide, not your task&apos;s cost. That comes from a
             small batch of your own task: divide its time per candidate by its yield.{' '}
             <Cite id="F05-91">Isaac Lab v3.0.0 docs, humanoid imitation figures</Cite>{' '}
             <Cite id="F05-108">the cost ladder per added episode</Cite>
@@ -220,10 +223,11 @@ export function Augmentation() {
             <Cite id="F06-52">Isaac Sim 6.2.0 requirements</Cite>
           </Box>
           <Box variant="p">
-            The requirement belongs to the renderer. Isaac Lab 3.0 makes Isaac Sim optional and ships Newton Warp, a
-            lightweight ray tracer that draws direct lighting only, in its base install. Its pages on renderers and
-            installation say neither whether Newton Warp needs RT cores nor whether Mimic&apos;s camera runs can use
-            it, so the card rule here holds for replay rendered in Isaac Sim (section 13, Rendering and Ray
+            The requirement belongs to RTX rendering and to Isaac Sim as a whole. Isaac Lab 3.0 makes Isaac Sim
+            optional and ships Newton Warp, a lightweight ray tracer that draws direct lighting only, in its base
+            install. Whether Newton Warp needs RT cores is not stated on its pages, and this research did not
+            establish whether Mimic&apos;s camera runs can use it, so the card rule here holds for replay run in
+            Isaac Sim (section 13, Rendering and Ray
             Tracing, sorts the renderers).{' '}
             <Cite id="F06-45">Isaac Lab v3.0.0 release notes</Cite>{' '}
             <Cite id="F06-50">Isaac Lab v3.0.0 docs, renderers</Cite>{' '}
@@ -270,8 +274,8 @@ export function Augmentation() {
               them directly. NVIDIA&apos;s memory figures point to a 24 GB card running one environment.
               One environment takes about 9.5 GB and five about 22 GB; NVIDIA
               recommends at least 24 GB for one or two environments and 48 GB for up to about five, and calls the gain
-              from more than one &quot;not very significant&quot;. One environment on an RTX 6000 Ada makes 1,000
-              demonstrations in 90 to 120 minutes, <Derived>5.4</Derived> to <Derived>7.2</Derived> GPU-seconds
+              from more than one &quot;not very significant&quot;. NVIDIA gives 90 to 120 minutes for 1,000
+              demonstrations with one environment on an RTX 6000 Ada, <Derived>5.4</Derived> to <Derived>7.2</Derived> GPU-seconds
               each.{' '}
               <Cite id="F05-92">Isaac Lab v3.0.0 docs, SkillGen</Cite>
             </Box>
@@ -307,8 +311,8 @@ export function Augmentation() {
             pseudo-actions: labels inferred from a video that was itself generated. <Cite id="F05-101">DreamGen paper, section 1</Cite>
           </Box>
           <Box variant="p">
-            DreamGen was tested on the SO-100, the predecessor of the {ARM}. With 10 and 13 real demonstrations
-            per task plus 40 and 50 generated ones, its authors report average success on two SO-100 tasks rising
+            DreamGen was tested on the SO-100, the predecessor of the {ARM}. On two SO-100 tasks, one with 10 real
+            demonstrations plus 40 generated and one with 13 plus 50, its authors report average success rising
             from 21% to 45.5%. Their other robots gained less from the same 10 to 13 real demonstrations per task:
             23% to 37% on three Franka tasks and 37% to 46.4% on four humanoid tasks.{' '}
             <Cite id="F05-102">DreamGen paper, sections 1 and 4</Cite> They also report the
@@ -347,8 +351,8 @@ export function Augmentation() {
             <Cite id="F03-98">NVIDIA Cosmos inference benchmarks, Cosmos3-Nano text-to-video</Cite>
           </Box>
           <Box variant="p">
-            Time grows with the grid the model fills in and with the number of passes over it: 35 in the model
-            card&apos;s examples, a figure to confirm on the card (section 6, World Models). The model works on a
+            Time grows with the grid the model fills in and with the number of passes over it: 35 in the examples
+            on Cosmos 3&apos;s model card, a count to confirm there for your model (section 6, World Models). The model works on a
             compressed grid, 4 times smaller in time and 32 by 32 times smaller in space than the video,
             so that 720p clip is (189 / 4) x (720 / 32) x (1280 / 32), on the order of 42,000 cells, and each
             denoising pass covers all of them. <Cite id="F03-96">Cosmos 3 paper, section 3.1</Cite>{' '}
@@ -415,10 +419,10 @@ export function Augmentation() {
                 <Cite id="F03-123">NVIDIA cosmos-framework FAQ, inference</Cite>
               </li>
               <li>
-                <strong>Measured peaks on an H100 80 GB.</strong> Nano peaked at 33.8 GiB for a single 1280 x 720
-                image, and at 50,623 to 52,147 MiB served through TensorRT-LLM, NVIDIA&apos;s serving runtime, after
-                a 189-frame warm-up. The notes record none for a full 189-frame video through PyTorch, the path the
-                timings use.{' '}
+                <strong>Measured peaks on an H100 80 GB.</strong> NVIDIA&apos;s cosmos-framework notes record Nano
+                peaking at 33.8 GiB for a single 1280 x 720 image, and at 50,623 to 52,147 MiB served through
+                TensorRT-LLM, NVIDIA&apos;s serving runtime, after a 189-frame warm-up. They record none for a full
+                189-frame video through PyTorch, the path the timings use.{' '}
                 <Cite id="F03-124">NVIDIA cosmos-framework, agent skill notes</Cite>
               </li>
               <li>
@@ -430,7 +434,7 @@ export function Augmentation() {
                 <strong>Below the NIM floors.</strong> An NVIDIA adapter outside the NIM keeps Nano&apos;s weights in
                 host memory and streams them to the GPU. With the FP8 (8-bit floating point) checkpoint it completed
                 all 21 of its test cases on an RTX 5070, a 12 GB card, in a host with 128 GB of memory, for
-                inference only and at an unquantified speed cost.{' '}
+                inference only and at a speed cost the README does not quantify.{' '}
                 <Cite id="F03-125">NVIDIA cosmos-framework, CPU offloading README</Cite>
               </li>
             </ul>
@@ -507,13 +511,14 @@ export function Augmentation() {
             Sharing is paid in generation time. On NVIDIA&apos;s PyTorch rows the RTX PRO 6000 takes{' '}
             <Derived>3.0</Derived> times the H100&apos;s time for a 480p text-to-video clip (180.81 s against 59.83
             s) and <Derived>3.8</Derived> times at 720p (786.37 s against 207.78 s).{' '}
-            <Cite id="F05-98">NVIDIA Cosmos inference benchmarks and methodology</Cite> Repainting the illustrative{' '}
-            <Toy>50</Toy> clips takes 50 x 489.90 s = <Derived>6.8</Derived> GPU-hours on it against{' '}
+            <Cite id="F05-98">NVIDIA Cosmos inference benchmarks and methodology</Cite> Repainting an existing 480p clip
+            takes the RTX PRO 6000 489.90 s against the H100&apos;s 148.65 s, so the illustrative{' '}
+            <Toy>50</Toy> clips take 50 x 489.90 s = <Derived>6.8</Derived> GPU-hours on it against{' '}
             <Derived>2.1</Derived> on the H100: <Derived>4.7</Derived> GPU-hours more on every 50 clips.{' '}
             <Cite id="F05-97">NVIDIA Cosmos inference benchmarks, transfer generation</Cite>
           </Box>
           <Box variant="p">
-            The engine moves that gap. On NVIDIA&apos;s rows for Diffusers, a second inference library, the RTX PRO
+            The inference library moves that gap. On NVIDIA&apos;s rows for Diffusers, a second inference library, the RTX PRO
             6000 repaints a 480p clip in 217.90 s, <Derived>489.90 / 217.90 = 2.2</Derived> times faster than on its
             PyTorch row, against the H100&apos;s 132.06 s, so its time against the H100&apos;s shrinks from{' '}
             <Derived>3.3</Derived> to <Derived>217.90 / 132.06 = 1.65</Derived> times. On the illustrative <Toy>50</Toy> clips the gap falls from{' '}
@@ -523,7 +528,7 @@ export function Augmentation() {
             <Cite id="F05-97">NVIDIA Cosmos inference benchmarks, transfer generation</Cite>
           </Box>
           <Box variant="p">
-            Whether to share is a sum of hours. One PyTorch repaint at 480p holds the RTX PRO 6000 for 489.90 s, so
+            Whether to share is a sum of hours. On NVIDIA&apos;s PyTorch row one repaint at 480p holds the RTX PRO 6000 for 489.90 s, so
             if replay keeps a G7e busy an illustrative <Toy>12</Toy> hours a day, the other 12 hold{' '}
             <Derived>12 x 3,600 / 489.90 = 88</Derived> clips, or{' '}
             <Derived>12 x 3,600 / 217.90 = 198</Derived> on the Diffusers row. Up to that, generation needs no new
@@ -532,13 +537,14 @@ export function Augmentation() {
           </Box>
           <Box variant="p">
             Past it, a second card is needed, and the per-clip times set which. EC2 sells the H100 singly as
-            p5.4xlarge and the RTX PRO 6000 singly as g7e.8xlarge. The H100 repaints a clip in 148.65 s where the RTX
-            PRO 6000 takes 489.90 s, so a separate H100 costs less per clip whenever its hourly price is under{' '}
-            <Derived>3.3</Derived> times the single-GPU G7e&apos;s, or <Derived>1.65</Derived> times on the Diffusers
+            p5.4xlarge and the RTX PRO 6000 singly from g7e.2xlarge up, g7e.8xlarge among them. On NVIDIA&apos;s rows the H100 repaints a clip in 148.65 s
+            where the RTX PRO 6000 takes 489.90 s, so a separate H100 costs less per clip whenever its hourly price is under{' '}
+            <Derived>3.3</Derived> times the price of the single-GPU G7e size you would run, or <Derived>1.65</Derived> times on the Diffusers
             rows; charge each whole instance for the
             hours it runs, at dated prices for your Region and purchase option. A second G7e is the choice when
             replay needs more hours too, since Isaac Sim does not support the H100.{' '}
             <Cite id="F05-66">EC2 instance types, single-GPU sizes</Cite>{' '}
+            <Cite id="F08-45">EC2 accelerated computing specifications, accelerator memory</Cite>{' '}
             <Cite id="F05-97">NVIDIA Cosmos inference benchmarks, transfer generation</Cite>{' '}
             <Cite id="F08-82">price-performance method</Cite>
           </Box>
