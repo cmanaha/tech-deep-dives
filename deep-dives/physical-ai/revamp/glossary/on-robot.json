@@ -68,5 +68,7 @@
   {"term": "MIG", "expansion": "Multi-Instance GPU", "meaning": "Splitting one GPU into isolated instances, each with its own compute, cache and memory bandwidth."},
   {"term": "Exponent", "expansion": null, "meaning": "The bits of a floating-point number that set how large or small it can get."},
   {"term": "Mantissa", "expansion": null, "meaning": "The bits of a floating-point number that set how finely it is stored."},
-  {"term": "Execution horizon", "expansion": null, "meaning": "In the real-time chunking paper, s: how many actions of a chunk play before the next chunk takes over. LeRobot uses the same name for a different setting, execution_horizon."}
+  {"term": "Execution horizon", "expansion": null, "meaning": "In the real-time chunking paper, s: how many actions of a chunk play before the next chunk takes over. LeRobot uses the same name for a different setting, execution_horizon."},
+  {"term": "Projection fusion", "expansion": null, "meaning": "Running several of a model's matrix multiplications as one GPU kernel; part of NVIDIA's optimised execution profile for GR00T N1.7 on Thor."},
+  {"term": "CUDA graph", "expansion": null, "meaning": "A sequence of GPU kernel launches recorded once and started again with one call."}
 ]
