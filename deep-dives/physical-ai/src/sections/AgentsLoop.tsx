@@ -797,7 +797,7 @@ export function AgentsLoop() {
           <Box variant="p">
             The prompt&apos;s objective gives a smaller speed-up still. On pin insertion, the authors report the time
             to complete it as 4.5 hours with one agent and 2.0 with eight,{' '}
-            <Derived>4.5 / 2.0 = 2.25</Derived> times faster, against 3.7 to the first target.{' '}
+            <Derived>4.5 / 2.0 = 2.25</Derived> times faster, against <Derived>3.7</Derived> to the first target.{' '}
             <Cite id="F04-20">ENPIRE project page, chart data</Cite>
           </Box>
           <Box variant="p">
