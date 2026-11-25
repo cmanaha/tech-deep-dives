@@ -148,5 +148,25 @@
     "term": "CUDA",
     "expansion": null,
     "meaning": "NVIDIA's programming layer for running code on its GPUs."
+  },
+  {
+    "term": "MIG",
+    "expansion": "Multi-Instance GPU",
+    "meaning": "NVIDIA's way of dividing one GPU into isolated slices; on a split card nvidia-smi cannot report decoder or GPU utilisation."
+  },
+  {
+    "term": "Streaming reader",
+    "expansion": null,
+    "meaning": "LeRobot's mode that trains from a dataset without downloading it first; Hugging Face reports 2.1 to 2.5 times more samples per second from four workers."
+  },
+  {
+    "term": "Row",
+    "expansion": null,
+    "meaning": "In a LeRobot dataset, one control tick of one episode; in the curation run's design note, one entry of the recipe's input table."
+  },
+  {
+    "term": "Update time",
+    "expansion": null,
+    "meaning": "The time the GPU takes for one training step on a batch; LeRobot's guide reports it as update_s beside the data-loading time dataloading_s."
   }
 ]
