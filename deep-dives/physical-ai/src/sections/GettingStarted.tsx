@@ -210,7 +210,7 @@ function RouteMap() {
         label="Reading route to highlight"
         options={ROUTES.map((r) => ({ id: r.id, text: r.text }))}
       />
-      <Figure caption={<>The outlined cells are the selected route. A letter on a cell marks each route that passes through it.</>}>
+      <Figure caption={<>The map shows which sections each route passes through, with the selected route outlined.</>}>
         <RouteGrid selected={selected} />
       </Figure>
     </SpaceBetween>
@@ -238,8 +238,7 @@ export function GettingStarted() {
           <Box variant="p">
             Four facts about a robot arm change what you buy for it, and experience with language models points the
             wrong way on each. The arm here is an {ARM}, a small desktop arm with six motors and two cameras,
-            learning to {TASK_STORY}. The model that drives it has a deadline the arm sets, 33.3 ms on this one, so
-            it is sized in milliseconds per call and its throughput settles nothing. Its training data is almost
+            learning to {TASK_STORY}. The model that drives it has a deadline the arm sets, 33.3 ms for this arm, so it is sized in milliseconds per call, where a served model is sized by its throughput. Its training data is almost
             all video, 38,400 times the bytes of its joint readings and targets before compression, so the data
             pipeline is a video pipeline and its cost lands on CPU cores.{' '}
             <Cite id="F01-28">LeRobot dataset.py, record defaults</Cite>{' '}
@@ -250,8 +249,7 @@ export function GettingStarted() {
             of NVIDIA&apos;s robot model takes a median 22.9 ms on a training GPU and 149.0 ms on a robot&apos;s
             computer, in NVIDIA&apos;s benchmark with TensorRT, its inference compiler, on both.{' '}
             <Cite id="F01-74">Isaac-GR00T deployment README, benchmark results</Cite> And a GPU that reads as busy
-            can be waiting on CPU cores: Hugging Face reports that one setting, which moves image preparation off
-            those cores, makes a small policy train 2.8 times faster on an H100.{' '}
+            can be waiting on CPU cores: Hugging Face reports that one LeRobot setting, <code>backend=gpu</code>, which moves image augmentation off those cores, makes a small policy train 2.8 times faster on an H100.{' '}
             <Cite id="F05-59">LeRobot v0.7.0 release post, Augment on the GPU</Cite>
           </Box>
         </SpaceBetween>
@@ -283,10 +281,7 @@ export function GettingStarted() {
           </Box>
           <Box variant="p">
             A model that serves requests is judged by its throughput, or by a latency someone chose. A policy is
-            judged against a period the arm sets, call by call, and an average hides the calls that matter. The
-            mean tick took 18.7 ms of the 33.3 ms budget and the mean policy call 5.18 ms in the sample timing
-            report of LeRobot&apos;s inference guide, which runs at 30 ticks a second on hardware the guide does
-            not name. The same
+            judged against a period the arm sets, call by call, and an average hides the calls that matter. LeRobot&apos;s inference guide prints a sample timing report, taken at 30 ticks a second on hardware the guide does not name. In it the mean tick took 18.7 ms of the 33.3 ms budget and the mean policy call 5.18 ms. The same
             report prints &quot;cycles over the 33.3 ms work budget: 12/1197 (1.0%)&quot;, with a worst cycle of 48.1
             ms and a worst policy call of 40.00 ms.{' '}
             <Cite id="F07-23">LeRobot inference guide, rollout timing example</Cite>
@@ -344,13 +339,12 @@ export function GettingStarted() {
             <Derived>100</Derived> minutes at the bench. <Cite id="F01-28">LeRobot dataset.py, record defaults</Cite>
           </Box>
           <Box variant="p">
-            The compute cost comes later and falls on whoever reads the data. Text is ready to train on as it is
-            stored, and video is not. Every reader, from the filter that
+            The compute cost comes later and falls on whoever reads the data. Text needs almost no preparation before it is trained on, and video has to be decoded first. Every reader, from the filter that
             drops bad episodes to the trainer, decodes video before it does anything else, and the format chosen at
             the bench decides who can do that. The video in that dataset is AV1 (AOMedia Video 1), the compression
             format LeRobot writes by default, and LeRobot&apos;s stock loader decodes it on CPU cores whatever GPU
             sits beside them. Moving the decoding to the GPU would not help on the H100, a GPU widely used for
-            training, which cannot hardware-decode AV1. So the purchase this fact forces is CPU cores per GPU.{' '}
+            training, which cannot hardware-decode AV1. So what you buy for video is CPU cores per GPU.{' '}
             <Cite id="F05-47">NVIDIA video encode and decode support matrix, H100 rows</Cite>{' '}
             <Cite id="F08-77">the CPU beside the GPU</Cite>
           </Box>
@@ -367,9 +361,7 @@ export function GettingStarted() {
         <SpaceBetween size="m">
           <Box variant="p">
             A policy is trained where the GPUs are, with no deadline on any single step, and it runs on the computer
-            beside the arm against the 33.3 ms tick. A model served from a data centre usually runs on the kind of GPU that trained it,
-            and one sizing covers both. Here the same weights are sized twice, in hours and gigabytes to train and
-            in milliseconds to run. Take GR00T N1.7, NVIDIA&apos;s robot model. To train: an AWS post fine-tunes
+            beside the arm against the 33.3 ms tick. A model served from a data centre is trained and run on data-centre GPUs. A policy is trained on one and run on a small computer beside the arm, so the same weights are sized twice, in hours and gigabytes to train and in milliseconds to run. Take GR00T N1.7, NVIDIA&apos;s robot model. To train: an AWS post fine-tunes
             it on 75 SO-101 episodes over 20,000 steps, and its timing table gives 3.4 hours at batch 32 on
             ml.g7e.2xlarge, a SageMaker instance with one 96 GB GPU.{' '}
             <Cite id="F09-82">AWS post, timing table</Cite>{' '}
@@ -377,7 +369,7 @@ export function GettingStarted() {
             <Cite id="F01-28">LeRobot dataset.py, record defaults</Cite>
           </Box>
           <Box variant="p">
-            The size that decides which GPU can do it is memory. The post&apos;s memory table gives a peak of 41.5
+            Memory decides which GPU can run that fine-tune. The post&apos;s memory table gives a peak of 41.5
             GB of GPU memory at batch 32, and that is with the backbone frozen: the large pretrained body of the
             model is left unchanged and only the smaller parts built on it are trained. A 24 GB card, such as
             those of EC2&apos;s G5 and G6, is ruled out at that batch size, and the run would take most of the 48 GB
@@ -404,7 +396,7 @@ export function GettingStarted() {
             The software on the robot moves the answer as much as the chip does. On the same Jetson Orin,
             NVIDIA&apos;s table gives 357.9 ms for the model run directly in PyTorch against the 149.0 ms of the
             compiled one. On a Jetson AGX Thor, NVIDIA reports that quantising the model, which is storing its
-            numbers in fewer bits (in a format NVIDIA calls mixed NVFP4), cuts the call from 76.8 ms to 35.6 ms.{' '}
+            numbers in fewer bits (in a format NVIDIA calls mixed NVFP4), together with its optimised execution profile, cuts the call from 76.8 ms to 35.6 ms.{' '}
             <Cite id="F01-74">Isaac-GR00T deployment README, benchmark results</Cite>{' '}
             <Cite id="F07-4">Isaac-GR00T deployment README, Thor quantisation</Cite>
           </Box>
@@ -435,7 +427,7 @@ export function GettingStarted() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            A job uses the parts of a machine in some proportion, so one of them fills while the others sit partly
+            A job never loads the parts of a machine evenly, so one of them fills while the others sit partly
             idle, and a larger instance helps only if it has more of that one. In training a robot policy the
             contest is between the GPU and the CPU cores that feed it.{' '}
             <Cite id="F08-50">the parts of the machine and the counter that shows each</Cite>
@@ -452,14 +444,12 @@ export function GettingStarted() {
           <Box variant="p">
             Hugging Face, which publishes LeRobot, reports that with that setting ACT, a small policy, trains 2.8
             times faster on an H100; it gives no dataset, camera count or batch size. If the figure holds, the
-            H100 had been waiting on the workers for 1 - 1/2.8 = <Derived>64</Derived>% of each step, and
-            nothing on the GPU itself says so.{' '}
+            H100 had been waiting on the workers for at least 1 - 1/2.8 = <Derived>64</Derived>% of each step (our arithmetic).{' '}
             <Cite id="F05-59">LeRobot v0.7.0 release post, Augment on the GPU</Cite>
           </Box>
           <Box variant="p">
             Which case a run is in shows in how a step&apos;s time divides. LeRobot&apos;s hardware guide times training
-            on 4 H100 GPUs at batch 32: for Diffusion Policy, one of its policies, an update takes 0.167 s, of which
-            loading the data is 0.015 s, <Derived>9</Derived>% of the step. In that run the GPUs are the limit, and the
+            on 4 H100 GPUs at batch 32: for Diffusion Policy, one of its policies, an update takes 0.167 s and loading the data 0.015 s, about a tenth as long. In that run the GPUs are the limit, and the
             input side has room to spare.{' '}
             <Cite id="F01-91">LeRobot hardware guide, benchmark table</Cite>
           </Box>
@@ -472,7 +462,7 @@ export function GettingStarted() {
           </Box>
           <Box variant="p">
             When the workers are the limit, the purchase that helps is CPU cores. Most eight-GPU instances give
-            each GPU 24 vCPUs, which is 12 physical cores; g7.48xlarge gives each GPU 24 physical cores, the most
+            each GPU 24 vCPUs, which is 12 physical cores; g7.48xlarge, an eight-GPU instance of EC2&apos;s G7 family, gives each GPU 24 physical cores, the most
             among the eight-GPU x86 sizes. Decoding that runs as a job of its own belongs on CPU instances, and
             decoding inside the trainer on the GPU instance with the most cores per GPU.{' '}
             <Cite id="F08-57">vCPUs and physical cores per GPU, from the EC2 specifications</Cite>{' '}
@@ -490,9 +480,7 @@ export function GettingStarted() {
       <ExpandableSection variant="container" headerText="Shorter routes for a single question">
         <SpaceBetween size="m">
           <Box variant="p">
-            Three routes cut the <Nav>30</Nav> sections down to those one question needs: world models, which
-            predict what the arm&apos;s actions will do before the motors move; the pipeline from a recorded
-            attempt to many robots; and the choice of machines and a scheduler.
+            Each of three routes covers part of the <Nav>30</Nav> sections: one for world models, one for the pipeline from a recorded attempt to many robots, and one for choosing machines and a scheduler.
           </Box>
           <RouteMap />
         </SpaceBetween>

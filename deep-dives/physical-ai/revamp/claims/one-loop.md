@@ -9,7 +9,7 @@ Sized as "GPU training", the bottleneck is often a CPU core, on a machine bought
 The stand-in is six 1024x1024 float32 matrix-vector products, NumPy on one core, one run; 390 passes per second on one Cortex-A78AE core of a Jetson Orin Nano Super; 62.3% of cycles stalled on memory; it is not the arm's policy, which runs on a GPU | F08-62
 The stand-in's weights are 25.2 MB, larger than the caches, read once per pass; 390 x 25.2 MB = 9.8 GB/s; the figure sits at that core's measured memory limits (the text prints the 11.71 GB/s streaming figure only) | F08-63
 The same core streamed 11.71 GB/s in a loop over arrays larger than the caches (one run) | F08-66
-11.71 GB/s / 25.2 MB = 465 passes per second as the expected ceiling; 390 is 84% of it, which is also 9.8 / 11.71 (our arithmetic, marked Derived) | F08-63, F08-66
+11.71 GB/s / 25.2 MB = 465 passes per second as the ceiling if the 11.71 GB/s sweep is the most the core's memory delivers (our reading); 390 is 84% of it, which is also 9.8 / 11.71 (our arithmetic, marked Derived) | F08-63, F08-66
 62.3% of cycles wait on memory whatever the speed of the arithmetic (stated from the stall figure) | F08-62
 By default the arm takes a target 30 times a second, one every 33.3 ms; NVIDIA reports a median of 149.0 ms per call of GR00T N1.7 on a Jetson Orin with TensorRT, 4.5 periods (vendor claim) | F07-5, F01-28
 A job on the robot's clock has a deadline per unit where every job of another shape has a throughput (our reading) | F08-79
@@ -19,7 +19,7 @@ Batch's documented Spot pattern retries a job whose host was reclaimed; the retr
 Shape is three properties: duration, coupling, interruptibility (our reading) | F08-78
 An episode frame holds joint readings, motor commands and one image entry per camera | F01-26
 Ring diagram tags per stage: the part that fills first or next in the stage's commonest workloads (our reading; rows 1, 2, 4, 5, 7, 8, 9, 10, 12, 13) | F08-76
-The table of fifteen workloads: stage, what each is and the part it exhausts first (rows 1 to 15; row 4 inside training; row 7 RT cores when ray traced; rows 13 to 15 vendor scale) | F08-76
+The table of fifteen workloads: stage, what each is and the part it exhausts first (rows 1 to 15; row 4 inside training; row 7 RT cores when an RTX renderer draws the image, general compute for the Warp ray tracer; row 15 at larger scale; rows 13 to 15 vendor scale) | F08-76
 The shape of each workload: independent units (rows 2, 3, 5, 6, 7, 10, 11, 13), one long run (8, 9; row 4 is shown with them because it runs inside the training job), nodes that talk (14, 15), always on (row 4 only as a standing tier; continuous decode of incoming video), on the robot's clock (1, 12), and what each loses on a stop | F08-78
 Twelve workloads one arm's owner can run on a desk machine or one EC2 instance, three at vendor scale: fifteen (our reading) | F08-75
 LeRobot's default video is AV1 written and read by CPU code; recording, decoding and the dataloader (rows 1, 2 and 4) land on CPU cores for that reason (our reading) | F08-77
@@ -40,3 +40,5 @@ A persistent cluster suits reserved capacity and the many-node tail (the basis f
 AWS IoT Greengrass is software on the device that receives deployments from the cloud; on-robot work has no cloud scheduler (our reading) | F07-84
 On most eight-GPU instances each GPU has 12 physical cores | F08-57
 On-robot inference runs on a machine whose CPU and GPU share one memory, so memory bandwidth is the shared part (row 12, our reading) | F08-76
+Splitting the eight stages gives twelve workloads; three more at vendor scale make fifteen | F08-75
+Five workloads singled out as easiest to buy wrong (recording, decoding, dataloader, simulated cameras, on-robot inference): our reading | F08-77, F06-52, F08-76

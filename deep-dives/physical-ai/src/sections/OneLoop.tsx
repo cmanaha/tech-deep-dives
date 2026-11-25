@@ -388,7 +388,7 @@ const GROUPS: { shape: string; forces: string; rows: Workload[] }[] = [
         stage: 'Simulate',
         name: 'Simulated cameras',
         does: 'Draw what each simulated camera sees, at every step.',
-        part: 'GPU memory first, then the GPU ray-tracing cores when the image is drawn by tracing rays. Some training GPUs have none.',
+        part: 'GPU memory first, then the GPU ray-tracing cores when an RTX renderer draws the image (the Warp ray tracer runs on general compute). Some training GPUs have none.',
         decides: true,
       },
       {
@@ -423,7 +423,7 @@ const GROUPS: { shape: string; forces: string; rows: Workload[] }[] = [
         stage: 'Augment, and inside training',
         name: 'Dataloader decode and augment',
         does: 'For every training sample, pull a few frames out of the video and vary them (a crop, a colour shift).',
-        part: 'CPU cores per GPU: the work runs in worker processes inside the training job, on cores the instance sells in a fixed ratio, 24 vCPUs per GPU on most eight-GPU sizes.',
+        part: 'CPU cores per GPU: the work runs in worker processes inside the training job, on cores the instance sells in a fixed ratio, 24 vCPUs per GPU on most eight-GPU sizes. Run as a standing tier of its own, this is the always-on shape.',
         decides: true,
       },
       {
@@ -458,7 +458,7 @@ const GROUPS: { shape: string; forces: string; rows: Workload[] }[] = [
         stage: 'Vendor scale',
         name: 'World-model pretraining',
         does: 'Train the large world model that world-model training and generative augmentation start from.',
-        part: 'The same three parts as robot-model pretraining, across more machines.',
+        part: 'The same three parts as robot-model pretraining, at larger scale.',
       },
     ],
   },
@@ -575,7 +575,7 @@ export function OneLoop() {
             Finding the bottleneck is a count: what one unit of work needs from a part, times units per second,
             against what the part delivers. The arm is steered by a policy, the trained model that reads the cameras
             and the joint angles and decides what the motors do next. A program small enough to count by hand
-            stands in for it: six 1024x1024 <code>float32</code> matrices of weights, each multiplying a vector in
+            stands in for it, to show the method (its figures are not the policy&apos;s): six 1024x1024 <code>float32</code> matrices of weights, each multiplying a vector in
             turn. A matrix times a vector uses every entry of the matrix once, so one pass reads all 25.2 MB of
             weights, and that is more than the processor&apos;s caches hold, so every pass fetches them from memory.{' '}
             <Cite id="F08-62">our profiling report, policy inference table</Cite>{' '}
@@ -586,7 +586,7 @@ export function OneLoop() {
             a small computer of the kind that sits beside a robot, a loop that does nothing but sweep through
             arrays larger than the caches moved 11.71 GB/s. At that rate memory delivers the 25.2 MB of weights
             11.71 GB/s / 25.2 MB = <Derived>465</Derived> times a second. So before the program runs, the count
-            puts its ceiling near <Derived>465</Derived> passes per second, however fast the core&apos;s arithmetic.{' '}
+            puts its ceiling near <Derived>465</Derived> passes per second if that sweep is the most this core&apos;s memory delivers (our reading), however fast the core&apos;s arithmetic.{' '}
             <Cite id="F08-66">our profiling report, memory streaming row</Cite>{' '}
             <Cite id="F08-63">the stand-in&apos;s weights against the core&apos;s memory limits</Cite>
           </Box>
@@ -602,8 +602,7 @@ export function OneLoop() {
           </Box>
           <Box variant="p">
             The same three terms size the arm&apos;s own policy on its GPU: what one call reads and computes, calls
-            per second, and what that machine delivers. The six-matrix program shows the method, and its figures
-            are not that policy&apos;s.
+            per second, and what that machine delivers.
           </Box>
         </SpaceBetween>
       </Container>
@@ -620,8 +619,7 @@ export function OneLoop() {
       >
         <SpaceBetween size="s">
           <Box variant="p">
-            Whether a job can run on capacity that may be taken back comes down to how long one unit of its work
-            runs, whether its pieces exchange data while they run, and what it can resume from. Two jobs for the
+            Whether a job can run on capacity that may be taken back comes down to three properties: duration, how long one unit of its work runs; coupling, whether its pieces exchange data while they run; and interruptibility, whether it can stop and resume having lost no more than one unit. Two jobs for the
             same arm sit at opposite ends.
           </Box>
           <Box variant="p">
@@ -656,7 +654,7 @@ export function OneLoop() {
             drives a simulated arm through the task 500 times, each attempt from its own random seed, and the
             successes are counted. One attempt at the task, recorded or simulated, is an episode. No episode needs
             data from another and none has a deadline, so the job is 500 short units that can run anywhere, in any
-            order. On AWS that is one array job in AWS Batch, a single submission that spawns 500 children, each
+            order. On AWS that is one array job in AWS Batch, its job-queue service: a single submission that spawns 500 children, each
             reading its index to pick its seed. <Cite id="F09-5">AWS Batch User Guide, Array jobs</Cite>
           </Box>
           <Box variant="p">
@@ -668,10 +666,7 @@ export function OneLoop() {
           </Box>
           <Box variant="p">
             One arm, two jobs: the first is sized by a deadline on a machine it never loses, the second wants many
-            small machines it can afford to lose. Duration is how long one unit of
-            work runs, coupling is whether the pieces must exchange data while they run, and interruptibility is
-            whether the job can stop and resume having lost no more than one unit. Together they are a job&apos;s
-            shape, and the shape settles the kind of scheduler and whether Spot is open.{' '}
+            small machines it can afford to lose. Together the three properties are a job&apos;s shape, and the shape settles the kind of scheduler and whether Spot is open.{' '}
             <Cite id="F08-78">the five shapes, defined by three properties</Cite>
           </Box>
           <ul style={LIST}>
@@ -703,10 +698,8 @@ export function OneLoop() {
             </li>
             <li>
               <strong>Always on.</strong> A stream with no end, handled item by item: video that arrives all day
-              is decoded as it comes, on a tier of machines that is kept running where the other shapes queue
-              jobs, and a taken machine costs one item. Scale alone moves a job here. Decoding one arm&apos;s 50
-              episodes is a few minutes on a laptop. The same code at a company that ingests video all day is a
-              standing tier, and the bottleneck is CPU cores at both sizes.{' '}
+              is decoded as it comes, and a taken machine costs one item. No job queue runs it: it is a standing tier of CPU machines that is kept running. Scale alone moves a job here. Decoding one arm&apos;s 50
+              episodes is a few minutes on a laptop. The same code at a company that ingests video all day is that standing tier, and the bottleneck is CPU cores at both sizes.{' '}
               <Cite id="F08-78">the five shapes, defined by three properties</Cite>{' '}
               <Cite id="F08-80">one workload, two shapes</Cite>
             </li>
@@ -737,7 +730,7 @@ export function OneLoop() {
             A recorded episode is a table of joint readings and motor commands over time, plus one video per
             camera. <Cite id="F01-26">LeRobot feature_utils.py</Cite> On its way to becoming a policy that repeats
             the task unaided, the bottleneck changes at nearly every hand-off: from CPU to GPU and back, and
-            between units inside the GPU. Two of the stages need a word. Augmentation multiplies an episode into
+            between units inside the GPU. Augmentation multiplies an episode into
             variants, and a world model is a model that predicts what the scene becomes after an action.
           </Box>
           <Box variant="p">
@@ -765,14 +758,13 @@ export function OneLoop() {
           <Box variant="p">
             A stage can hide more than one bottleneck. Simulation is one stage and three workloads, because one
             scene&apos;s physics, thousands of scenes stepped together and the simulated cameras exhaust three
-            different parts. Split every stage that way and the eight stages become the fifteen workloads of the
-            table, grouped by shape and labelled with their stage. <Cite id="F08-75">how the fifteen are chosen</Cite>{' '}
+            different parts. Split every stage that way and the eight stages become twelve workloads; three more, run only at vendor scale, make the fifteen of the table. <Cite id="F08-75">how the fifteen are chosen</Cite>{' '}
             <Cite id="F08-76">our workload table</Cite>{' '}
             <Cite id="F08-78">the five shapes, defined by three properties</Cite>
           </Box>
           <WorkloadTable />
           <Box variant="p">
-            Five of the fifteen are the easiest to buy wrong, and they are in bold: recording, decoding, the
+            Five of the fifteen are, in our reading, the easiest to buy wrong: recording, decoding, the
             dataloader, the simulated cameras and on-robot inference. The first three all land on CPU cores, for
             one reason. All three handle video, and the video is in AV1 (AOMedia Video 1), the compression format
             that LeRobot, the open-source library this arm is recorded and trained with, writes by default. CPU
@@ -819,8 +811,7 @@ export function OneLoop() {
           <ul style={LIST}>
             <li>
               <strong>Will the model I trained drive the arm in time?</strong> Time one call on the robot&apos;s own
-              computer, because the training GPU&apos;s figure says little: NVIDIA&apos;s GR00T N1.7 call is a median
-              22.9 ms on an H100 and 149.0 ms on a Jetson Orin, both with TensorRT. Then set that time against the
+              computer, because the training GPU&apos;s figure says little: NVIDIA reports a median of 22.9 ms on an H100 and 149.0 ms on a Jetson Orin for one GR00T N1.7 call, both with TensorRT. Then set that time against the
               motion one call returns: 40 actions played one per 33.3 ms tick last 40 x 33.3 ms ={' '}
               <Derived>1.33</Derived> s, about <Derived>nine</Derived> times the 149.0 ms call (section{' '}
               <span data-num="nav">17</span>, Running on the Robot).{' '}
@@ -835,8 +826,7 @@ export function OneLoop() {
             </li>
             <li>
               <strong>Which GPU does simulation need?</strong> None for one scene&apos;s physics, which runs on a
-              CPU core, and one with ray-tracing cores once the cameras are ray traced, which rules out the A100
-              and the H100 (section 12, Physics Simulation, and section <span data-num="nav">13</span>, Rendering
+              CPU core, and one with ray-tracing cores once an RTX renderer draws the cameras, which rules out the A100 and the H100; the Warp ray tracer runs on general GPU compute (section 12, Physics Simulation, and section <span data-num="nav">13</span>, Rendering
               and Ray Tracing). <Cite id="F06-52">Isaac Sim 6.2.0 requirements</Cite>
             </li>
             <li>
