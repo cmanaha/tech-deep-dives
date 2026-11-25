@@ -88,7 +88,7 @@ function Wide() {
   return (
     <g>
       <T x={20} y={40} fill={MUTED}>
-        trusted most, slowest to run
+        the reference on top
       </T>
       {ROWS.map((row, i) => (
         <g key={row.key}>
@@ -167,7 +167,7 @@ function Narrow() {
   return (
     <g>
       <T x={16} y={24} fill={MUTED}>
-        trusted most, slowest to run
+        the reference on top
       </T>
       {ROWS.map((row, i) => (
         <g key={row.key}>

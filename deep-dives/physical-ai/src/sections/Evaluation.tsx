@@ -117,7 +117,7 @@ export function Evaluation() {
             50 read as 80% against 90%, but their 95% intervals, the ranges of true rates that could plausibly have
             produced each count, run from 67.0% to 88.8% and from 78.6% to 95.7%, and they overlap. Overlap is a
             warning; the verdict comes from a test built for the comparison, and it finds that two equal policies
-            would look this different about one time in four. Telling a true 80% from a true 90%, with four
+            would look at least this different about one time in four. Telling a true 80% from a true 90%, with four
             chances in five of seeing the gap and one in twenty of a false alarm, takes about 199 trials per
             policy. <Cite id="F06-97">our arithmetic, with the formulas of LeRobot eval_stats.py</Cite> Robot
             evaluations typically run 10 to 50 episodes per task.{' '}
@@ -319,7 +319,7 @@ export function Evaluation() {
           </Box>
           <Box variant="p">
             That share is the p-value, and here it is 0.26: about one time in four, equal policies would look at
-            least this different. These trials cannot tell A from B. A 20-point gap clears the noise: 45 of 50
+            least this different. These trials cannot tell A from B. A 20-point gap near the top of the scale clears the noise: 45 of 50
             against 35 of 50 gives p = 0.023, although <Derived>35 of 50 has an interval of 56.2% to 80.9%</Derived>
             , which still overlaps B&apos;s. Two intervals can overlap while the gap is real.{' '}
             <Cite id="F06-97">our arithmetic, with the formulas of LeRobot eval_stats.py</Cite>
@@ -514,7 +514,7 @@ export function Evaluation() {
             <Cite id="F06-81">SIMPLER paper, Table I</Cite> PolaRiS rebuilds a real scene from a few minutes of
             video (section 14), fine-tunes each policy for 1k steps on about 350 simulated demonstrations from 15
             other scanned scenes, and then reports an average r = 0.9 against real trials across six paired
-            environments, 0.81 in the worst, over a handful of policies. What it scores is each policy after that
+            environments, 0.81 in the worst. What it scores is each policy after that
             fine-tuning, adapted to the simulator&apos;s look, rather than the checkpoint as it left training.{' '}
             <Cite id="F06-83">PolaRiS paper, introduction and sections 5.1 and 5.2</Cite>{' '}
             <Cite id="F06-73">PolaRiS paper, section 4.1</Cite>{' '}
@@ -557,7 +557,7 @@ export function Evaluation() {
         header={
           <Header
             variant="h2"
-            description="Order candidate policies when no simulated scene exists, at about 86 GPU-seconds per imagined rollout, and know what a correlation over six to eight policies can show"
+            description="Order candidate policies when no simulated scene exists, at about 86 GPU-seconds per imagined rollout, and know what a correlation over a few policies can show"
           >
             A world model scores a policy with no scene to build
           </Header>
@@ -599,7 +599,7 @@ export function Evaluation() {
             interaction, the moment the second checkpoint failed.
           </Box>
           <Box variant="p">
-            These correlations are computed over six to eight policies. A high figure over so few shows that the
+            RoboWorld&apos;s correlation is computed over 8 policies and HF-WM&apos;s over six. A high figure over so few shows that the
             tool orders those policies roughly as real robots do; it does not show that the tool can split two good
             checkpoints a few points apart.{' '}
             <Cite id="F06-89">RoboWorld paper, section 5</Cite>{' '}
@@ -608,8 +608,8 @@ export function Evaluation() {
           <Box variant="p">
             The cost is video generation on a GPU&apos;s tensor cores, with no physics engine and no ray tracing.
             RoboWorld&apos;s authors report &quot;only 100 H100 GPU hours&quot; for their whole benchmark of 8
-            policies. That is 100 / 8 = 12.5 GPU-hours per policy, and 100 x 3,600 / 4,186 = 86 GPU-seconds to
-            imagine each 30-second rollout. <Cite id="F06-89">RoboWorld paper, section 5</Cite>
+            policies. By our arithmetic that is <Derived>100 / 8 = 12.5</Derived> GPU-hours per policy, and{' '}
+            <Derived>100 x 3,600 / 4,186 = 86</Derived> GPU-seconds to imagine each 30-second rollout. <Cite id="F06-89">RoboWorld paper, section 5</Cite>
           </Box>
           <Figure
             cites="F06-81 F06-83 F06-89 F06-90"
@@ -690,7 +690,7 @@ export function Evaluation() {
             the policy reads images, and a call to the policy. Physics alone is light. In Isaac Lab&apos;s own
             benchmark on one RTX PRO 6000 Blackwell, the GPU AWS sells in G7e instances, 8,192
             environments of its Cartpole task, state only and with no camera, process about a million environment
-            steps a second, policy updates included, in 0.93 GB of GPU memory. <Cite id="F06-47">Isaac Lab release benchmark, state-only rows</Cite> One small camera per
+            steps a second with the Newton physics engine, policy updates included, in 0.93 GB of GPU memory. <Cite id="F06-47">Isaac Lab release benchmark, state-only rows</Cite> One small camera per
             environment cuts that throughput by a factor of 6.7 and multiplies the memory by 62 (section 13,
             Rendering and Ray Tracing). <Cite id="F06-48">Isaac Lab release benchmark, camera rows</Cite>
           </Box>
@@ -737,7 +737,7 @@ export function Evaluation() {
             closed loop in simulation, across a sweep of variations, and use the result to discard; the validation
             action error, at a fixed number of denoising steps, can shortlist which checkpoints to score. With no
             simulated scene for the task, a world model trained on robots and scenes like yours can order the
-            candidates, at about 86 GPU-seconds per imagined rollout in RoboWorld&apos;s figures; treat its order
+            candidates, at about 86 GPU-seconds per imagined rollout by our arithmetic from RoboWorld&apos;s figures; treat its order
             as provisional, and do not ask it to split two close checkpoints.{' '}
             <Cite id="F06-89">RoboWorld paper, section 5</Cite>
           </Box>
@@ -745,7 +745,7 @@ export function Evaluation() {
             Before a policy goes into use, take the two or three survivors to the bench in one session, and fix
             the number of trials, or the stopping rule, before the first one. Start from the gap you need to see.
             At 50 trials each, 40 of 50 against 45 of 50 is a difference these trials cannot resolve, p = 0.26; a
-            20-point gap shows, and a 10-point gap needs about 199 trials per policy. Fifty bench trials can catch
+            20-point gap near the top of the scale shows, and a 10-point gap needs about 199 trials per policy. Fifty bench trials can catch
             a policy that fails on the real arm. Telling apart two that differ by 10 points takes hundreds of
             episodes, which a simulator supplies and a bench session does not, and the answer carries the
             simulator&apos;s gap to the bench with it.{' '}

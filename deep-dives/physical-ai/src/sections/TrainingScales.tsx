@@ -90,7 +90,7 @@ function GpuHoursChart() {
         <title id="training-scales-gpuhours-title">Published robot-model training runs on one logarithmic axis of GPU-hours, in three bands</title>
         <desc>
           Ten runs placed by GPU-hours on a logarithmic axis from a tenth of a GPU-hour to one hundred thousand. Five
-          one-GPU fine-tunes sit between half a GPU-hour and 10.9, among them 3.4 hours for 20,000 steps of GR00T
+          one-GPU runs sit between half a GPU-hour and 10.9, among them 3.4 hours for 20,000 steps of GR00T
           N1.7 as AWS measured it. Two eight-GPU runs sit in the hundreds. Three multi-node pretraining runs sit
           between a few thousand and roughly 50,000.
         </desc>
@@ -228,8 +228,8 @@ export function TrainingScales() {
             sample in the batch. A frozen weight is only read.
           </Box>
           <Box variant="p">
-            What trains therefore sets how large a batch fits. On one A6000 GPU, NVIDIA&apos;s GR00T N1, the model
-            before N1.7, fit batches of up to 200 when only its action layers trained, and 16 once the vision encoder,
+            What trains therefore sets how large a batch fits. In NVIDIA&apos;s test on one A6000 GPU, its first GR00T
+            release, N1, fit batches of up to 200 when only its action layers trained, and 16 once the vision encoder,
             the part that turns images into vectors, trained as well: a batch <Derived>12.5</Derived> times smaller
             (200 / 16). <Cite id="F02-34">GR00T N1 paper, training infrastructure</Cite> Holding the weights is the
             cheap part: N1.7&apos;s 3,144,016,000 parameters at 2 bytes each in bf16 (a 16-bit number format) are{' '}
@@ -263,7 +263,7 @@ export function TrainingScales() {
             <Cite id="F02-80">LeRobot pi0 documentation</Cite>
           </Box>
           <Box variant="p">
-            The setting is a command-line flag, and it has failed without warning. Before LeRobot v0.7.0,{' '}
+            Which of the three settings a run uses is a command-line flag, and that flag has failed without warning. Before LeRobot v0.7.0,{' '}
             <code>--policy.use_peft=true</code> on its own ran a full fine-tune; v0.7.0 has one LoRA switch for every
             policy, <code>--peft.method_type=LORA</code>.{' '}
             <Cite id="F02-83">LeRobot v0.7.0 PEFT documentation and release</Cite> Confirm which weights a run trains
@@ -274,7 +274,9 @@ export function TrainingScales() {
             GPU-hours. Compare runs in samples, not steps. AWS&apos;s two N1.7 runs both took 20,000 steps: batch 32
             on ml.g7e.2xlarge was 640,000 samples in 3.4 hours, about <Derived>52</Derived> a second, and batch 16 on
             ml.g6e.2xlarge was 320,000 samples in 4.0 hours, about <Derived>22</Derived> a second.{' '}
-            <Cite id="F09-82">AWS post, timing table</Cite>
+            <Cite id="F09-82">AWS post, timing table</Cite> By steps the g6e run looks{' '}
+            <Derived>4.0 / 3.4 = 1.2</Derived> times slower; by samples it is <Derived>52 / 22 = 2.4</Derived> times
+            slower.
           </Box>
           <Box variant="p">
             Take the rate from your own code. NVIDIA lists 131.33 samples a second for N1.7 on an RTX Pro 6000
@@ -365,7 +367,7 @@ export function TrainingScales() {
             over every frame) at batch 8 for ACT and 4 for pi0, puts ACT at 30 to 60 minutes on one RTX 4090 or 3090
             and pi0 or pi0.5 at 4 to 8 hours on one A100 with 40 GB. These are indicative figures that real runs miss
             by up to 50% either way, and at the recorder&apos;s default of 60 s per episode the same 50 episodes are
-            90,000 frames and each training time doubles.{' '}
+            90,000 frames, and by our arithmetic each training time doubles.{' '}
             <Cite id="F01-90">LeRobot hardware guide, memory by policy group and common scenarios</Cite>
           </Box>
           <Box variant="p">
@@ -419,7 +421,7 @@ export function TrainingScales() {
           <Box variant="p">
             A node is one server, such as an EC2 instance with eight GPUs, and eight in one server is the widest job
             whose exchange of gradients never leaves the machine. Time sends a job here: pi0-FAST, a 3-billion-parameter
-            VLA, trained for about 4 days on 8 H100 GPUs, 8 x 96 = <Derived>768</Derived> GPU-hours, which on one GPU
+            VLA, trained for about 4 days on 8 H100 GPUs by its authors&apos; account, 8 x 96 = <Derived>768</Derived> GPU-hours, which on one GPU
             would be <Derived>768 / 24 = 32</Derived> days.{' '}
             <Cite id="F02-28">pi0-FAST paper, appendix on DROID training</Cite> The CPU budget is fixed at this size:
             most eight-GPU sizes carry 24 vCPUs per GPU, 12 physical cores, and the dataloader workers have to keep up
@@ -445,9 +447,10 @@ export function TrainingScales() {
             about <Derived>11</Derived> hours apart (<Derived>25 x 27 = 675</Derived> minutes). It hit its 40-hour
             wall-clock cap at step 83 of 100, and the timeout ended the script before the latest checkpoint was
             uploaded: the instance terminated with the checkpoints of steps 25, 50 and 75 still on its own disk.{' '}
-            <Cite id="F04-71">AWS sample, earlier run</Cite> The eight steps after the last save alone were about{' '}
-            <Derived>8 x 27 = 216</Derived> minutes on eight GPUs, <Derived>29</Derived> GPU-hours, and a save on
-            the machine&apos;s own disk dies with the machine.
+            <Cite id="F04-71">AWS sample, earlier run</Cite> None of the three saves had left the machine, so the
+            run kept nothing: about 38 hours of training on eight GPUs, <Derived>8 x 38 = 304</Derived> GPU-hours
+            (<Derived>8 x 40 = 320</Derived> over the 40 hours the instance ran). A save on the machine&apos;s own
+            disk dies with the machine.
           </Box>
           <Box variant="p">
             For large models the best-practices guide for Amazon EKS (Elastic Kubernetes Service, AWS&apos;s managed
@@ -468,8 +471,8 @@ export function TrainingScales() {
             <Cite id="F09-91">EC2 User Guide, Capacity Blocks</Cite>
           </Box>
           <Box variant="p">
-            Training plans leave out the G family too, so the G instances of the one-GPU size cannot be reserved
-            either way, while an eight-GPU P node can.{' '}
+            Training plans leave out the G family too, so neither a Capacity Block nor a training plan reserves the
+            G instances of the one-GPU size, while both reserve an eight-GPU P node.{' '}
             <Cite id="F09-35">SageMaker training plans, eligible instance types</Cite> Telexistence booked one
             p6-b200.48xlarge with Capacity Blocks and fine-tuned DreamZero, a 14-billion-parameter model that
             predicts video and actions, on that single node.{' '}
@@ -502,17 +505,15 @@ export function TrainingScales() {
             weights, <Derived>6.3</Derived> GB. At the 50 Gbps of a g7e.2xlarge, <Derived>6.25</Derived> GB a second,
             moving it once takes about a second; at the 3,200 Gbps of a p5.48xlarge, about <Derived>16</Derived>{' '}
             milliseconds. Both are floors: an exchange moves at least one copy, and the eight GPUs of a p5.48xlarge
-            share its 3,200 Gbps. <Cite id="F08-49">EC2 accelerated instance table, network</Cite> For scale, a step
-            of AWS&apos;s frozen-backbone run took about <Derived>32 / 52 = 0.62</Derived> s: a second of exchange
-            would more than double a step of that length, and <Derived>16</Derived> ms would add about{' '}
-            <Derived>0.016 / 0.62 = 3%</Derived>.{' '}
-            <Cite id="F09-82">AWS post, timing table</Cite>
+            share its 3,200 Gbps. <Cite id="F08-49">EC2 accelerated instance table, network</Cite> The faster link
+            moves the same gradient <Derived>3,200 / 50 = 64</Derived> times sooner; set against the compute time of
+            one step, timed on your own run, that gap says whether a second server pays.
           </Box>
           <Box variant="p">
             That traffic runs over EFA (Elastic Fabric Adapter), the EC2 network device for traffic between
             instances, which bypasses the operating system kernel and uses AWS&apos;s own reliable transport so that
-            many machines can train as one. <Cite id="F08-48">EC2 docs on ENA and EFA</Cite> The one-GPU sizes do not
-            have it: g6e.4xlarge (20 Gbps) and g7e.2xlarge go without EFA, and p5.48xlarge carries it.{' '}
+            many machines can train as one. <Cite id="F08-48">EC2 docs on ENA and EFA</Cite> The small one-GPU sizes
+            do not have it: g6e.4xlarge (20 Gbps) and g7e.2xlarge go without EFA, and p5.48xlarge carries it.{' '}
             <Cite id="F08-49">EC2 accelerated instance table, network</Cite> The fabric has its own dive (
             <Link href="../efa/">EFA</Link>), and so does the way a step is split across nodes and what each trained
             weight costs in bytes (<Link href="../llm-training-systems/">Training at Scale</Link>).
@@ -551,7 +552,8 @@ export function TrainingScales() {
             bookable up to 8 weeks ahead. <Cite id="F09-34">SageMaker training plans guide</Cite>
           </Box>
           <Box variant="p">
-            At the top of the scale, GR00T N1 took roughly 50,000 H100 GPU-hours on up to 1,024 GPUs.{' '}
+            At the top of the scale, NVIDIA reports roughly 50,000 H100 GPU-hours for GR00T N1, on up to 1,024
+            GPUs.{' '}
             <Cite id="F02-34">GR00T N1 paper, training infrastructure</Cite> A fine-tune on one GPU starts from a
             checkpoint that carries that compute.
           </Box>
