@@ -15,7 +15,7 @@
  {"n":14,"id":"sim-to-real","comp":"SimToReal","title":"Sim-to-Real and Real-to-Sim: Widen the Simulator or Measure the Arm"},
  {"n":15,"id":"training-scales","comp":"TrainingScales","title":"Training at Three Scales: One GPU, One Node, Many Nodes"},
  {"n":16,"id":"evaluation","comp":"Evaluation","title":"Evaluation: Counting Successes, and How Many Trials It Takes"},
- {"n":17,"id":"on-robot","comp":"OnRobot","title":"Running on the Robot: Fitting a Policy Inside the Control Period"},
+ {"n":17,"id":"on-robot","comp":"OnRobot","title":"Running on the Robot: Driving the Arm With a Policy Slower Than Its Clock"},
  {"n":18,"id":"fleet","comp":"Fleet","title":"The Fleet: Policies Out, Episodes Back"},
  {"n":19,"id":"agents","comp":"AgentsLoop","title":"Agents Running the Loop: What the Agent May Touch and Who Grades It"},
  {"n":20,"id":"workloads","comp":"Workloads","title":"Fifteen Workloads, Five Shapes"},

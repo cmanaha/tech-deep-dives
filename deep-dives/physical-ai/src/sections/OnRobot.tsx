@@ -3,10 +3,9 @@ import Container from '@cloudscape-design/components/container';
 import Header from '@cloudscape-design/components/header';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 import Box from '@cloudscape-design/components/box';
-import ExpandableSection from '@cloudscape-design/components/expandable-section';
 import { Cite, Derived } from '../components/Cite';
 import { Figure, AnimatedFigure } from '../components/Figure';
-import { Formula } from '../components/Math';
+import { Formula, M } from '../components/Math';
 import { Placeholder, Snippet } from '../components/Blocks';
 import { linear } from '../lib/scale';
 import { ARM, TASK_STORY } from '../lib/task';
@@ -28,7 +27,6 @@ const STOP_INK = '#b0281a';
 /** Keeps a narrow, phone-first drawing from growing oversized on a wide screen. */
 const NARROW: CSSProperties = { maxWidth: 600, margin: '0 auto' };
 
-const LIST: CSSProperties = { margin: 0, paddingLeft: 22 };
 const TH: CSSProperties = { textAlign: 'left', padding: '6px 10px', borderBottom: '2px solid #5f6b7a', verticalAlign: 'bottom' };
 const TD: CSSProperties = { padding: '6px 10px', borderBottom: '1px solid #d5dbdb', verticalAlign: 'top' };
 
@@ -496,6 +494,105 @@ function DeviceStack() {
 }
 
 /* ------------------------------------------------------------------------ */
+/* Diagram 17.4 (static): the three zones of a chunk under real-time chunking */
+/* ------------------------------------------------------------------------ */
+
+/* The paper's own example: d = 4 frozen actions, seven guided ones, s = 5 free ones. The decay is drawn
+   as an illustration of an exponential schedule, not read off the paper. */
+const RTC_WEIGHTS = [1, 1, 1, 1, 0.71, 0.49, 0.32, 0.19, 0.1, 0.04, 0.01, 0, 0, 0, 0, 0];
+const RTC_D = 4;
+const RTC_FREE_FROM = 11;
+const RTC_CELL = 22;
+const rx = (i: number) => 30 + RTC_CELL * i;
+const RTC_BASE = 118;
+const RTC_BAR = 64;
+
+const RTC_ZONES = [
+  { name: 'frozen', from: 0, to: RTC_D, fill: EMPHASIS, cell: EMPHASIS, sub: 'd = 4' },
+  { name: 'guided', from: RTC_D, to: RTC_FREE_FROM, fill: '#7fb2e5', cell: '#d6e7f8', sub: '' },
+  { name: 'free', from: RTC_FREE_FROM, to: RTC_WEIGHTS.length, fill: '#ffffff', cell: '#ffffff', sub: 's = 5' },
+];
+
+function RtcZones() {
+  const zoneOf = (i: number) => RTC_ZONES.find((z) => i >= z.from && i < z.to) ?? RTC_ZONES[2];
+  return (
+    <div style={NARROW}>
+      <svg viewBox="0 0 400 272" role="img" aria-labelledby="on-robot-rtc-title" style={{ width: '100%', height: 'auto' }}>
+        <title id="on-robot-rtc-title">The three zones of a new chunk under real-time chunking: frozen, guided and free</title>
+        <desc>
+          A row of action slots in playing order. The first four are frozen at a guidance weight of 1, because the arm
+          plays them from the old chunk before the new one lands. The next seven are guided, with a weight that falls
+          toward 0. The last five lie beyond the end of the old chunk and are generated freely, at weight 0.
+        </desc>
+        <rect x="0" y="0" width="400" height="272" fill="#fbfbfd" />
+        <text x="20" y="22" {...TITLE}>
+          Guidance weight on each action of the new chunk
+        </text>
+
+        {/* weight axis */}
+        <line x1="28" y1={RTC_BASE - RTC_BAR} x2="28" y2={RTC_BASE} stroke={NEUTRAL_INK} strokeWidth="1.5" />
+        <line x1="28" y1={RTC_BASE} x2={rx(RTC_WEIGHTS.length)} y2={RTC_BASE} stroke={NEUTRAL_INK} strokeWidth="1.5" />
+        <text x="22" y={RTC_BASE - RTC_BAR + 5} textAnchor="end" {...LABEL}>
+          1
+        </text>
+        <text x="22" y={RTC_BASE + 4} textAnchor="end" {...LABEL}>
+          0
+        </text>
+
+        {/* bars: the weight of each slot */}
+        {RTC_WEIGHTS.map((w, i) => {
+          const z = zoneOf(i);
+          const h = RTC_BAR * w;
+          return h > 0 ? (
+            <rect key={`b${i}`} x={rx(i) + 3} y={RTC_BASE - h} width={RTC_CELL - 6} height={h} fill={z.fill} stroke={CPU_INK} strokeWidth="1" />
+          ) : null;
+        })}
+
+        {/* the slots themselves */}
+        {RTC_WEIGHTS.map((_, i) => {
+          const z = zoneOf(i);
+          return <rect key={`c${i}`} x={rx(i) + 1} y="124" width={RTC_CELL - 2} height="20" fill={z.cell} stroke={CPU_INK} strokeWidth="1" />;
+        })}
+
+        {/* zone brackets and names */}
+        {RTC_ZONES.map((z) => {
+          const x0 = rx(z.from) + 2;
+          const x1 = rx(z.to) - 2;
+          const mid = (x0 + x1) / 2;
+          return (
+            <g key={z.name}>
+              <path d={`M${x0} 150 V156 H${x1} V150`} fill="none" stroke={NEUTRAL_INK} strokeWidth="1.5" />
+              <text x={mid} y="172" textAnchor="middle" {...TITLE}>
+                {z.name}
+              </text>
+              {z.sub && (
+                <text x={mid} y="188" textAnchor="middle" {...LABEL}>
+                  {z.sub}
+                </text>
+              )}
+            </g>
+          );
+        })}
+        <text x="200" y="208" textAnchor="middle" {...LABEL}>
+          actions of the new chunk, in the order they play
+        </text>
+
+        {/* legend */}
+        <text x="20" y="230" {...LABEL}>
+          frozen: already played from the old chunk
+        </text>
+        <text x="20" y="248" {...LABEL}>
+          guided: pulled toward the old chunk, less and less
+        </text>
+        <text x="20" y="266" {...LABEL}>
+          free: past the end of the old chunk, new
+        </text>
+      </svg>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------------ */
 /* Section                                                                  */
 /* ------------------------------------------------------------------------ */
 
@@ -517,6 +614,11 @@ Manifests:
     Artifacts:
       - URI: "docker:account-id.dkr.ecr.region.amazonaws.com/repository[:tag|@digest]"`;
 
+const RUN_LINE = `docker run --rm --runtime nvidia --network=host \\
+  -e AWS_CONTAINER_AUTHORIZATION_TOKEN -e AWS_CONTAINER_CREDENTIALS_FULL_URI \\
+  --device /dev/video0 --device /dev/ttyACM0 \\
+  account-id.dkr.ecr.region.amazonaws.com/repository[:tag|@digest]`;
+
 export function OnRobot() {
   return (
     <SpaceBetween size="l">
@@ -524,195 +626,219 @@ export function OnRobot() {
         header={
           <Header
             variant="h1"
-            description="Fit a policy inside a latency budget on a named device, and know what else runs beside it (NVIDIA's Isaac-GR00T and TensorRT documentation, LeRobot v0.7.0 and the AWS IoT Greengrass guide, read 2026-11-20)"
+            description="Tell from one measured call whether a policy can drive your arm, and what chunked actions, asynchronous calls and a compiled, quantised engine each buy back"
           >
-            17. Running on the Robot: Fitting a Policy Inside the Control Period
+            17. Running on the Robot: Driving the Arm With a Policy Slower Than Its Clock
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            A trained policy has to run on a computer bolted beside the arm, and that computer has a clock to keep.
-            Section 3, The Robot as a Computer, set the clock for the {ARM}: 30 ticks a second, 33.3 ms each. Section 5, Vision-Language-Action Models, showed that the large models answer far more slowly than that. This
-            section puts the two together on named devices as the arm learns to {TASK_STORY}.
-          </Box>
-          <Box variant="p">
-            The number to carry through it: NVIDIA reports 149.0 ms for one call of its GR00T N1.7 policy on a Jetson
-            Orin, which is 4.5 control periods at 30 Hz.{' '}
-            <Cite id="F07-5">Isaac-GR00T deployment README, benchmark table</Cite> The blocks below are the ways to
-            live with a gap of that size, and the last one covers managing the device from an AWS account.
-          </Box>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header variant="h2" description="Which computer sits beside the arm, and what software it runs today">
-            The devices
-          </Header>
-        }
-      >
-        <SpaceBetween size="m">
-          <Box variant="p">
-            Three NVIDIA machines cover the range. A Jetson is a small computer built to ride on a robot: an Arm CPU
-            and a GPU on one board, sharing one pool of memory, so an 8 GB board does not give a policy 8 GB of GPU
-            memory. A DGX Spark is a desk-side box with the same shared-memory design. The table gives each as
-            NVIDIA specifies it.
-          </Box>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 560 }}>
-              <thead>
-                <tr>
-                  <th style={TH}>Device</th>
-                  <th style={TH}>Where it sits</th>
-                  <th style={TH}>Memory, shared by CPU and GPU</th>
-                  <th style={TH}>Power</th>
-                  <th style={TH}>Source</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style={TD}>Jetson Orin Nano Super Developer Kit</td>
-                  <td style={TD}>On or beside a small arm such as the {ARM}</td>
-                  <td style={TD}>8 GB</td>
-                  <td style={TD}>7 W to 25 W</td>
-                  <td style={TD}>
-                    <Cite id="F07-36">NVIDIA Jetson Orin Nano Super Developer Kit page</Cite>
-                  </td>
-                </tr>
-                <tr>
-                  <td style={TD}>Jetson AGX Thor Developer Kit (T5000 module)</td>
-                  <td style={TD}>On a larger robot, with room for a large policy</td>
-                  <td style={TD}>128 GB</td>
-                  <td style={TD}>40 W to 130 W</td>
-                  <td style={TD}>
-                    <Cite id="F07-39">NVIDIA Jetson Thor page, specifications</Cite>
-                  </td>
-                </tr>
-                <tr>
-                  <td style={TD}>DGX Spark</td>
-                  <td style={TD}>On the desk, wired to the robot computer</td>
-                  <td style={TD}>128 GB</td>
-                  <td style={TD}>240 W power supply; the chip&apos;s budget is 140 W</td>
-                  <td style={TD}>
-                    <Cite id="F07-47">DGX Spark User Guide, hardware overview</Cite>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <Box variant="p">
-            Both Jetson families run JetPack, NVIDIA&apos;s bundle of Linux, GPU drivers and libraries. The current
-            release is JetPack 7.2.2, built on Ubuntu 24.04 with Linux kernel 6.8.{' '}
-            <Cite id="F07-44">NVIDIA JetPack downloads page</Cite> DGX Spark needs its own dependency stack.{' '}
-            <Cite id="F07-9">Isaac-GR00T deployment README, platform setup</Cite>
-          </Box>
-          <Box variant="p">
-            NVIDIA&apos;s latency table says &quot;Jetson Orin&quot; without naming the module, and no first-party
-            latency for a policy on a Jetson Orin Nano was located in this research.{' '}
-            <Cite id="F07-117">SmolVLA paper and LeRobot v0.7.0 guides, searched for a latency figure</Cite> On the
-            smallest board, the figure that counts is the one you measure.
-          </Box>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header variant="h2" description="Count a policy call in control periods, and see which links of the chain nobody has published">
-            The budget, from camera to motor
-          </Header>
-        }
-      >
-        <SpaceBetween size="m">
-          <Box variant="p">
-            Section 3 turned delay into distance: the gripper keeps moving on old orders from the moment a frame is
-            captured until the action computed from it reaches the servos. That span is the budget, and it is a
-            chain: the camera frame, image preparation, the policy call, decoding the actions, and the write to the
-            servo bus. The policy call is the longest link. Count it in control periods, the unit the loop works in.
-          </Box>
-          <Box variant="p">
-            The worked example: 149.0 ms divided by a 33.3 ms period is 4.47, so NVIDIA&apos;s Jetson Orin figure is
-            4.5 control periods at 30 Hz. The arm has played four actions and started a fifth before the answer to
-            one camera frame exists.{' '}
+            A large robot policy answers several control periods late, and its timing still leaves room to drive the{' '}
+            {ARM} to {TASK_STORY}. Take GR00T N1.7, NVIDIA&apos;s robot policy, on a Jetson Orin, a small computer
+            built to ride on a robot. Compiled with TensorRT, NVIDIA&apos;s inference compiler, one call takes a
+            median of 149.0 ms in NVIDIA&apos;s benchmark. The arm&apos;s loop plays one
+            action every 33.3 ms, its control period (section 3, The Robot as a Computer), so one call spans 149.0 /
+            33.3 = 4.5 periods.{' '}
             <Cite id="F07-5">Isaac-GR00T deployment README, benchmark table</Cite>
+          </Box>
+          <Box variant="p">
+            Three things make a call that long usable. Chunked actions spread one call over many ticks: the call
+            returns a chunk of future actions, 40 in that benchmark, which the arm plays one per tick
+            (section 4, Learning From Demonstrations). Asynchronous inference computes the next chunk while the
+            current one plays, so the arm need not stop to wait. Together the two let a call take up to about half of
+            what its chunk lasts. Compiling the model, and on newer boards quantising it, shortens the call itself,
+            which keeps the actions fresh: plain PyTorch takes 357.9 ms for the same call on the same Orin.{' '}
+            <Cite id="F07-2">Isaac-GR00T deployment README, benchmark conditions</Cite>{' '}
+            <Cite id="F07-5">Isaac-GR00T deployment README, benchmark table</Cite>
+          </Box>
+          <Box variant="p">
+            At the median both calls fit. A chunk of 40 actions at 30 Hz lasts 40 / 30 ={' '}
+            <Derived>1.33</Derived> s; the compiled call takes 4.5 of its 40 ticks and the PyTorch call 357.9 / 33.3
+            = <Derived>10.7</Derived>. The compiler pays off in freshness. Every action of a new chunk was planned
+            from a camera frame at least one call old, and each later action in the chunk is a tick older again.
+            While the arm carries the block toward the cup at the
+            illustrative 0.25 m/s of section 3, it travels <Derived>37</Derived> mm in 149.0 ms and{' '}
+            <Derived>89</Derived> mm in 357.9 ms, and if the cup is nudged in that time the arm is still steering for
+            where it was, toward a mouth a few centimetres across. Chunking hides a slow call from the clock and
+            leaves its age in every action.{' '}
+            <Cite id="F07-2">Isaac-GR00T deployment README, benchmark conditions</Cite>{' '}
+            <Cite id="F07-5">Isaac-GR00T deployment README, benchmark table</Cite>{' '}
+            <Cite id="F01-83" kind="derived">
+              speed times delay
+            </Cite>
+          </Box>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Find which links from camera to motor have published figures and which you measure on your own arm, and budget against the slowest call, not the median"
+          >
+            The policy call is the longest link from camera to motor
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            The delay from camera to servo is four waits (section 3): the age of the camera frame, the policy call,
+            the network when the policy runs on another computer, and the wait for the next tick&apos;s write.
+            The frame alone can be up to 33.3 ms old before any processing starts. The benchmark&apos;s figure for the call
+            already includes preparing the images and decoding the actions, and leaves out any network hop.{' '}
+            <Cite id="F07-118">LeRobot inference guide, sample cadence report</Cite>{' '}
+            <Cite id="F07-2">Isaac-GR00T deployment README, benchmark conditions</Cite>
+          </Box>
+          <Box variant="p">
+            That figure holds for stated conditions: the <code>nvidia/GR00T-N1.7-LIBERO</code> checkpoint, batch size
+            1, four denoising steps (the passes of the action head that build each chunk, section 5) and two 256x256
+            camera images. Each figure is the median of 60 timed calls on fixed inputs, with the Jetsons in their
+            maximum power mode, and the table does &quot;not measure closed-loop task success&quot;. Change a
+            condition and the figure moves: NVIDIA&apos;s model card times the same model with one camera and with
+            TensorRT compiling only the action head, and prints 216.5 ms for a Jetson Orin (section 5,
+            Vision-Language-Action Models). Fewer images, and slower, because the backbone ran uncompiled: a latency
+            belongs to its device, runtime, camera count and step count together.{' '}
+            <Cite id="F07-2">Isaac-GR00T deployment README, benchmark conditions</Cite>{' '}
+            <Cite id="F07-3">Isaac-GR00T deployment README, measurement details</Cite>{' '}
+            <Cite id="F02-40">GR00T N1.7 model card, inference timing table</Cite>
+          </Box>
+          <Box variant="p">
+            A median or a mean is the typical call, and the arm feels the slowest one, because the chunk in play has
+            to cover it. The table gives medians only. LeRobot&apos;s documentation shows the gap in a sample report
+            from a 30 Hz rollout on hardware it does not name: inference averaged 5.18 ms and its worst call took
+            40.00 ms, a stall of about <Derived>35</Derived> ms on top of the typical call, and recording averaged
+            0.67 ms and once took 620.00 ms, the blocking save of an episode. Budget against the worst call you
+            measure.{' '}
+            <Cite id="F07-3">Isaac-GR00T deployment README, measurement details</Cite>{' '}
+            <Cite id="F07-23">LeRobot inference guide, cadence reporting</Cite>
           </Box>
           <Figure
             cites="F07-1 F07-5 F07-68 F07-118"
             caption={
               <>
-                Read each bar against the gridlines: one gridline is one tick of a 30 Hz loop. The top group is
-                NVIDIA&apos;s table for one compiled call of GR00T N1.7. The bottom group is the one measured
-                end-to-end chain found, reported by its authors for a different policy served from a workstation.
+                Each gridline is one tick of the 30 Hz loop. Top: NVIDIA&apos;s medians for one compiled GR00T N1.7
+                call on the Jetson Orin, the larger Jetson AGX Thor and the DGX Spark, a desk-side machine. Bottom: a
+                policy served from a workstation, as timed by the authors of real-time chunking (a method for joining
+                chunks smoothly), split into model, network, image resize and other.
               </>
             }
           >
             <BudgetChart />
           </Figure>
           <Box variant="p">
-            NVIDIA&apos;s conditions, stated once: the <code>nvidia/GR00T-N1.7-LIBERO</code> checkpoint, batch size 1,
-            a chunk of 40 actions, four refinement steps and two 256x256 camera images, with image preparation and
-            action decoding inside the timing.{' '}
-            <Cite id="F07-2">Isaac-GR00T deployment README, benchmark conditions</Cite> Each figure is the median of 60
-            timed calls on fixed inputs, with the Jetsons in their maximum power mode, and the table does &quot;not
-            measure closed-loop task success&quot;.{' '}
-            <Cite id="F07-3">Isaac-GR00T deployment README, measurement details</Cite> A median hides the slowest
-            call, which is the one a control loop feels. Section 5 quoted NVIDIA&apos;s model card, which times one
-            camera on another software stack and prints other figures: a latency belongs to its device, runtime,
-            camera count and step count together.
+            When the policy runs on another computer, the network and the CPU beside the arm join the chain. The
+            authors of the real-time chunking paper timed 50 calls of a policy served from a workstation over wired
+            Ethernet. The model took 97.43 ms with a desktop robot computer and 96.89 ms with a small on-robot one,
+            an Intel NUC, yet the NUC&apos;s chain was 138.98 ms against 108.76 ms: its network took 21.20 ms against
+            6.89 ms, and its CPU spent 11.22 ms resizing images against 1.44 ms. The computer beside the arm is part
+            of the budget even when the GPU is elsewhere. The network also brings the jitter: across the 50 calls
+            the model&apos;s time varied by about 0.2 ms and the network&apos;s by 2 to 3 ms.{' '}
+            <Cite id="F07-68">Real-time chunking paper, appendix A.3, table 2</Cite>
           </Box>
           <Box variant="p">
-            The two ends of the chain are open. No first-party figure was located for camera exposure, the USB
-            transfer, or the servo bus write on an {ARM}. The first link has a known bound: a frame from a 30 fps
-            camera can be up to 33.3 ms old before any processing starts.{' '}
-            <Cite id="F07-118">LeRobot inference guide, sample cadence report</Cite>
+            LeRobot&apos;s guides give no timing for camera exposure, the USB transfer or the servo bus write on an{' '}
+            {ARM}, so the two ends of the chain are yours to measure. Its cadence report times the camera reads and
+            the motor write on your own arm, as its observe and send lines.{' '}
+            <Cite id="F07-118">LeRobot inference guide, sample cadence report</Cite>{' '}
+            <Cite id="F07-23">LeRobot inference guide, cadence reporting</Cite>
           </Box>
-          <ExpandableSection headerText="The measured chain, link by link">
-            <SpaceBetween size="s">
-              <Box variant="p">
-                The authors of the real-time chunking paper measured 50 inference calls during a real episode, over
-                wired Ethernet. With a desktop robot computer the chain was model 97.43 ms, network 6.89 ms, image
-                resize 1.44 ms and other 3.00 ms: 108.76 ms in total. With a small on-robot computer (an Intel NUC)
-                it was model 96.89 ms, network 21.20 ms, image resize 11.22 ms and other 9.67 ms: 138.98 ms.{' '}
-                <Cite id="F07-68">Real-time chunking paper, appendix A.3, table 2</Cite>
-              </Box>
-              <Box variant="p">
-                The model&apos;s time barely moves between the rows. The weaker robot computer spent 11.22 ms
-                resizing images against 1.44 ms: the CPU beside the arm is part of the budget even when the GPU is
-                elsewhere.
-              </Box>
-            </SpaceBetween>
-          </ExpandableSection>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header variant="h2" description="How a model that needs 4.5 control periods keeps a 30 Hz loop fed, and the one case no setting rescues">
-            Chunking buys time
+          <Header
+            variant="h2"
+            description="Work out from the chunk length and one measured call whether the arm ever waits, and set when the robot computer asks for the next chunk"
+          >
+            Asynchronous calls stretch the deadline to half a chunk
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Section 4 introduced the action chunk: one policy call returns the next several dozen actions, and the
-            host loop plays one per tick. A slow model can then drive a fast loop, as long as it refills the queue
-            before the queue empties.
-          </Box>
-          <Box variant="p">
-            The simplest schedule is synchronous: play the chunk, then call the model and wait. When the call is
-            longer than one period, this &quot;introduces visible pauses between chunks&quot;. The alternative is
-            asynchronous: start the next call early, while the current chunk is still playing.{' '}
+            How the next call is scheduled decides what the arm does while the model works. Synchronous inference,
+            LeRobot&apos;s default, blocks the loop until the call returns, so &quot;the robot stops moving every time
+            the policy computes its next chunk of actions&quot;. The pauses also change the arm&apos;s dynamics, so
+            the policy meets motion its training data never showed. Asynchronous inference starts the next
+            call early, while the current chunk is still playing.{' '}
+            <Cite id="F01-87">LeRobot remote inference guide and inference guide</Cite>{' '}
             <Cite id="F07-62">Real-time chunking paper, section 2</Cite>
           </Box>
           <Box variant="p">
-            Starting early leaves a seam. The new chunk was computed from a camera frame that is several ticks old
-            when it lands, and it may disagree with the motion the arm is in the middle of. Real-time chunking (RTC)
-            handles the seam in two moves: generate the next chunk while the current one plays, and make the new
-            chunk agree with the actions already committed.{' '}
-            <Cite id="F07-12">LeRobot real-time chunking guide</Cite> The actions that will have been played before
-            the new chunk arrives are treated as fixed, and the model fills in the rest so that it continues from
-            them.{' '}
+            On the benchmark&apos;s medians an Orin running synchronously stops for
+            149.0 ms after every 40 actions, so it is idle 149.0 / (<Derived>1,333</Derived> + 149.0) ={' '}
+            <Derived>10</Derived>% of the time, in a visible stop every <Derived>1.5</Derived> s. With the PyTorch
+            call it is idle <Derived>21</Derived>% of the time.{' '}
+            <Cite id="F07-2">Isaac-GR00T deployment README, benchmark conditions</Cite>{' '}
+            <Cite id="F07-5">Isaac-GR00T deployment README, benchmark table</Cite>
+          </Box>
+          <Box variant="p">
+            Asynchronous inference has one condition, and no setting relaxes it. The arm keeps playing while a call
+            runs, so when the new chunk lands its first actions are already in the past and are dropped.
+            LeRobot&apos;s tuning rule is that what remains must cover the next call. Write <M>H</M> for the chunk length in actions,{' '}
+            <M>{String.raw`\Delta t`}</M> for the control period and <M>L</M> for the time one call takes, from
+            sending the observation to receiving the chunk.
+          </Box>
+          <Formula
+            name="The half-chunk rule: LeRobot's tuning rule in symbols"
+            tex={String.raw`H\,\Delta t \;-\; L \;\ge\; L \quad\Longrightarrow\quad L \;\le\; \tfrac{1}{2}\,H\,\Delta t`}
+            source={<Cite id="F07-22">LeRobot remote inference guide, tuning</Cite>}
+          />
+          <Box variant="p">
+            <M>{String.raw`H\,\Delta t`}</M> is what the chunk lasts. Subtracting <M>L</M> leaves the part still to
+            play when the chunk lands, and the <M>L</M> on the right is the next call it has to cover. LeRobot&apos;s
+            remote inference guide gives the failing case: &quot;If inference takes 1 second out of a 1.67-second
+            prediction, only about 0.67 seconds remain. Another 1-second request cannot fit; no refill value fixes
+            that.&quot; Its remedies are a shorter call, a longer chunk or a different action rate. For a chunk of 40
+            the call may take about <Derived>20</Derived> ticks, a little less once a tick of margin is kept. The compiled Orin median takes 4.5, so a worst call up to about four times the
+            median still fits.{' '}
+            <Cite id="F07-22">LeRobot remote inference guide, tuning</Cite>{' '}
+            <Cite id="F07-2">Isaac-GR00T deployment README, benchmark conditions</Cite>{' '}
+            <Cite id="F07-5">Isaac-GR00T deployment README, benchmark table</Cite>
+          </Box>
+          <Box variant="p">
+            The real-time chunking paper states the same bound in ticks. It counts the delay <M>d</M> as the
+            call&apos;s length in whole periods, <code>d = floor(L / dt)</code>, which is 4 for the compiled Orin
+            call at 30 Hz, and it requires <code>d &lt;= s &lt;= H - d</code>, where <M>s</M>, which the paper calls
+            the execution horizon, is how many actions of a chunk play before the next one takes over. Both halves hold together only while <M>d</M> is at most
+            half of <M>H</M>.{' '}
+            <Cite id="F07-5">Isaac-GR00T deployment README, benchmark table</Cite>{' '}
+            <Cite id="F07-63">Real-time chunking paper, section 2</Cite>{' '}
             <Cite id="F07-65">Real-time chunking paper, section 3 and figure 3</Cite>
+          </Box>
+          <Box variant="p">
+            LeRobot v0.7.0 ships the asynchronous pattern in two forms. Local RTC (real-time chunking) runs the
+            policy in a background thread on the robot computer, with no network in the path, and guides each new
+            chunk to continue the motion in progress. Remote
+            inference moves the checkpoint to a policy server, for example a DGX Spark on the desk, while cameras,
+            motors and recording stay on the robot computer and &quot;the remote client does not load weights&quot;.
+            The two sides talk over Zenoh, a publish/subscribe network protocol that carries observations one way and
+            chunks back.{' '}
+            <Cite id="F01-40">LeRobot inference guide, inference backends</Cite>{' '}
+            <Cite id="F07-25">LeRobot remote inference guide, installation</Cite>
+          </Box>
+          <Box variant="p">
+            The robot computer decides when to ask for the next chunk. Ask too late and the queue empties; ask too
+            early and most of each chunk is thrown away unplayed. LeRobot&apos;s rule takes three quantities:{' '}
+            <code>refill_seconds</code>, your setting for how much playback may remain when it asks (default 0.5 s);
+            the turnaround, the measured round trip from encoding through network, queueing and inference to
+            decoding; and <code>fps</code>, the action rate.
+          </Box>
+          <Formula
+            name="When the client asks for the next chunk"
+            tex={String.raw`\small \begin{aligned} &\text{effective refill} = \max(\text{set},\ \text{floor}) \\ &\text{set} = \texttt{refill\_seconds} \\ &\text{floor} = \text{recent maximum turnaround} \\ &\qquad\quad + 1 / \texttt{fps} \end{aligned}`}
+            source={<Cite id="F07-26">LeRobot remote inference guide, parameters</Cite>}
+          />
+          <Box variant="p">
+            The first term is your preference and the second a floor from measurement: the slowest recent round trip
+            plus one tick of margin. At 30 Hz the 0.5 s default has the client ask with <Derived>15</Derived> actions
+            left (0.5 s x 30 actions a second), and it holds until the slowest round trip passes 0.5 - 0.033 ={' '}
+            <Derived>0.467</Derived> s, about three times the 149.0 ms Orin median. Past that the floor
+            rises and the client asks earlier; no refill value makes a call fit that breaks the half-chunk rule.{' '}
+            <Cite id="F07-26">LeRobot remote inference guide, parameters</Cite>{' '}
+            <Cite id="F07-5">Isaac-GR00T deployment README, benchmark table</Cite>
           </Box>
           <AnimatedFigure
             name="chunks against the control clock"
@@ -721,55 +847,144 @@ export function OnRobot() {
             cites="F07-5 F07-12 F07-22 F07-26 F07-65"
             caption={
               <>
-                Follow the marker along the clock. Steps 1 to 4 are the fast case, steps 5 and 6 the slow one. The
-                timing is illustrative: a 50-action chunk at 30 Hz, a request with 0.5 s of playback left, and a call
-                of 5 ticks or of 30.
+                Follow the marker along the clock. In steps 1 to 4 a call of 5 ticks, asked with 0.5 s of playback
+                left, lands with actions to spare; in steps 5 and 6 a call of 30 ticks lands after the queue has run
+                dry. Illustrative timing: a 50-action chunk, the size LeRobot&apos;s RTC guide uses as its example,
+                at 30 Hz, so half a chunk is <Derived>25</Derived> ticks.
               </>
             }
           >
             {(step, reduced) => <ChunkClock step={step} reduced={reduced} />}
           </AnimatedFigure>
           <Box variant="p">
-            LeRobot v0.7.0 ships the asynchronous pattern as remote inference. The checkpoint moves to a policy
-            server, for example a DGX Spark on the desk. Cameras, motors and recording stay on the robot computer,
-            and &quot;the remote client does not load weights&quot;. The two sides talk over Zenoh, a
-            publish/subscribe network protocol that carries observations one way and chunks back.{' '}
-            <Cite id="F07-25">LeRobot remote inference guide, installation</Cite>
+            On the remote path, keep the default join, <code>aligned</code>: it drops the incoming actions whose
+            time has passed and replaces only the future, which avoids backward bumps between chunks.{' '}
+            <code>append</code> keeps the whole new chunk and can start the arm from an older observation, and RTC
+            guidance runs on the server when the checkpoint supports it.{' '}
+            <Cite id="F07-27">LeRobot remote inference guide, modes</Cite>
           </Box>
           <Box variant="p">
-            The client decides when to ask for the next chunk. Ask too late and the queue empties; ask too early and
-            most of each chunk is discarded unplayed. Its rule uses three quantities: <code>refill_seconds</code>,
-            your setting for how much playback may remain when it asks (default 0.5 s); the turnaround, the measured
-            round trip from encoding through network and inference to decoding; and <code>fps</code>, the action
-            rate.
+            The network adds its own share of the turnaround. Camera frames travel as raw RGB by default, about 1.8
+            MB for two 640x480 frames, which is about <Derived>14</Derived> ms of every turnaround on a gigabit link;
+            try JPEG at quality 90, then compare turnaround and task quality. A congested link drops observations
+            rather than blocking motor commands. Five policy types, ACT and SmolVLA among them, have run on real
+            robots this way, while a router, a private hosted GPU or a Hugging Face Space &quot;has not been
+            validated yet&quot;, so measure the full turnaround on any new network before the arm moves.{' '}
+            <Cite id="F07-28">LeRobot remote inference guide, bandwidth</Cite>{' '}
+            <Cite id="F07-29">LeRobot remote inference guide, supported policies and robots</Cite>
           </Box>
-          <Formula
-            name="When the client asks for the next chunk"
-            tex={String.raw`\small \begin{aligned} &\text{effective refill} = \max(\text{set},\ \text{floor}) \\ &\text{set} = \texttt{refill\_seconds} \\ &\text{floor} = \text{recent maximum turnaround} \\ &\qquad\quad + 1 / \texttt{fps} \end{aligned}`}
-            source={<Cite id="F07-26">LeRobot remote inference guide, parameters</Cite>}
-          />
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Set inference_delay, execution_horizon and the guidance mode from your measured call, and choose whether to pay for a smooth hand-over at run time or at training time"
+          >
+            Real-time chunking freezes what the arm will already have played
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
           <Box variant="p">
-            The first term is your preference. The second is a floor taken from measurement: the slowest recent round
-            trip plus one tick of margin. At 30 Hz with a 149 ms turnaround the floor is 0.149 + 0.033 = 0.182 s,
-            below 0.5 s, so the default applies and the client asks with <Derived>15</Derived> actions left (0.5 s x
-            30 actions a second).{' '}
-            <Cite id="F07-26">LeRobot remote inference guide, parameters</Cite>
+            Starting early leaves a seam between chunks. The new chunk was planned from a frame several ticks old,
+            and nothing ties it to the motion in progress. In the real-time chunking paper&apos;s figure the chunk
+            being played goes over an obstacle and the new one goes under it, so the hand-over &quot;may be
+            arbitrarily discontinuous and out-of-distribution&quot;, a jerk that gets worse as the delay grows.{' '}
+            <Cite id="F07-64">Real-time chunking paper, section 2 and figure 2</Cite>
           </Box>
           <Box variant="p">
-            The limit is arithmetic, and the guide states it: &quot;If inference takes 1 second out of a 1.67-second
-            prediction, only about 0.67 seconds remain. Another 1-second request cannot fit; no refill value fixes
-            that.&quot;{' '}
-            <Cite id="F07-22">LeRobot remote inference guide, tuning</Cite> In our arithmetic from that rule, the
-            turnaround has to stay under about half the chunk&apos;s duration, less the one-tick margin of the
-            floor. A 1.67 s chunk allows about <Derived>0.8</Derived> s, and the 149.0 ms of the worked example is well inside.{' '}
-            <Cite id="F07-5">Isaac-GR00T deployment README, benchmark table</Cite> When the check fails, the
-            guide&apos;s remedies are a shorter turnaround, a longer chunk, or a different action rate.
+            RTC treats the start of the new chunk as inpainting, the image-editing task of filling a missing region so
+            that it matches its surroundings. The first <M>d</M> actions of the new chunk will have been played from
+            the old chunk by the time it lands, so they are frozen to the old values. Freezing only those is not
+            enough: when <M>d</M> is small, the new chunk can still switch strategy. The actions that overlap the
+            old chunk are therefore pulled toward it too, with a weight that decays from 1 to 0, because
+            &quot;actions further in the future should be treated with more uncertainty&quot;. The last <M>s</M> have no counterpart: the old chunk ends{' '}
+            <M>s</M> actions before the new one does, so they are generated freely.{' '}
+            <Cite id="F07-65">Real-time chunking paper, section 3 and figure 3</Cite>{' '}
+            <Cite id="F07-66">Real-time chunking paper, section 3.2</Cite>
+          </Box>
+          <Figure
+            cites="F07-65 F07-66"
+            caption={
+              <>
+                Each column is one action of the new chunk, in the order the arm will play it; bar height is the
+                weight pulling it toward the old chunk. The layout is the paper&apos;s example, a delay of 4 ticks and
+                5 fresh actions; the shape of the decay is illustrative.
+              </>
+            }
+          >
+            <RtcZones />
+          </Figure>
+          <Box variant="p">
+            The pull acts inside the denoising. A flow-matching head (section 4) builds a chunk from noise in a few
+            steps, and at each step RTC adds a term that drags the weighted positions toward the old chunk. To know
+            which way to move the half-built chunk so that the finished one matches, it needs the gradient of the
+            model&apos;s output with respect to its input: a backward pass through the model, the computation
+            training uses, at every step. The authors measured that cost on pi0.5, Physical Intelligence&apos;s
+            vision-language-action model (VLA, section 5): on an RTX 4090 each denoising step got 2.5 times slower
+            and the whole call went from 76 ms to 97 ms, <Derived>28</Derived>% slower. The backbone&apos;s reading of the images and the instruction,{' '}
+            <Derived>62</Derived> ms of the 76, does not change.{' '}
+            <Cite id="F07-13">LeRobot real-time chunking guide, how RTC works</Cite>{' '}
+            <Cite id="F07-67">Real-time chunking paper, appendix A.3, tables 1 and 3</Cite>
           </Box>
           <Box variant="p">
-            RTC&apos;s authors tested how much delay it absorbs. They ran pi0.5, a vision-language-action (VLA) model
-            from Physical Intelligence, with 50-action chunks on 50 Hz robots, and injected up to 200 ms of extra
-            latency, a delay of about 16 steps or 320 ms. Across 480 episodes and 28 hours they report &quot;no
-            degradation&quot; for RTC, while synchronous execution got worse in step with the delay.{' '}
+            LeRobot v0.7.0 exposes the zones as settings. <code>inference_delay</code> is <M>d</M>, passed with every
+            call because it varies at run time. The paper rounds the 149.0 ms Orin median at 30 Hz,{' '}
+            <Derived>4.47</Derived> ticks, down to 4; rounding up to 5 freezes one action more, the safer side when
+            calls run longer than the median. LeRobot&apos;s guide gives its settings for SmolVLA, pi0 and pi0.5,
+            while GR00T N1.7 ships with NVIDIA&apos;s own deployment path, so read the Orin numbers as worked
+            arithmetic.{' '}
+            <code>execution_horizon</code> is how many actions of the old chunk the new one must stay consistent
+            with, the frozen and guided zones together in the figure, <M>H - s</M> in the paper&apos;s symbols: 10
+            by default, typically 8 to 12, smoother when higher and slower to react. The paper&apos;s own execution
+            horizon is <M>s</M>, the count the figure leaves free.{' '}
+            <code>max_guidance_weight</code> caps the pull, 10.0 by default, given as the right value for 10-step
+            flow matching in SmolVLA, pi0 and pi0.5.{' '}
+            <Cite id="F07-5">Isaac-GR00T deployment README, benchmark table</Cite>{' '}
+            <Cite id="F07-63">Real-time chunking paper, section 2</Cite>{' '}
+            <Cite id="F07-11">Isaac-GR00T deployment README, shared Docker workflow</Cite>{' '}
+            <Cite id="F07-14">LeRobot configuration_rtc.py</Cite>{' '}
+            <Cite id="F07-15">LeRobot real-time chunking guide, key parameters</Cite>
+          </Box>
+          <Box variant="p">
+            The shape of the decay is <code>prefix_attention_schedule</code>, and the code and the documentation
+            disagree on it. The code defaults to <code>LINEAR</code>, with a to-do comment to change it; the
+            documentation recommends <code>EXP</code>, the paper&apos;s exponential, for getting started. The code is
+            what runs, so pass the schedule explicitly.{' '}
+            <Cite id="F07-14">LeRobot configuration_rtc.py</Cite>{' '}
+            <Cite id="F07-16">LeRobot real-time chunking guide, prefix schedules</Cite>
+          </Box>
+          <Box variant="p">
+            The guidance cost can move into training instead. Training-time RTC, a later paper, gives each training
+            example a random delay <M>d</M>, hands the model the first <M>d</M> actions clean and trains it to
+            generate the rest. At run time the prefix is fed in, with no guidance and no backward pass. Its authors
+            trained with delays of 0 to 10 ticks, &quot;which supports a maximum latency of 200ms on a 50Hz
+            robot&quot;, and in simulation it beat the guided version at delays of 2 ticks or more.{' '}
+            <Cite id="F07-70">Training-time RTC paper, section III</Cite>{' '}
+            <Cite id="F07-71">Training-time RTC paper, section IV.B</Cite>{' '}
+            <Cite id="F07-72">Training-time RTC paper, section IV.A</Cite>
+          </Box>
+          <Box variant="p">
+            In LeRobot that is the <code>trained</code> mode, and it turns the latency budget into a training
+            setting. It needs a pi0.5 checkpoint trained with <code>rtc_training_max_delay</code> above 0, and refuses
+            to start unless{' '}
+            <code>rtc_training_max_delay &lt;= execution_horizon &lt;= prediction_steps - rtc_training_max_delay</code>
+            , the paper&apos;s bound written in LeRobot&apos;s names. A checkpoint trained for up to 10 ticks of delay covers 200 ms on a 50 Hz robot and{' '}
+            <Derived>333</Derived> ms on this 30 Hz arm. The default <code>guided</code> mode works with ordinary
+            flow-matching checkpoints, with no retraining.{' '}
+            <Cite id="F07-17">LeRobot real-time chunking guide, modes</Cite>{' '}
+            <Cite id="F07-18">LeRobot configuration_rtc.py, trained-mode admission</Cite>{' '}
+            <Cite id="F07-71">Training-time RTC paper, section IV.B</Cite>
+          </Box>
+          <Box variant="p">
+            The original real-time chunking paper measured how much delay RTC absorbs on real robots. Its authors ran pi0.5 with 50-action chunks
+            on 50 Hz two-armed robots and injected up to 200 ms of extra latency, a total delay of about 16 ticks or{' '}
+            <Derived>320</Derived> ms. Over 480 episodes and 28 hours, RTC showed &quot;no degradation&quot;,
+            synchronous inference &quot;degrades linearly&quot;, and temporal ensembling (section 4&apos;s weighted
+            average of overlapping chunks) could not run at all: it oscillated hard enough to trigger the
+            robot&apos;s protective stop.{' '}
             <Cite id="F07-69">Real-time chunking paper, section 4.2</Cite>
           </Box>
         </SpaceBetween>
@@ -777,133 +992,280 @@ export function OnRobot() {
 
       <Container
         header={
-          <Header variant="h2" description="Two ways to make the call itself shorter, and how thin the evidence is that the robot still succeeds">
-            Making the model fit
+          <Header
+            variant="h2"
+            description="See why on Thor a rewrite of the model's graph saved twice what four-bit numbers did, what compiling saved on each device, and why every engine is built on the device that runs it"
+          >
+            Compiling buys more than fewer bits do
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Chunking tolerates a slow call. Two build steps make the call shorter: compile the model for the
-            device&apos;s GPU, and store its numbers in fewer bits. On NVIDIA&apos;s Jetson Orin row, the same policy
-            takes 357.9 ms in plain PyTorch and 149.0 ms compiled.{' '}
-            <Cite id="F07-5">Isaac-GR00T deployment README, benchmark table</Cite>
-          </Box>
-          <Box variant="p">
-            <strong>Engines.</strong> TensorRT is NVIDIA&apos;s inference compiler and runtime. It takes a model
+            Chunking makes a slow call tolerable; compiling and quantising make it shorter. TensorRT takes a model
             graph, usually an ONNX (Open Neural Network Exchange) file, the portable format a trained checkpoint is
             exported to, and picks a GPU implementation for every layer by timing candidates on the machine doing
-            the build. The result is a file called an engine.{' '}
-            <Cite id="F07-76">TensorRT 11.5 release notes</Cite> The choices were timed on one GPU, so the engine
-            belongs to that kind of GPU: &quot;By default, TensorRT engines are only compatible with the type of
-            device where they were built.&quot;{' '}
-            <Cite id="F07-77">TensorRT documentation, Engine Compatibility</Cite>
+            the build. The result is a file called an engine. For GR00T N1.7 there are seven engines, one per
+            sub-network from the vision encoder to the action decoder, and NVIDIA recommends compiling the full
+            pipeline because the backbone &quot;dominates inference time&quot;.{' '}
+            <Cite id="F07-76">TensorRT 11.5 release notes</Cite>{' '}
+            <Cite id="F07-7">Isaac-GR00T deployment README, TensorRT acceleration</Cite>
           </Box>
           <Box variant="p">
-            The engine records the TensorRT version and the GPU&apos;s compute capability, a number naming the GPU
-            generation: 8.7 for Jetson AGX Orin, 11.0 for Jetson AGX Thor, 12.1 for DGX Spark. On a mismatch it
-            &quot;will fail to deserialize&quot;.{' '}
-            <Cite id="F07-79">TensorRT documentation, compatibility checks and support matrix</Cite> A lab with both
-            Jetson types keeps one set of ONNX files and builds two sets of engines, on the devices themselves, at
-            about 2 to 5 minutes a build.{' '}
-            <Cite id="F07-8">Isaac-GR00T deployment README, build notes</Cite> A JetPack update that changes the
-            TensorRT version means building again.
+            In NVIDIA&apos;s table, compiling cut one call from 357.9 ms to 149.0 ms on the Jetson Orin, from 200.8
+            ms to 116.6 ms on the DGX Spark and from 106.8 ms to 76.8 ms on the Jetson AGX Thor: factors of{' '}
+            <Derived>2.4</Derived>, <Derived>1.7</Derived> and <Derived>1.4</Derived>. Compiling pays most where the
+            call is longest: on the Orin it saves <Derived>208.9</Derived> ms, more than any other step in the
+            table.{' '}
+            <Cite id="F07-1">Isaac-GR00T deployment README, benchmark table</Cite>
           </Box>
           <Box variant="p">
-            TensorRT 11.5.0 adds one exception, a hardware compatibility mode on Arm server-class Linux, the
-            category DGX Spark belongs to: an engine built with it runs on other supported GPUs there. The mode is
-            not supported on JetPack, so on a Jetson every device type gets its own engine.{' '}
-            <Cite id="F07-77">TensorRT documentation, Engine Compatibility</Cite> Check the installed version before
-            counting on the mode: NVIDIA&apos;s GR00T guide pins an older TensorRT on DGX Spark.{' '}
-            <Cite id="F07-9">Isaac-GR00T deployment README, DGX Spark setup</Cite>
+            Quantisation stores a model&apos;s numbers in fewer bits, so each layer moves less memory and does cheaper
+            arithmetic. A floating-point number splits its bits between an exponent, which sets how large or small it
+            can get, and a mantissa, which sets how finely it is stored. These policies default to BF16, a
+            sixteen-bit floating-point format. TensorRT 11.5 documents
+            FP8, eight bits with four for the exponent and three for the mantissa, and FP4, four bits with two and
+            one. NVFP4 is that FP4 with a scale factor per block of numbers, and the Blackwell-generation GPU in
+            Thor runs it natively.{' '}
+            <Cite id="F07-4">Isaac-GR00T deployment README, Thor quantisation</Cite>{' '}
+            <Cite id="F07-81">TensorRT documentation, quantized types</Cite>{' '}
+            <Cite id="F07-58">Jetson AI Lab, GR00T N1.7 on Thor tutorial</Cite>
           </Box>
           <Box variant="p">
-            <strong>Quantisation.</strong> Quantisation stores a model&apos;s numbers in fewer bits, so each layer
-            moves less memory and does cheaper arithmetic. The unquantised default for these policies is BF16, a
-            sixteen-bit floating-point format. NVFP4 is, in NVIDIA&apos;s words, &quot;a 4-bit floating-point format
-            with per-block scaling&quot;, supported natively by the GPU in Thor.{' '}
-            <Cite id="F07-58">Jetson AI Lab, GR00T N1.7 on Thor tutorial</Cite> On AGX Thor, NVIDIA reports that mixed
-            NVFP4 with its optimised execution profile cuts the call from 76.8 ms to 35.6 ms, a factor of 2.16. The
-            profile also caches work between refinement steps, so fewer bits are only part of that saving. No other
-            device in the table has a quantised figure.{' '}
+            Sixteen bits is more than one format. BF16 keeps the eight-bit exponent of FP32 (32-bit floating point)
+            and gives up mantissa bits; FP16 has a five-bit exponent, and NVIDIA&apos;s pi0.5 tutorial rules it out
+            because it overflows in the attention layers, an error that &quot;compounds over the denoising
+            loop&quot;. No engine is one precision throughout either: GR00T N1.7&apos;s vision encoder stays at FP32
+            &quot;for accuracy&quot;, and under NVFP4 the accuracy-sensitive layers stay at FP8. Choosing the scales
+            takes data. NVIDIA&apos;s recipe runs 10 samples of real robot data through the model, so the build needs
+            recordings from your robot.{' '}
+            <Cite id="F07-53">Jetson AI Lab, OpenPi on Thor tutorial, precision note</Cite>{' '}
+            <Cite id="F07-7">Isaac-GR00T deployment README, TensorRT acceleration</Cite>{' '}
+            <Cite id="F07-57">Jetson AI Lab, GR00T N1.7 on Thor tutorial, how the optimisation works</Cite>{' '}
+            <Cite id="F07-58">Jetson AI Lab, GR00T N1.7 on Thor tutorial</Cite>
+          </Box>
+          <Box variant="p">
+            On the Thor, NVIDIA reports 35.6 ms for the call with mixed NVFP4 and its optimised execution profile,
+            which caches what the action head reads from the backbone, fuses projections and replays the GPU work as
+            CUDA graphs, against 76.8 ms for the plain engine: a factor of 2.16, and just over one control period. Fewer bits are
+            the smaller part of that. NVIDIA&apos;s Thor tutorial, timing one camera, splits the saving: quantisation
+            shrank the backbone from 27 to 13.6 ms, and a precision-independent rewrite of the graph shrank the action
+            head from 45 to 17.2 ms. The rewrite computes once what the head reads from the backbone, which does not
+            change between denoising steps, so it saved <Derived>27.8</Derived> ms to the bits&apos;{' '}
+            <Derived>13.4</Derived>.{' '}
+            <Cite id="F07-4">Isaac-GR00T deployment README, Thor quantisation</Cite>{' '}
+            <Cite id="F07-57">Jetson AI Lab, GR00T N1.7 on Thor tutorial, how the optimisation works</Cite>
+          </Box>
+          <Box variant="p">
+            NVIDIA&apos;s pi0.5 tutorial on the same Thor, with chunks of 10 actions (its action horizon), shows how
+            far the bits go:
+            about 132 ms in PyTorch BF16, about 54 ms as an FP8 TensorRT engine and about 49 ms with FP8 plus NVFP4.
+            Compiling and dropping to FP8 together bought <Derived>2.4</Derived> times, and four-bit layers on top
+            took off about 5 ms more. For the Orin, NVIDIA publishes no quantised figure at all.{' '}
+            <Cite id="F07-51">Jetson AI Lab, OpenPi on Thor tutorial</Cite>{' '}
             <Cite id="F07-4">Isaac-GR00T deployment README, Thor quantisation</Cite>
           </Box>
           <Box variant="p">
-            Task success under quantisation has one small check behind it. NVIDIA&apos;s README reports one task from
-            LIBERO, a suite of simulated manipulation tasks, run for 20 episodes on an H100: PyTorch 20 of 20, the
-            TensorRT pipeline 19 of 20. That engine was unquantised BF16. There is no success figure for the NVFP4
+            Whether the robot still succeeds on a quantised engine rests on thin evidence. NVIDIA&apos;s README runs
+            one LIBERO task, from a simulated manipulation benchmark, for 20 episodes on an H100: PyTorch 20 of 20,
+            the TensorRT engine 19 of 20, and that engine was unquantised BF16. It has no success figure for the NVFP4
             engine or for any Jetson.{' '}
-            <Cite id="F07-10">Isaac-GR00T deployment README, LIBERO closed-loop evaluation</Cite> NVIDIA&apos;s
-            tutorial states that task success is unchanged and prints no rate or episode count.{' '}
-            <Cite id="F07-59">Jetson AI Lab, GR00T N1.7 on Thor tutorial</Cite> Treat a quantised engine as a new
-            policy and evaluate it as section 16, Evaluation, describes.
+            <Cite id="F07-10">Isaac-GR00T deployment README, LIBERO closed-loop evaluation</Cite>
           </Box>
           <Box variant="p">
-            One newer figure exists. NVIDIA&apos;s GR00T 2 whitepaper of November 2026 reports 124 ms per action
-            chunk on a Jetson Thor at 120 W for its Turbo variant. It is a vendor claim from a whitepaper with no
-            released code or weights; the GR00T N1.7 table remains the newest for a model you can download.{' '}
-            <Cite id="F07-119">NVIDIA GR00T 2 whitepaper, table 27</Cite>
+            NVIDIA&apos;s Thor tutorial states that task success is unchanged and prints no rate or episode count. The
+            pi0.5 tutorial checks only that the quantised outputs point the same way as PyTorch&apos;s, by cosine
+            similarity (1.0 is the same direction): about 0.9995 for FP8 alone and 0.9946 once the four-bit layers
+            are added, a score that would fail the 0.999 NVIDIA&apos;s GR00T verify step expects. Twenty episodes
+            cannot tell 19 of 20 from 20 of 20, so treat a quantised engine as a new policy and evaluate it as
+            section 16, Evaluation, describes.{' '}
+            <Cite id="F07-59">Jetson AI Lab, GR00T N1.7 on Thor tutorial</Cite>{' '}
+            <Cite id="F07-52">Jetson AI Lab, OpenPi on Thor tutorial, accuracy check</Cite>{' '}
+            <Cite id="F07-8">Isaac-GR00T deployment README, build notes</Cite>{' '}
+            <Cite id="F07-10">Isaac-GR00T deployment README, LIBERO closed-loop evaluation</Cite>
+          </Box>
+          <Box variant="p">
+            TensorRT ties an engine to the GPU type that built it. The engine records the TensorRT version and the
+            GPU&apos;s compute capability, a number naming the GPU generation (8.7 for Jetson AGX Orin, 11.0 for Jetson AGX
+            Thor, 12.1 for DGX Spark), and on a mismatch it &quot;will fail to deserialize&quot;. An engine copied
+            from a Thor robot to an Orin robot is refused when it loads, before it can drive anything.{' '}
+            <Cite id="F07-77">TensorRT documentation, Engine Compatibility</Cite>{' '}
+            <Cite id="F07-79">TensorRT documentation, compatibility checks and support matrix</Cite>
+          </Box>
+          <Box variant="p">
+            A lab with both Jetson types therefore keeps one set of ONNX files and builds two sets of engines on the
+            devices themselves, about 2 to 5 minutes a build, each checked against PyTorch (NVIDIA&apos;s verify step
+            expects a cosine similarity of 0.999 or more). A JetPack update that changes the TensorRT version means
+            building again. On JetPack there is no way around the rule. TensorRT 11.5.0 adds a hardware
+            compatibility mode, the escape from it, only on Arm server-class Linux, the category DGX Spark belongs
+            to. NVIDIA&apos;s GR00T guide pins an older TensorRT on the Spark, so check the installed version before
+            counting on the mode.{' '}
+            <Cite id="F07-8">Isaac-GR00T deployment README, build notes</Cite>{' '}
+            <Cite id="F07-76">TensorRT 11.5 release notes</Cite>{' '}
+            <Cite id="F07-77">TensorRT documentation, Engine Compatibility</Cite>{' '}
+            <Cite id="F07-9">Isaac-GR00T deployment README, DGX Spark setup</Cite>
           </Box>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header variant="h2" description="What to install on the Jetson so an AWS account can start, update and trust the policy, and what the documents leave for you to write">
-            What else runs on the device: the managed side
+          <Header
+            variant="h2"
+            description="Rule boards out by shared memory and bandwidth, then buy on a timed call of your policy, since no spec sheet predicts it"
+          >
+            Choosing the computer beside the arm: memory filters, a timed call decides
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            A robot computer is still a computer someone has to manage: install the policy, restart it when it dies,
-            give it credentials, replace it next month. On AWS the service for this is AWS IoT Greengrass, which AWS
-            defines as &quot;an open source Internet of Things (IoT) edge runtime and cloud service that helps you
-            build, deploy and manage IoT applications on your devices&quot;. It has two halves: software on the
-            device, and a cloud service that tells that software what to run.{' '}
-            <Cite id="F07-120">AWS IoT Greengrass developer guide, What is AWS IoT Greengrass?</Cite>
+            On a Jetson the CPU and the GPU share one pool of memory, and that pool holds everything: the operating
+            system, the control loop, the camera frames and the policy&apos;s weights. The smallest board, the Jetson
+            Orin Nano Super Developer Kit, has 8 GB in that pool, at 102 GB/s. pi0.5, the policy of NVIDIA&apos;s
+            Thor tutorial, needs about 6 GB or more for its weights alone, so a policy of that size leaves little of
+            the board for anything else. Bandwidth sets a lower bound too: a call reads every weight at least once,
+            so at that size and 102 GB/s it takes at least 6 / 102 = <Derived>59</Derived> ms, almost two control periods, before any
+            arithmetic.{' '}
+            <Cite id="F07-36">NVIDIA Jetson Orin Nano Super Developer Kit page</Cite>{' '}
+            <Cite id="F07-54">Jetson AI Lab, OpenPi on Thor tutorial, prerequisites</Cite>
           </Box>
           <Box variant="p">
-            <strong>What gets installed.</strong> The device half is one program, the nucleus. It comes in two
-            implementations.{' '}
-            <Cite id="F07-133">Greengrass developer guide, How AWS IoT Greengrass works</Cite>
-          </Box>
-          <ul style={LIST}>
-            <li>
-              <strong>The Java nucleus</strong> (v2.18.4) has every feature and needs a Java runtime. Its documented
-              minimums are 256 MB of disk and 96 MB of RAM.{' '}
-              <Cite id="F07-84">Greengrass developer guide, Greengrass nucleus requirements</Cite>
-            </li>
-            <li>
-              <strong>Nucleus lite</strong> (v2.7.0) is a set of small C programs with a shorter feature list; it
-              cannot, for example, be driven by the Greengrass command-line tool on the device.{' '}
-              <Cite id="F07-135">Greengrass developer guide, feature compatibility</Cite> AWS measured its v2.5.0 packages at 14.6 MB
-              of memory idle and 15.8 MB with six small components running, on a Raspberry Pi 4.{' '}
-              <Cite id="F07-138">aws-greengrass-lite v2.7.0, RESOURCE_LIMITS.md</Cite>
-            </li>
-          </ul>
-          <Box variant="p">
-            Both figures are AWS&apos;s, and neither was taken on a Jetson. For the Java nucleus AWS lists 64-bit Arm
-            Linux as a supported architecture and names no Linux distribution, so JetPack is neither listed nor
-            excluded.{' '}
-            <Cite id="F07-140">Greengrass developer guide, nucleus supported platforms</Cite> The nucleus lite
-            packages name Ubuntu 24.04, the release JetPack 7.2.2 is built on, and no Jetson.{' '}
-            <Cite id="F07-142">aws-greengrass-lite v2.7.0, package readme</Cite>
+            That bound is a minimum, and the figure to plan with is a timed call. For the smallest board there is
+            none to borrow: NVIDIA&apos;s table says &quot;Jetson Orin&quot; without naming the module, and the
+            SmolVLA paper and LeRobot&apos;s guides give no latency on a Jetson Orin Nano for SmolVLA or ACT, two
+            policies LeRobot ships. On the smallest board the figure that counts is the one you measure.{' '}
+            <Cite id="F07-5">Isaac-GR00T deployment README, benchmark table</Cite>{' '}
+            <Cite id="F07-117">SmolVLA paper and LeRobot v0.7.0 guides, searched for a latency figure</Cite>
           </Box>
           <Box variant="p">
-            <strong>What a component is.</strong> Everything the nucleus runs is a component: a recipe, which is a
-            JSON or YAML file that defines its &quot;details, dependencies, artifacts, and lifecycles&quot;, plus
-            its artifacts, the files it needs.{' '}
+            No single spec predicts that call, so buy on measured calls. NVIDIA&apos;s Thor page claims 7.5 times
+            the performance of the AGX Orin, and the Thor&apos;s memory bandwidth is 273 / 204.8 ={' '}
+            <Derived>1.33</Derived> times the AGX Orin 64GB&apos;s. A third-party paper measured GR00T N1.7 at 209.9
+            ms on an AGX Orin and 101.1 ms on an AGX Thor, <Derived>2.08</Derived> times, with an older software
+            stack, and NVIDIA&apos;s own table gives 1.94 times for its unnamed Orin: far below the peak claim, and
+            above the bandwidth ratio. The DGX Spark has the Thor&apos;s 128 GB at 273 GB/s and is still slower on
+            this policy, 116.6 ms against 76.8 ms compiled in the same table, which gives no reason; served from the
+            desk it also pays the network, 6.89 ms to 21.20 ms in the measured chain.{' '}
+            <Cite id="F07-39">NVIDIA Jetson Thor page, specifications</Cite>{' '}
+            <Cite id="F07-35">NVIDIA Jetson Orin page, specifications</Cite>{' '}
+            <Cite id="F07-73">Perturbation Informed Execution paper, table 6</Cite>{' '}
+            <Cite id="F07-5">Isaac-GR00T deployment README, benchmark table</Cite>{' '}
+            <Cite id="F07-6">Isaac-GR00T deployment README, benchmark table</Cite>{' '}
+            <Cite id="F07-47">DGX Spark User Guide, hardware overview</Cite>{' '}
+            <Cite id="F07-68">Real-time chunking paper, appendix A.3, table 2</Cite>
+          </Box>
+          <Box variant="p">
+            The GPU generation decides which savings a board can take. The Thor runs NVFP4 natively and is the only
+            device in the table with a quantised figure, 35.6 ms; an Orin has only the compiled 149.0 ms. The Thor can
+            also split its GPU into two isolated instances with MIG (Multi-Instance GPU) under JetPack 7.2, each with
+            its own compute, cache and memory bandwidth, so a latency-sensitive policy and a best-effort model on the
+            same board do not slow each other.{' '}
+            <Cite id="F07-4">Isaac-GR00T deployment README, Thor quantisation</Cite>{' '}
+            <Cite id="F07-58">Jetson AI Lab, GR00T N1.7 on Thor tutorial</Cite>{' '}
+            <Cite id="F07-5">Isaac-GR00T deployment README, benchmark table</Cite>{' '}
+            <Cite id="F07-46">NVIDIA JetPack 7.2 blog, MIG</Cite>
+          </Box>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 600 }}>
+              <thead>
+                <tr>
+                  <th style={TH}>Device</th>
+                  <th style={TH}>Memory shared by CPU and GPU</th>
+                  <th style={TH}>Power</th>
+                  <th style={TH}>One compiled GR00T N1.7 call, NVIDIA&apos;s median</th>
+                  <th style={TH}>Source</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style={TD}>Jetson Orin Nano Super Developer Kit</td>
+                  <td style={TD}>8 GB at 102 GB/s</td>
+                  <td style={TD}>7 W to 25 W</td>
+                  <td style={TD}>Not published</td>
+                  <td style={TD}>
+                    <Cite id="F07-36">NVIDIA Jetson Orin Nano Super Developer Kit page</Cite>{' '}
+                    <Cite id="F07-117">SmolVLA paper and LeRobot v0.7.0 guides, searched for a latency figure</Cite>
+                  </td>
+                </tr>
+                <tr>
+                  <td style={TD}>Jetson AGX Orin 64GB</td>
+                  <td style={TD}>64 GB at 204.8 GB/s</td>
+                  <td style={TD}>15 W to 60 W</td>
+                  <td style={TD}>149.0 ms is labelled only &quot;Jetson Orin&quot;</td>
+                  <td style={TD}>
+                    <Cite id="F07-35">NVIDIA Jetson Orin page, specifications</Cite>{' '}
+                    <Cite id="F07-5">Isaac-GR00T deployment README, benchmark table</Cite>
+                  </td>
+                </tr>
+                <tr>
+                  <td style={TD}>Jetson AGX Thor Developer Kit (T5000 module)</td>
+                  <td style={TD}>128 GB at 273 GB/s</td>
+                  <td style={TD}>40 W to 130 W</td>
+                  <td style={TD}>76.8 ms; 35.6 ms with mixed NVFP4</td>
+                  <td style={TD}>
+                    <Cite id="F07-39">NVIDIA Jetson Thor page, specifications</Cite>{' '}
+                    <Cite id="F07-4">Isaac-GR00T deployment README, Thor quantisation</Cite>
+                  </td>
+                </tr>
+                <tr>
+                  <td style={TD}>DGX Spark (desk-side)</td>
+                  <td style={TD}>128 GB at 273 GB/s</td>
+                  <td style={TD}>240 W power supply; the chip&apos;s budget is 140 W</td>
+                  <td style={TD}>116.6 ms</td>
+                  <td style={TD}>
+                    <Cite id="F07-47">DGX Spark User Guide, hardware overview</Cite>{' '}
+                    <Cite id="F07-6">Isaac-GR00T deployment README, benchmark table</Cite>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <Box variant="p">
+            The software splits once, before you flash anything. JetPack 7.2.2, NVIDIA&apos;s bundle of Linux, GPU
+            drivers and libraries, is built on Ubuntu 24.04 and covers both Jetson families,
+            and NVIDIA&apos;s GR00T guide no longer supports JetPack 6. LeRobot&apos;s Jetson Dockerfile targets
+            JetPack 6.2 and is community-maintained, so an Orin owner picks the stack by the software to run:
+            JetPack 7.2 for NVIDIA&apos;s GR00T path, JetPack 6.2 for LeRobot&apos;s container. On a DGX Spark the
+            GR00T guide uses a separate dependency stack, with TensorRT pinned to 10.16.1.11.{' '}
+            <Cite id="F07-44">NVIDIA JetPack downloads page</Cite>{' '}
+            <Cite id="F07-9">Isaac-GR00T deployment README, platform setup</Cite>{' '}
+            <Cite id="F07-34">LeRobot installation guide, Jetson note</Cite>
+          </Box>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Wrap the policy container in a recipe for AWS IoT Greengrass, AWS's agent for running software on devices, add the GPU, device and credential flags AWS's recipes leave out, and check what the agent costs beside the policy"
+          >
+            The deployment agent reaches the GPU only through flags you add
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            The policy is one program on the robot computer, and something has to install it, restart it when it
+            dies, give it credentials and replace it next month. On AWS that is AWS IoT Greengrass, an open source
+            edge runtime in two halves: software on the device, called the nucleus, and a cloud service that tells
+            it what to run. Copied as AWS documents it, a Greengrass recipe starts the policy container with no
+            access to the GPU, the camera or the servo bus, and each of the three reaches the policy only through
+            flags you add.{' '}
+            <Cite id="F07-120">AWS IoT Greengrass developer guide, What is AWS IoT Greengrass?</Cite>{' '}
+            <Cite id="F07-133">Greengrass developer guide, How AWS IoT Greengrass works</Cite>{' '}
+            <Cite id="F07-156">Greengrass developer guide, Run a Docker container, all recipes</Cite>
+          </Box>
+          <Box variant="p">
+            Everything the nucleus runs is a component: a recipe, a JSON or YAML file that defines its &quot;details,
+            dependencies, artifacts, and lifecycles&quot;, plus its artifacts, the files it needs. The lifecycle holds
+            the commands to install, start and stop it. A policy with its engines and libraries ships most easily as
+            a container image. AWS&apos;s recipe for one depends on the Docker application manager, which pulls the
+            image from Amazon ECR (Elastic Container Registry, AWS&apos;s image store), and on the token exchange
+            service, which hands out temporary AWS credentials; it lists the image as an artifact and starts it with a plain <code>docker run</code>.{' '}
             <Cite id="F07-122">Greengrass developer guide, Greengrass component</Cite>{' '}
-            <Cite id="F07-151">Greengrass developer guide, component recipe reference</Cite> The lifecycle holds the
-            commands: what to run to install, to start and to stop.
-          </Box>
-          <Box variant="p">
-            <strong>The policy as a container component.</strong> A policy with its engines and libraries ships most
-            easily as a container image, and AWS documents a recipe for that. It depends on two AWS components: the
-            Docker application manager, which pulls the image (here from Amazon Elastic Container Registry, ECR),
-            and the token exchange service. The image is listed as an artifact, and the lifecycle is a plain{' '}
-            <code>docker run</code>.{' '}
+            <Cite id="F07-151">Greengrass developer guide, component recipe reference</Cite>{' '}
             <Cite id="F07-153">Greengrass developer guide, Run a Docker container</Cite>
           </Box>
           <Snippet
@@ -914,65 +1276,72 @@ export function OnRobot() {
             {RECIPE}
           </Snippet>
           <Box variant="p">
-            Pin the image by tag or digest. Without one, each device pulls whatever is latest on the day it deploys.
-            Docker has to be installed and running first.{' '}
-            <Cite id="F07-154">Greengrass developer guide, Docker application manager requirements</Cite>
-          </Box>
-          <Box variant="p">
-            <strong>GPU access.</strong> AWS&apos;s documentation shows no GPU flag. None of the four recipes on its
-            &quot;Run a Docker container&quot; page passes a GPU or device flag.{' '}
-            <Cite id="F07-156">Greengrass developer guide, Run a Docker container, all recipes</Cite> The lifecycle
-            script is a shell line, so GPU access is whatever <code>docker run</code> arguments you write into the
-            recipe. Two AWS sample repositories, which are samples and were not run in this research, start a Jetson
-            container with <code>docker run --runtime nvidia</code>.{' '}
+            Pin the image by tag or digest: without one, each device pulls whatever is latest on the day it deploys.
+            The <code>Run</code> line is a shell command, and none of
+            the four recipes on AWS&apos;s &quot;Run a Docker container&quot; page passes a GPU or device flag, so
+            the policy&apos;s <code>docker run</code> line needs three kinds that you add. For the GPU, two AWS
+            sample repositories pass <code>--runtime nvidia</code> on a Jetson, and NVIDIA&apos;s command for its
+            GR00T container on Jetson and DGX Spark passes <code>--runtime nvidia --gpus all</code>; the samples give
+            no flags for a DGX Spark. For the camera and the servo bus the line would need Docker&apos;s{' '}
+            <code>--device</code> flag, for example <code>--device /dev/video0</code> and{' '}
+            <code>--device /dev/ttyACM0</code>, which no AWS page shows.{' '}
+            <Cite id="F07-154">Greengrass developer guide, Docker application manager requirements</Cite>{' '}
+            <Cite id="F07-156">Greengrass developer guide, Run a Docker container, all recipes</Cite>{' '}
             <Cite id="F07-157">AWS samples: genai-at-edge recipe and the Physical AI Toolchain edge stack</Cite>{' '}
-            NVIDIA&apos;s own command for its GR00T container on Jetson and DGX Spark passes{' '}
-            <code>--runtime nvidia --gpus all</code>.{' '}
-            <Cite id="F07-11">Isaac-GR00T deployment README, shared Docker workflow</Cite> Neither source says which
-            flags a Greengrass recipe needs on a DGX Spark. In our reading, the camera and the servo bus reach the
-            container the same way, through standard Docker device flags that no AWS page read for this dive shows.
+            <Cite id="F07-11">Isaac-GR00T deployment README, shared Docker workflow</Cite>
           </Box>
           <Figure
             cites="F07-44 F07-120 F07-122 F07-148 F07-153 F07-156"
             caption={
               <>
                 Read from the top: the cloud service names the components, the nucleus installs and starts them, and
-                the policy component starts the container that holds the control loop. The layout is our reading of
-                the documents; it has not been run on a device.
+                the policy component starts the container that holds the control loop. The GPU, camera and servo bus
+                at the bottom reach the container only through flags in its <code>docker run</code> line. The layout
+                is a plan built from AWS&apos;s and NVIDIA&apos;s documents.
               </>
             }
           >
             <DeviceStack />
           </Figure>
           <Box variant="p">
-            <strong>Credentials.</strong> A component that calls AWS, to read weights from Amazon S3 for instance,
-            needs credentials, and a robot should not carry a long-lived access key. The token exchange service
-            (TES) is a local server on the device that meets this need. The device proves its identity with its
-            X.509 certificate, the identity file issued when it was registered, and receives temporary credentials
-            for one IAM (Identity and Access Management) role. They are held in memory and expire after an hour by
-            default, and AWS SDKs find TES through an environment variable.{' '}
+            The third kind of flag carries credentials. A component that calls AWS, to read weights from Amazon S3
+            for instance, needs them, and a robot should not carry a long-lived access key. The token exchange
+            service (TES) is a local server on the device that meets this need: the device proves its identity with
+            its X.509 certificate, the identity file issued when it was registered, and receives temporary
+            credentials for one IAM (Identity and Access Management) role, held in memory and expiring after an hour
+            by default. A container does not inherit them. Its <code>docker run</code> line needs{' '}
+            <code>--network=host</code> and the variables <code>AWS_CONTAINER_CREDENTIALS_FULL_URI</code> and{' '}
+            <code>AWS_CONTAINER_AUTHORIZATION_TOKEN</code> passed with <code>-e</code>, and AWS notes that host
+            networking is less secure. Put together, the <code>Run</code> line carries all three kinds of flag.{' '}
             <Cite id="F07-148">Greengrass developer guide, Interact with AWS services; Token exchange service</Cite>{' '}
-            A container does not inherit this. It needs <code>--network=host</code> and two environment variables
-            passed in, and AWS notes that host networking is less secure.{' '}
             <Cite id="F07-150">Greengrass developer guide, AWS credentials in Docker container components</Cite>
           </Box>
+          <Snippet
+            title="The policy's Run line with all three kinds of flag (assembled, not yet run on a device)"
+            mode="adapted"
+            source={<Cite id="F07-150">Greengrass developer guide, AWS credentials in Docker container components</Cite>}
+            ours={<>the GPU flag from AWS&apos;s Jetson samples, the two device paths and the image name</>}
+          >
+            {RUN_LINE}
+          </Snippet>
           <Box variant="p">
-            No first-party sample from 2025 or 2026 that runs a GPU policy container on a Jetson under Greengrass
-            was located in this research, so the first run is yours to do.{' '}
-            <Cite id="F07-199">Search of AWS posts and sample repositories</Cite> In order:
+            Beside the policy the agent is small on paper. The Java nucleus (v2.18.4) has every feature, needs a Java
+            runtime and documents minimums of 256 MB of disk and 96 MB of RAM. Nucleus lite (v2.7.0) is a set of
+            small C programs that gives up some features, the Greengrass command-line tool on the device among them,
+            and AWS measured its v2.5.0 packages on a Raspberry Pi 4 at 14.6 MB of memory idle and 15.8 MB with six
+            small components running. Against the 8 GB of the smallest Jetson those are about{' '}
+            <Derived>1</Derived>% and <Derived>0.2</Derived>%. Whether either installs on JetPack is yours to test:
+            for the Java nucleus AWS lists 64-bit Arm Linux without naming a distribution, and the nucleus lite
+            packages target Ubuntu 24.04, the release JetPack 7.2.2 is built on, without naming a Jetson. Section 18,
+            The Fleet, takes this component from one robot to many.{' '}
+            <Cite id="F07-84">Greengrass developer guide, Greengrass nucleus requirements</Cite>{' '}
+            <Cite id="F07-135">Greengrass developer guide, feature compatibility</Cite>{' '}
+            <Cite id="F07-138">aws-greengrass-lite v2.7.0, RESOURCE_LIMITS.md</Cite>{' '}
+            <Cite id="F07-36">NVIDIA Jetson Orin Nano Super Developer Kit page</Cite>{' '}
+            <Cite id="F07-140">Greengrass developer guide, nucleus supported platforms</Cite>{' '}
+            <Cite id="F07-142">aws-greengrass-lite v2.7.0, package readme</Cite>{' '}
+            <Cite id="F07-44">NVIDIA JetPack downloads page</Cite>
           </Box>
-          <ol style={LIST}>
-            <li>
-              Time one policy call on your device with your cameras and step count, and divide by the control period.
-              NVIDIA&apos;s 149.0 ms on Jetson Orin is 4.5 periods; yours will differ.
-            </li>
-            <li>Check the turnaround against half the chunk&apos;s duration before tuning anything else.</li>
-            <li>Build the engines on the device that will run them, and rebuild after a JetPack update.</li>
-            <li>
-              Install a nucleus, wrap the policy container in a recipe, and write its GPU and device flags yourself.
-            </li>
-          </ol>
-          <Box variant="p">Section 18, The Fleet, takes the same component from one device to many.</Box>
           <Placeholder
             what={
               <>
@@ -984,6 +1353,105 @@ export function OnRobot() {
             }
             source={<>our own hook-up of the two machines to AWS IoT, which has not been done yet. Nothing in this block was run on a device.</>}
           />
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Match what the arm does to its cause and the setting that moves it, then measure your worst call before you buy a faster board"
+          >
+            How a late policy shows at the bench
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            The software will not stop a policy that is merely slow. Local RTC&apos;s default budgets let an
+            observation be 5 s old by the time its actions run, <Derived>1.25</Derived> m of travel at the
+            illustrative 0.25 m/s, and a request stay outstanding for 10 s, which the documentation calls &quot;starting values, not measured hardware guarantees&quot;. When the queue does run
+            dry, a robot that supports it holds its last target for <code>action_starvation_grace_s</code>, 1 second
+            by default, and then the run faults; on a robot that does not, the run faults at once.{' '}
+            <Cite id="F07-21">LeRobot inference guide, local RTC budgets</Cite>{' '}
+            <Cite id="F07-20">LeRobot inference guide, real-time chunking</Cite>{' '}
+            <Cite id="F01-83" kind="derived">
+              speed times delay
+            </Cite>
+          </Box>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 600 }}>
+              <thead>
+                <tr>
+                  <th style={TH}>What you would see</th>
+                  <th style={TH}>What causes it</th>
+                  <th style={TH}>What to change</th>
+                  <th style={TH}>Source</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style={TD}>The arm stops each time a chunk runs out, then moves on</td>
+                  <td style={TD}>Synchronous rollout, LeRobot&apos;s default: the loop waits for every call</td>
+                  <td style={TD}>Switch to RTC or remote inference</td>
+                  <td style={TD}>
+                    <Cite id="F01-87">LeRobot remote inference guide and inference guide</Cite>{' '}
+                    <Cite id="F07-62">Real-time chunking paper, section 2</Cite>
+                  </td>
+                </tr>
+                <tr>
+                  <td style={TD}>A jerk or a sudden change of route each time a new chunk takes over</td>
+                  <td style={TD}>Asynchronous chunks joined with no guidance; the new one was planned from an older frame</td>
+                  <td style={TD}>Turn RTC on; its guided mode needs no retraining</td>
+                  <td style={TD}>
+                    <Cite id="F07-12">LeRobot real-time chunking guide</Cite>{' '}
+                    <Cite id="F07-64">Real-time chunking paper, section 2 and figure 2</Cite>{' '}
+                    <Cite id="F07-17">LeRobot real-time chunking guide, modes</Cite>
+                  </td>
+                </tr>
+                <tr>
+                  <td style={TD}>The arm holds its last target for up to 1 s, then the run faults</td>
+                  <td style={TD}>The queue ran dry: the call takes more than about half the chunk</td>
+                  <td style={TD}>A shorter call, a longer chunk or another action rate; no refill value fixes it</td>
+                  <td style={TD}>
+                    <Cite id="F07-20">LeRobot inference guide, real-time chunking</Cite>{' '}
+                    <Cite id="F07-22">LeRobot remote inference guide, tuning</Cite>
+                  </td>
+                </tr>
+                <tr>
+                  <td style={TD}>Oscillation that triggers the robot&apos;s protective stop</td>
+                  <td style={TD}>Temporal ensembling with 100 ms or 200 ms of added delay</td>
+                  <td style={TD}>Use RTC instead</td>
+                  <td style={TD}>
+                    <Cite id="F07-69">Real-time chunking paper, section 4.2</Cite>
+                  </td>
+                </tr>
+                <tr>
+                  <td style={TD}>The engine refuses to load: it &quot;will fail to deserialize&quot;</td>
+                  <td style={TD}>Built on another GPU type or with another TensorRT version</td>
+                  <td style={TD}>Build on the device that runs it, and again after a JetPack update</td>
+                  <td style={TD}>
+                    <Cite id="F07-79">TensorRT documentation, compatibility checks and support matrix</Cite>{' '}
+                    <Cite id="F07-8">Isaac-GR00T deployment README, build notes</Cite>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <Box variant="p">
+            Before you change a board or a setting, run your policy on the computer you have with LeRobot&apos;s
+            cadence report. Each line gives a stage&apos;s mean, its worst call and its share of the loop&apos;s
+            work. Count the worst inference time in ticks and hold it against half your chunk: NVIDIA&apos;s compiled
+            Orin median, 4.5 ticks against the <Derived>20</Derived> that half a 40-tick chunk allows, leaves room
+            for a worst call about four times longer, and your own worst call says whether asynchronous chunks carry
+            the arm or the call itself has to shrink. A high infer share points at the policy or the device, a high
+            observe share at the cameras, and pacing headroom near zero &quot;means there is nothing left to absorb
+            a slow tick&quot;.{' '}
+            <Cite id="F07-23">LeRobot inference guide, cadence reporting</Cite>{' '}
+            <Cite id="F07-24">LeRobot inference guide, reading the cadence report</Cite>{' '}
+            <Cite id="F07-5">Isaac-GR00T deployment README, benchmark table</Cite>{' '}
+            <Cite id="F07-2">Isaac-GR00T deployment README, benchmark conditions</Cite>
+          </Box>
         </SpaceBetween>
       </Container>
     </SpaceBetween>

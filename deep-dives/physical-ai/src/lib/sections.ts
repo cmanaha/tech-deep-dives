@@ -16,7 +16,7 @@ export const sections = [
   { id: 'sim-to-real', title: '14. Sim-to-Real and Real-to-Sim: Widen the Simulator or Measure the Arm' },
   { id: 'training-scales', title: '15. Training at Three Scales: One GPU, One Node, Many Nodes' },
   { id: 'evaluation', title: '16. Evaluation: Counting Successes, and How Many Trials It Takes' },
-  { id: 'on-robot', title: '17. Running on the Robot: Fitting a Policy Inside the Control Period' },
+  { id: 'on-robot', title: '17. Running on the Robot: Driving the Arm With a Policy Slower Than Its Clock' },
   { id: 'fleet', title: '18. The Fleet: Policies Out, Episodes Back' },
   { id: 'agents', title: '19. Agents Running the Loop: What the Agent May Touch and Who Grades It' },
   { id: 'workloads', title: '20. Fifteen Workloads, Five Shapes' },
