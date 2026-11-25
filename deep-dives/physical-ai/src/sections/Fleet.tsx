@@ -661,7 +661,7 @@ export function Fleet() {
             variant="h1"
             description="Know how a new policy reaches a hundred robots safely and how their episodes come back: one component may carry 2 GB of artifacts, a policy weighs about 6 GB, and a rollout has a brake and no reverse gear (AWS IoT Greengrass nucleus v2.18.4 and AWS documentation, read 2026-11-20)"
           >
-            18. The Fleet
+            18. The Fleet: Policies Out, Episodes Back
           </Header>
         }
       >

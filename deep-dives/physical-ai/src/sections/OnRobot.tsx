@@ -526,7 +526,7 @@ export function OnRobot() {
             variant="h1"
             description="Fit a policy inside a latency budget on a named device, and know what else runs beside it (NVIDIA's Isaac-GR00T and TensorRT documentation, LeRobot v0.7.0 and the AWS IoT Greengrass guide, read 2026-11-20)"
           >
-            17. Running on the Robot
+            17. Running on the Robot: Fitting a Policy Inside the Control Period
           </Header>
         }
       >

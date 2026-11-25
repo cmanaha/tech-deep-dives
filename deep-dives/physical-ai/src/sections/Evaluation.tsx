@@ -99,7 +99,7 @@ export function Evaluation() {
             variant="h1"
             description="Know why a falling loss does not mean a working robot, and the three ways to measure what does (LeRobot v0.7.0, sources read 2026-11-20)"
           >
-            16. Evaluation
+            16. Evaluation: Counting Successes, and How Many Trials It Takes
           </Header>
         }
       >

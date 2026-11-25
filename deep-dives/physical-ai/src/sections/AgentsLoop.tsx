@@ -289,7 +289,7 @@ export function AgentsLoop() {
             variant="h1"
             description="Know what changes when a coding agent launches the experiments in an engineer's place: what it may touch, who grades it and which limits to set from outside (ENPIRE paper v2 and repository, AWS documentation, read 2026-11-20)"
           >
-            19. Agents Running the Loop
+            19. Agents Running the Loop: What the Agent May Touch and Who Grades It
           </Header>
         }
       >

@@ -173,7 +173,7 @@ export function TrainingScales() {
             variant="h1"
             description="Place any robot-model training job in one of three sizes and know what each asks of the cluster (papers, model cards, LeRobot v0.7.0 and AWS posts, read 2026-11-20)"
           >
-            15. Training at Three Scales
+            15. Training at Three Scales: One GPU, One Node, Many Nodes
           </Header>
         }
       >
