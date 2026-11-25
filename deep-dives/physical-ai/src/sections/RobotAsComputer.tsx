@@ -477,8 +477,8 @@ export function RobotAsComputer() {
           <Box variant="p">
             The leader&apos;s motors are switched off and it is only measured: the software reads the angle of each
             of its six joints and hands those six numbers to the follower as targets, many times a second.{' '}
-            <Cite id="F01-24">LeRobot so_leader.py, get_action()</Cite> A recording made this way is a
-            demonstration. What the person&apos;s hand asked for is stored as six target angles, so for a model
+            <Cite id="F01-24">LeRobot so_leader.py, get_action()</Cite> A recording made this way, a demonstration, stores what the person&apos;s hand asked for as six target
+            angles, so for a model
             that outputs joint targets, LeRobot&apos;s default, a demonstration needs no conversion before
             training (section 4, Learning From Demonstrations).{' '}
             <Cite id="F01-53">LeRobot action representations guide, joint and end-effector space</Cite>
@@ -520,7 +520,7 @@ export function RobotAsComputer() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Everything the robot knows at one instant is called an observation. On the {ARM} it has two halves that
+            An observation is everything the robot knows at one instant, and on the {ARM} it has two halves that
             answer different questions: the joints say where the arm is, and the cameras say where the block and
             the cup are.
           </Box>
@@ -531,13 +531,10 @@ export function RobotAsComputer() {
             <Cite id="F01-8">LeRobot so_follower.py, motor list</Cite>{' '}
             <Cite id="F01-44">Feetech STS3215 specification, command signal</Cite> The angle sensor is an encoder:
             it reports the joint&apos;s angle as a whole number of steps, 4096 per full turn on this arm.{' '}
-            <Cite id="F01-11">rustypot sts3215.rs, resolution</Cite> Reading all six gives the arm&apos;s pose. A
-            robot&apos;s sense of its own body is called proprioception, and on this arm proprioception is those
-            six angles.
+            <Cite id="F01-11">rustypot sts3215.rs, resolution</Cite> Reading all six gives the arm&apos;s pose.
           </Box>
           <Box variant="p">
-            Five of the joints place and orient the gripper (shoulder pan, shoulder lift, elbow flex, wrist flex,
-            wrist roll) and the sixth servo opens and closes it. Each joint that moves independently is one degree
+            Five of the joints place and orient the gripper and the sixth servo opens and closes it. Each joint that moves independently is one degree
             of freedom (DoF), one number needed to say where the mechanism is, so this is a five-DoF arm plus a
             gripper.{' '}
             <Cite id="F01-8">LeRobot so_follower.py, motor list</Cite>{' '}
@@ -618,10 +615,13 @@ export function RobotAsComputer() {
               />
               <Box variant="p">
                 The difference <M>{String.raw`\mathrm{raw} - \mathrm{mid}`}</M> is how many steps the joint is from
-                its centre, and the factor 360 / 4095 turns steps into degrees. As an illustration, a reading of <Toy>3072</Toy> with
+                its centre, and the factor 360 / 4095 turns steps into degrees. The code divides by 4095, the encoder resolution
+                minus one, where the datasheet gives the step as 360 / 4096. As an illustration, a reading of <Toy>3072</Toy> with
                 a midpoint of <Toy>2048</Toy> is <Toy>1024</Toy> steps from centre, and <Toy>1024</Toy> x 360 /
                 4095 = <Toy>90.02</Toy> degrees.{' '}
-                <Cite id="F01-18">LeRobot motors_bus.py, normalisation</Cite>
+                <Cite id="F01-18">LeRobot motors_bus.py, normalisation</Cite>{' '}
+                <Cite id="F01-43">Feetech STS3215 specification, electronic resolution</Cite>{' '}
+                <Cite id="F01-11">rustypot sts3215.rs, resolution</Cite>
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -655,8 +655,7 @@ export function RobotAsComputer() {
             pose at that instant and <code>observation.state</code> is the follower&apos;s measured pose just
             before, so the action leads and the state lags.{' '}
             <Cite id="F01-27">LeRobot lerobot_record.py, record_loop()</Cite> The gap between the two is the error
-            the servos are working to close. Later a trained model picks the action from the observation. That
-            model is called a policy.
+            the servos are working to close. Later a trained model, the policy, picks the action from the observation.
           </Box>
           <Box variant="p">
             Two choices fix what the numbers of an action mean, and every robot model makes both. The first is
@@ -671,8 +670,8 @@ export function RobotAsComputer() {
           </Box>
           <Box variant="p">
             The second choice is what each number is measured from. An absolute action is the target itself:
-            elbow to <Toy>40</Toy> degrees. A relative action is an offset from where the robot was when the policy
-            made its prediction: elbow 5 degrees further than now. (Both angles are made up.) A third form,
+            for example, elbow to <Toy>40</Toy> degrees. A relative action is an offset from where the robot was
+            when the policy made its prediction: elbow 5 degrees further than now. A third form,
             delta, measures each action from the previous one, so errors add up along the sequence. Absolute is
             LeRobot&apos;s default.{' '}
             <Cite id="F01-55">LeRobot action representations guide, absolute, relative and delta</Cite> Projects
@@ -704,7 +703,7 @@ export function RobotAsComputer() {
             <Cite id="F01-15">rustypot sts3215.rs, operating modes</Cite>
           </Box>
           <Box variant="p">
-            The controller is tuned by numbers called gains. The servo uses the PID (proportional-integral-derivative)
+            Three numbers, the gains, tune the controller. The servo uses the PID (proportional-integral-derivative)
             design, a controller that sets the motor drive from three views of the error: its size now, its sum
             over time, and how fast it is changing. Write <M>e_t</M> for the error on pass{' '}
             <M>t</M> of the controller, the goal angle minus the measured angle, and <M>P</M>, <M>I</M> and{' '}
@@ -799,7 +798,7 @@ export function RobotAsComputer() {
             cites="F01-28 F01-81"
             caption={
               <>
-                Step through from the bottom lane up. Each loop keeps the one beneath it supplied: the servo with a
+                Each loop keeps the one beneath it supplied: the servo with a
                 goal, the host with a chunk. The curves in the bottom lane are illustrative, not measured.
               </>
             }
@@ -810,8 +809,7 @@ export function RobotAsComputer() {
             The pattern is general: a slower loop on top plans and a faster, simpler loop underneath tracks.
             Robotics calls the first a planner and the second a controller, and larger robots stack more of them.
             NVIDIA&apos;s research page for its GR00T 2 model describes four on a Unitree G1, a humanoid (a robot
-            with two legs and two arms), and each has a counterpart on the {ARM}. The table lists them from the
-            fastest loop to the slowest.
+            with two legs and two arms), and each has a counterpart on the {ARM}.
           </Box>
           <div style={{ overflowX: 'auto' }}>
             <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 560 }}>
@@ -868,20 +866,17 @@ export function RobotAsComputer() {
             </table>
           </div>
           <Box variant="p">
-            Each row runs slower than the row before it and decides more: hold an angle, issue the next target,
+            From the joint loop to the planner, each rung runs slower and decides more: hold an angle, issue the next target,
             plan a second or so of motion, choose the task. On the humanoid only the slowest of the four leaves the
             robot: everything but the reasoning model runs onboard, by NVIDIA&apos;s account.{' '}
             <Cite id="F01-73">NVIDIA GR00T 2 research page</Cite>
           </Box>
-          <ExpandableSection headerText="A second published ladder: Figure's Helix 02">
-            <Box variant="p">
-              The last control rates Figure published are for its Helix 02 humanoid model, on 2026-01-27, and they
-              describe three layers: a slow reasoning layer, a layer producing full-body joint targets at 200 Hz,
-              and beneath them a 10-million-parameter network that outputs joint-level commands at 1 kHz. Its newer
-              Helix 2.5, posted 2026-09-17, states none.{' '}
-              <Cite id="F01-72">Figure, Helix 02 post</Cite>
-            </Box>
-          </ExpandableSection>
+          <Box variant="p">
+            Figure&apos;s last published rates, for its Helix 02 humanoid model on 2026-01-27, have the same shape:
+            joint-level commands at 1 kHz from a 10-million-parameter network, under full-body joint targets at 200
+            Hz, under a slow reasoning layer. Its newer Helix 2.5, posted 2026-09-17, states none.{' '}
+            <Cite id="F01-72">Figure, Helix 02 post</Cite>
+          </Box>
         </SpaceBetween>
       </Container>
 
@@ -904,8 +899,7 @@ export function RobotAsComputer() {
             latency figure for a robot is half a number until a speed stands beside it.
           </Box>
           <Box variant="p">
-            Take the {ARM} carrying the block toward the cup at 0.25 m/s, a modest working pace chosen for the
-            arithmetic; no one measured it.
+            Take the {ARM} carrying the block toward the cup at an illustrative 0.25 m/s, a modest working pace.
           </Box>
           <ul style={LIST}>
             <li>One tick of delay, 33.3 ms: 0.25 m/s x 0.0333 s = 8.3 mm.</li>
@@ -934,10 +928,9 @@ export function RobotAsComputer() {
           <Box variant="p">
             The line has a ceiling. Feetech&apos;s datasheet lists a no-load speed of 42 RPM at 6 V for the
             follower&apos;s servo.{' '}
-            <Cite id="F01-42">Feetech STS3215 specification, section 5</Cite> By our arithmetic, one joint swinging
-            the fully stretched arm, 0.413 m long, at that speed moves the gripper at about 1.82 m/s at most. The
-            arm&apos;s own weight and the kit&apos;s stock 5 V supply both lower that, and it has not been
-            measured. At that ceiling a tenth of a second would be 182 mm.{' '}
+            <Cite id="F01-42">Feetech STS3215 specification, section 5</Cite> One joint swinging the fully stretched arm, 0.413 m long, at that speed moves the gripper at about 1.82
+            m/s at most, a ceiling that the arm&apos;s own weight and the kit&apos;s stock 5 V supply both lower by
+            an unmeasured amount. At that ceiling a tenth of a second would be 182 mm.{' '}
             <Cite id="F01-82" kind="derived">
               datasheet speed times arm length
             </Cite>{' '}
@@ -961,8 +954,7 @@ export function RobotAsComputer() {
           </Box>
           <Box variant="p">
             Run the formula backwards and it gives a budget. Decide how far off the gripper may be, divide by its
-            speed, and the result is the delay the whole chain from camera to servo may take. If the block must
-            arrive within 10 mm of the centre of the cup (a made-up tolerance), then at 0.25 m/s the budget is{' '}
+            speed, and the result is the delay the whole chain from camera to servo may take. Say the block must arrive within 10 mm of the centre of the cup. At 0.25 m/s the budget is{' '}
             <Toy>0.010</Toy> m / 0.25 m/s = <Derived>0.040</Derived> s, or <Derived>40</Derived> ms: barely more
             than one tick.
           </Box>
@@ -977,11 +969,11 @@ export function RobotAsComputer() {
             <M>{String.raw`d_{\max}`}</M> the error the task can absorb:
           </Box>
           <Formula
-            name="Control-latency budget (our accounting)"
+            name="Control-latency budget"
             tex={String.raw`\begin{aligned} \tau &= \tau_{\text{sense}} + \tau_{\text{infer}} \\ &\quad + \tau_{\text{comm}} + \tau_{\text{act}} \\ v\,\tau &\le d_{\max}, \qquad n = \tau / T \end{aligned}`}
             source={
               <>
-                our accounting, built on{' '}
+                built on{' '}
                 <Cite id="F01-83" kind="derived">
                   speed times delay
                 </Cite>
@@ -1003,8 +995,9 @@ export function RobotAsComputer() {
             <Cite id="F01-28">LeRobot dataset.py, record defaults</Cite>
           </Box>
           <Box variant="p">
-            Take the longest value of the two waits, NVIDIA&apos;s median for the call, and the model on the Thor
-            beside the arm, so no network: 33.3 + 76.8 + 0 + 33.3 = <Derived>143.4</Derived> ms, which is <Derived>4.3</Derived> ticks, and at 0.25 m/s
+            Put the model on the Thor beside the arm and take each wait at its longest: a frame 33.3 ms old,
+            NVIDIA&apos;s median call of 76.8 ms, no network, and a full tick of 33.3 ms before the write. 33.3 +
+            76.8 + 0 + 33.3 = <Derived>143.4</Derived> ms, which is <Derived>4.3</Derived> ticks, and at 0.25 m/s
             the gripper travels <Derived>35.9</Derived> mm on old information. Against the <Derived>40</Derived> ms
             budget that is more than three times over, and inference is the largest term. It is also the term a
             runtime choice moves: that median is with the model compiled by TensorRT, NVIDIA&apos;s inference
@@ -1017,8 +1010,7 @@ export function RobotAsComputer() {
             <Cite id="F01-85">LeRobot cameras guide, frame access modes</Cite>
           </Box>
           <Box variant="p">
-            The sum is not the whole chain. It takes the longest value of the two waits, which overstates a typical
-            tick, and NVIDIA&apos;s median call, which understates a slow one. It also leaves out camera exposure,
+            The sum is not the whole chain. It takes the frame age and the write wait at their longest, which overstates a typical tick, and NVIDIA&apos;s median call, which understates a slow one. It also leaves out camera exposure,
             transfer and decoding, the time on the serial bus and the servo&apos;s own response. Each of those
             adds delay, and the sources read on 2026-11-20 give a figure for none of them. A chain slower than its budget leaves two moves: slow the arm, or shorten the chain.
           </Box>
@@ -1123,8 +1115,7 @@ export function RobotAsComputer() {
             actions, spans a median of 22.9 ms on an H100 data-centre GPU to 149.0 ms on a Jetson Orin, which at 30
             Hz is 1 to 5 control ticks per call.{' '}
             <Cite id="F01-74">Isaac-GR00T deployment README, benchmark results</Cite> Every hop between the arm
-            and that GPU adds to the delay. The policy is the model-serving job that is sized by a deadline; the
-            training-side jobs are sized by throughput.
+            and that GPU adds to the delay. The policy on the arm is sized by a deadline, where the jobs that train it are sized by throughput.
           </Box>
           <Box variant="p">
             Check your own loop first. LeRobot&apos;s timing report has a pacing headroom line, the time the loop

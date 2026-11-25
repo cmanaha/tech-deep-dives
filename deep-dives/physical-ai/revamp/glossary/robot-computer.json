@@ -5,7 +5,6 @@
   {"term": "Host", "expansion": null, "meaning": "The laptop or small board the arm and cameras plug into by USB, which runs the control loop."},
   {"term": "Observation", "expansion": null, "meaning": "Everything the robot knows at one instant: on the SO-101, six joint angles plus one image per camera."},
   {"term": "Encoder", "expansion": null, "meaning": "A sensor on a joint that reports its angle as a whole number of steps, 4096 per turn on the SO-101."},
-  {"term": "Proprioception", "expansion": null, "meaning": "A robot's sense of its own body; on the SO-101 it is the six joint angles."},
   {"term": "Calibration", "expansion": null, "meaning": "Recording each joint's range once so that raw encoder steps map to the same scale on every arm."},
   {"term": "Action", "expansion": null, "meaning": "What the robot is told to do at one instant: on the SO-101, six target joint angles."},
   {"term": "Policy", "expansion": null, "meaning": "The trained model that picks the action from the observation."},
