@@ -1,7 +1,7 @@
 [
   {"term": "Bottleneck", "expansion": null, "meaning": "The part of a machine a job exhausts first, while the other parts sit partly idle."},
   {"term": "PMU", "expansion": "performance monitoring unit", "meaning": "The hardware counters inside a processor core, each of which counts one kind of event such as a clock cycle or a retired micro-operation."},
-  {"term": "PMU card", "expansion": null, "meaning": "One page of readings for one workload on one machine: throughput, where the CPU's slots went, what the GPU tools showed, and how it was counted."},
+  {"term": "PMU card", "expansion": null, "meaning": "One page of readings for one workload on one machine: throughput, where the CPU's slots went, what lies behind the largest loss, the GPU readings where a GPU does the work, and how it was all counted."},
   {"term": "perf", "expansion": null, "meaning": "The Linux tool that reads the processor's counters; perf stat runs a program and prints the totals."},
   {"term": "Micro-operation", "expansion": null, "meaning": "One of the smaller internal steps a core splits each program instruction into; Intel writes uOp."},
   {"term": "Instructions per cycle", "expansion": null, "meaning": "Finished instructions divided by clock cycles: how much a core got done per cycle, with nothing on why the rest of its capacity went unused."},
@@ -18,8 +18,8 @@
   {"term": "Bad speculation", "expansion": null, "meaning": "The share of slots that carried work thrown away after a wrong branch guess, plus, in the corrected formulas, slots lost while recovering from it."},
   {"term": "Front-end bound", "expansion": null, "meaning": "The share of slots left empty because the front end had no micro-operation ready."},
   {"term": "Back-end bound", "expansion": null, "meaning": "The share of slots left empty because the back end could not accept another micro-operation."},
-  {"term": "Memory bound", "expansion": null, "meaning": "The part of back-end bound in which the core is waiting for data to be loaded or stored; more memory bandwidth helps it."},
-  {"term": "Core bound", "expansion": null, "meaning": "The part of back-end bound in which execution units are busy or operations wait on each other's results; a faster or wider core helps it."},
+  {"term": "Memory bound", "expansion": null, "meaning": "The part of back-end bound in which the core is waiting for data to be loaded or stored; faster memory helps it: more bandwidth if the loads stream, lower latency if each load waits for the one before."},
+  {"term": "Core bound", "expansion": null, "meaning": "The part of back-end bound in which execution units are busy or operations wait on each other's results; a faster core helps it, and faster memory does not."},
   {"term": "Memory stall", "expansion": null, "meaning": "A separate counter's share of cycles in which the back end waited on memory."},
   {"term": "OP_SPEC, OP_RETIRED", "expansion": null, "meaning": "Arm events counting micro-operations dispatched through a slot (including those later thrown away) and micro-operations that retired."},
   {"term": "STALL_SLOT", "expansion": null, "meaning": "The Arm event counting empty slots; it is the sum of STALL_SLOT_FRONTEND and STALL_SLOT_BACKEND."},
@@ -34,7 +34,7 @@
   {"term": "Kernel (GPU)", "expansion": null, "meaning": "One function launched on the GPU, such as a matrix multiply; unrelated to the operating system's kernel."},
   {"term": "SM", "expansion": "streaming multiprocessor", "meaning": "The GPU's processing unit, repeated many times across the chip."},
   {"term": "Tensor cores", "expansion": null, "meaning": "Units inside each GPU multiprocessor with a pipeline of their own for matrix multiply-accumulate instructions, the arithmetic of training and inference."},
-  {"term": "RT cores", "expansion": "ray-tracing cores", "meaning": "The GPU units that find what each camera ray hits when an image is rendered; the tools read for this dive show no counter for them."},
+  {"term": "RT cores", "expansion": "ray-tracing cores", "meaning": "The GPU units that find what each camera ray hits when an image is rendered; no counter for them was located in the documentation of nvidia-smi, DCGM, tegrastats or Nsight Compute."},
   {"term": "nvidia-smi utilisation", "expansion": null, "meaning": "The percent of time in the sample period during which at least one kernel was running on the GPU; it says nothing about how much of the GPU the kernel used."},
   {"term": "tegrastats", "expansion": null, "meaning": "The Jetson's always-on monitor: GPU activation time, memory-controller bandwidth in use and power per rail."},
   {"term": "DCGM", "expansion": "Data Center GPU Manager", "meaning": "NVIDIA's fleet monitoring service, which adds SM activity, tensor activity and memory activity per GPU."},
@@ -45,5 +45,6 @@
   {"term": "Roofline chart", "expansion": null, "meaning": "A chart of a kernel's achieved speed against arithmetic per byte of memory moved, under a roof whose sloped part is the memory bandwidth limit and whose flat part is the peak compute limit."},
   {"term": "Level 2 (top-down)", "expansion": null, "meaning": "The second level of top-down analysis, which splits back-end bound into memory bound and core bound; Arm's files for the Neoverse V3, Cortex-X925 and Cortex-A725 define it with events of their own."},
   {"term": "GFLOP/s", "expansion": "billion floating-point operations per second", "meaning": "A rate of arithmetic; a matrix multiply of two n x n matrices does about 2 x n x n x n of them."},
-  {"term": "SIMT path", "expansion": null, "meaning": "The GPU's general floating-point path, as opposed to the tensor pipeline; a kernel whose name carries simt did its arithmetic there."}
+  {"term": "SIMT path", "expansion": null, "meaning": "The GPU's general floating-point path, as opposed to the tensor pipeline; a kernel whose name carries simt did its arithmetic there."},
+  {"term": "SpeedOfLight (Nsight Compute)", "expansion": null, "meaning": "The section of a kernel profile that reports compute and memory throughput; each figure is the highest percentage among the units behind it, each unit measured against its own peak."}
 ]
