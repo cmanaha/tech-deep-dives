@@ -3,6 +3,7 @@
   {"term": "PMU", "expansion": "performance monitoring unit", "meaning": "The hardware counters inside a processor core, each of which counts one kind of event such as a clock cycle or a retired micro-operation."},
   {"term": "PMU card", "expansion": null, "meaning": "One page of readings for one workload on one machine: throughput, where the CPU's slots went, what lies behind the largest loss, the GPU readings where a GPU does the work, and how it was all counted."},
   {"term": "perf", "expansion": null, "meaning": "The Linux tool that reads the processor's counters; perf stat runs a program and prints the totals."},
+  {"term": "Multiplexing (perf)", "expansion": null, "meaning": "What perf does when it cannot count every requested event at once: the events take turns, each count is scaled to the whole run, and perf reports the share of the measurement time each counter was running."},
   {"term": "Micro-operation", "expansion": null, "meaning": "One of the smaller internal steps a core splits each program instruction into; Intel writes uOp."},
   {"term": "Instructions per cycle", "expansion": null, "meaning": "Finished instructions divided by clock cycles: how much a core got done per cycle, with nothing on why the rest of its capacity went unused."},
   {"term": "Front end", "expansion": null, "meaning": "The part of a core that predicts the next instructions, fetches them and decodes them into micro-operations."},
@@ -44,7 +45,8 @@
   {"term": "Nsight Compute", "expansion": null, "meaning": "NVIDIA's profiler for one GPU kernel, reporting throughput against the GPU's maximum and a roofline chart."},
   {"term": "Roofline chart", "expansion": null, "meaning": "A chart of a kernel's achieved speed against arithmetic per byte of memory moved, under a roof whose sloped part is the memory bandwidth limit and whose flat part is the peak compute limit."},
   {"term": "Level 2 (top-down)", "expansion": null, "meaning": "The second level of top-down analysis, which splits back-end bound into memory bound and core bound; Arm's files for the Neoverse V3, Cortex-X925 and Cortex-A725 define it with events of their own."},
-  {"term": "GFLOP/s", "expansion": "billion floating-point operations per second", "meaning": "A rate of arithmetic; a matrix multiply of two n x n matrices does about 2 x n x n x n of them."},
   {"term": "SIMT path", "expansion": null, "meaning": "The GPU's general floating-point path, as opposed to the tensor pipeline; a kernel whose name carries simt did its arithmetic there."},
-  {"term": "SpeedOfLight (Nsight Compute)", "expansion": null, "meaning": "The section of a kernel profile that reports compute and memory throughput; each figure is the highest percentage among the units behind it, each unit measured against its own peak."}
+  {"term": "torch.set_float32_matmul_precision", "expansion": null, "meaning": "The PyTorch setting that decides whether a float32 matrix multiply may compute in a lower internal precision; \"highest\", the default, keeps float32, and \"high\" permits TensorFloat32."},
+  {"term": "TensorFloat32", "expansion": null, "meaning": "A number format that stores 10 mantissa bits where float32 stores 23; PyTorch may use it for a float32 matrix multiply when the precision setting is \"high\"."},
+  {"term": "SpeedOfLight (Nsight Compute)", "expansion": null, "meaning": "The section of a kernel profile that reports compute and memory throughput; each figure is the highest of the percentages its constituent counters report, so it need not be a share of the chip's peak arithmetic rate or memory bandwidth."}
 ]

@@ -19,7 +19,7 @@
  {"n":18,"id":"fleet","comp":"Fleet","title":"The Fleet: A 6 GB Policy, a 2 GB Package and No Reverse Gear"},
  {"n":19,"id":"agents","comp":"AgentsLoop","title":"Agents Running the Loop: What the Agent May Touch and Who Grades It"},
  {"n":20,"id":"workloads","comp":"Workloads","title":"Fifteen Workloads, Five Shapes"},
- {"n":21,"id":"pmu-cards","comp":"PmuCards","title":"Reading a Machine: The Counters That Say Which Part Is Full"},
+ {"n":21,"id":"pmu-cards","comp":"PmuCards","title":"Reading a Machine: Counters Tell a Core Limit From a Memory Limit"},
  {"n":22,"id":"measurements","comp":"Measurements","title":"Our Measurements: The Speed-Up Depends on the Part That Runs Out First"},
  {"n":23,"id":"price-performance","comp":"PricePerformance","title":"Price-Performance and Latency: When the Faster Machine Is the Better Buy"},
  {"n":24,"id":"aws-orchestration","comp":"AwsOrchestration","title":"Orchestrating Physical AI on AWS"},
