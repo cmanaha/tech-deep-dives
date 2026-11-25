@@ -78,16 +78,6 @@
  },
  {
   "tier": 1,
-  "url": "https://aws.amazon.com/about-aws/whats-new/2026/11/ec2-performance-status-checks/",
-  "local": null,
-  "venue": null,
-  "title": "AWS What's New, EC2 performance status checks",
-  "sections": [
-   21
-  ]
- },
- {
-  "tier": 1,
   "url": "https://core-electronics.com.au/attachments/uploads/sts3215-smart-servo-datasheet-translated.pdf",
   "local": null,
   "venue": null,
@@ -101,9 +91,10 @@
   "url": "https://developer.nvidia.com/embedded/jetpack/downloads",
   "local": null,
   "venue": null,
-  "title": "NVIDIA JetPack downloads page",
+  "title": "JetPack downloads page",
   "sections": [
-   17
+   17,
+   18
   ]
  },
  {
@@ -119,6 +110,7 @@
    10,
    13,
    20,
+   21,
    23,
    29
   ]
@@ -192,6 +184,7 @@
   "title": "Capacity Blocks list",
   "sections": [
    13,
+   15,
    24,
    26,
    28,
@@ -203,11 +196,13 @@
   "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html",
   "local": null,
   "venue": null,
-  "title": "EC2 User Guide, Elastic Fabric Adapter",
+  "title": "EC2 docs on ENA and EFA",
   "sections": [
    1,
    2,
-   20
+   15,
+   20,
+   21
   ]
  },
  {
@@ -251,6 +246,7 @@
   "title": "Spot best practices",
   "sections": [
    1,
+   15,
    24,
    28,
    29
@@ -317,6 +313,7 @@
   "venue": null,
   "title": "AWS Batch User Guide, scaling",
   "sections": [
+   19,
    24,
    25
   ]
@@ -401,6 +398,7 @@
   "title": "AWS Batch User Guide, Array jobs",
   "sections": [
    1,
+   16,
    20,
    24,
    25,
@@ -456,6 +454,8 @@
   "title": "AWS Batch user guide, job length on Spot",
   "sections": [
    1,
+   15,
+   16,
    20,
    24,
    25,
@@ -484,6 +484,16 @@
  },
  {
   "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/efa.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch User Guide, EFA",
+  "sections": [
+   15
+  ]
+ },
+ {
+  "tier": 1,
   "url": "https://docs.aws.amazon.com/batch/latest/userguide/eks.html",
   "local": null,
   "venue": null,
@@ -501,6 +511,16 @@
   "title": "AWS Batch User Guide, Test GPU functionality, and API Reference, RegisterJobDefinition",
   "sections": [
    25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/fair-share-scheduling.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch User Guide, fair-share scheduling",
+  "sections": [
+   19
   ]
  },
  {
@@ -627,6 +647,7 @@
   "title": "AWS Batch User Guide, multi-node parallel jobs",
   "sections": [
    1,
+   15,
    24,
    25
   ]
@@ -671,6 +692,16 @@
   "title": "AWS Batch User Guide, Quota shares and Preemption",
   "sections": [
    25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/resource-aware-scheduling.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch User Guide, resource-aware scheduling",
+  "sections": [
+   19
   ]
  },
  {
@@ -745,6 +776,16 @@
  },
  {
   "tier": 1,
+  "url": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/bedrock-agentcore-limits.html",
+  "local": null,
+  "venue": null,
+  "title": "AgentCore Developer Guide, quotas",
+  "sections": [
+   19
+  ]
+ },
+ {
+  "tier": 1,
   "url": "https://docs.aws.amazon.com/decision-guides/latest/decision-guides/genai-guide.html",
   "local": null,
   "venue": null,
@@ -766,6 +807,7 @@
    10,
    11,
    13,
+   15,
    20,
    21,
    23,
@@ -781,6 +823,7 @@
   "title": "checkpointing",
   "sections": [
    13,
+   15,
    24,
    28,
    29
@@ -816,6 +859,16 @@
    24,
    28,
    29
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/eks/latest/userguide/auto-change.html",
+  "local": null,
+  "venue": null,
+  "title": "EKS User Guide, Auto Mode release notes",
+  "sections": [
+   19
   ]
  },
  {
@@ -1004,7 +1057,8 @@
   "sections": [
    1,
    2,
-   20
+   20,
+   21
   ]
  },
  {
@@ -1042,7 +1096,7 @@
   "url": "https://docs.aws.amazon.com/general/latest/gr/maintenance_services.html",
   "local": null,
   "venue": null,
-  "title": "AWS General Reference, Services in Maintenance",
+  "title": "AWS General Reference, service lifecycle tables",
   "sections": [
    18
   ]
@@ -1053,6 +1107,16 @@
   "local": null,
   "venue": null,
   "title": "Greengrass V2 API reference, DeploymentComponentUpdatePolicy",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/greengrass/v2/APIReference/API_DeploymentPolicies.html",
+  "local": null,
+  "venue": null,
+  "title": "Greengrass V2 API reference, DeploymentPolicies",
   "sections": [
    18
   ]
@@ -1209,6 +1273,16 @@
  },
  {
   "tier": 1,
+  "url": "https://docs.aws.amazon.com/greengrass/v2/developerguide/interprocess-communication.html",
+  "local": null,
+  "venue": null,
+  "title": "Greengrass developer guide, IPC in Docker components",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
   "url": "https://docs.aws.amazon.com/greengrass/v2/developerguide/manage-data-streams.html",
   "local": null,
   "venue": null,
@@ -1244,7 +1318,8 @@
   "venue": null,
   "title": "Greengrass developer guide, feature compatibility",
   "sections": [
-   17
+   17,
+   18
   ]
  },
  {
@@ -1273,7 +1348,7 @@
   "url": "https://docs.aws.amazon.com/greengrass/v2/developerguide/stream-export-configurations.html",
   "local": null,
   "venue": null,
-  "title": "Greengrass developer guide, Export configurations",
+  "title": "Greengrass developer guide, Export configurations, Amazon S3",
   "sections": [
    18
   ]
@@ -1331,16 +1406,6 @@
  },
  {
   "tier": 1,
-  "url": "https://docs.aws.amazon.com/iot/latest/developerguide/device-defender.html",
-  "local": null,
-  "venue": null,
-  "title": "AWS IoT developer guide, Device Defender",
-  "sections": [
-   18
-  ]
- },
- {
-  "tier": 1,
   "url": "https://docs.aws.amazon.com/iot/latest/developerguide/iot-basic-ingest.html",
   "local": null,
   "venue": null,
@@ -1365,6 +1430,16 @@
   "local": null,
   "venue": null,
   "title": "AWS IoT developer guide, Fleet indexing",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS IoT developer guide, AWS IoT Core policies",
   "sections": [
    18
   ]
@@ -1795,12 +1870,32 @@
  },
  {
   "tier": 1,
+  "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/managed-tier-checkpointing.html",
+  "local": null,
+  "venue": null,
+  "title": "SageMaker Developer Guide, managed tiered checkpointing",
+  "sections": [
+   15
+  ]
+ },
+ {
+  "tier": 1,
   "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/mlflow.html",
   "local": null,
   "venue": null,
   "title": "SageMaker Developer Guide, managed MLflow",
   "sections": [
    24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/model-managed-spot-training.html",
+  "local": null,
+  "venue": null,
+  "title": "SageMaker Developer Guide, managed Spot training",
+  "sections": [
+   15
   ]
  },
  {
@@ -1937,8 +2032,9 @@
   "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-prerequisites.html",
   "local": null,
   "venue": null,
-  "title": "SageMaker Developer Guide, HyperPod prerequisites",
+  "title": "SageMaker HyperPod prerequisites",
   "sections": [
+   15,
    27
   ]
  },
@@ -2098,13 +2194,12 @@
   "url": "https://docs.nvidia.com/datacenter/dcgm/latest/user-guide/feature-overview.html",
   "local": null,
   "venue": null,
-  "title": "DCGM User Guide, profiling metrics",
+  "title": "DCGM User Guide, Tensor Activity",
   "sections": [
    1,
    2,
    20,
-   21,
-   22
+   21
   ]
  },
  {
@@ -2113,6 +2208,16 @@
   "local": null,
   "venue": null,
   "title": "TensorRT documentation, Engine Compatibility",
+  "sections": [
+   17
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.nvidia.com/deeplearning/tensorrt/latest/inference-library/work-quantized-types.html",
+  "local": null,
+  "venue": null,
+  "title": "TensorRT documentation, quantized types",
   "sections": [
    17
   ]
@@ -2130,7 +2235,6 @@
    11,
    20,
    21,
-   22,
    23
   ]
  },
@@ -2139,9 +2243,10 @@
   "url": "https://docs.nvidia.com/dgx/dgx-spark/hardware.html",
   "local": null,
   "venue": null,
-  "title": "DGX Spark User Guide, hardware overview",
+  "title": "DGX Spark user guide, hardware",
   "sections": [
    17,
+   22,
    23
   ]
  },
@@ -2161,9 +2266,10 @@
   "url": "https://docs.nvidia.com/jetson/archives/r39.2.2/DeveloperGuide/AT/JetsonLinuxDevelopmentTools/TegrastatsUtility.html",
   "local": null,
   "venue": null,
-  "title": "docs.nvidia.com/jetson/archives/r39.2.2/DeveloperGuide/AT/JetsonLinuxDevelopmentTools/TegrastatsUtility.html",
+  "title": "Jetson Linux r39.2.2, Tegrastats Utility",
   "sections": [
-   22
+   21,
+   23
   ]
  },
  {
@@ -2207,10 +2313,9 @@
   "url": "https://docs.nvidia.com/nsight-systems/ReleaseNotes/index.html",
   "local": null,
   "venue": null,
-  "title": "Nsight Systems release notes",
+  "title": "Nsight Systems release notes; the waiting-on-CPU limit is our reading",
   "sections": [
-   21,
-   22
+   21
   ]
  },
  {
@@ -2249,7 +2354,7 @@
   "url": "https://github.com/aws-greengrass/aws-greengrass-nucleus/blob/v2.18.4/src/main/java/com/aws/greengrass/componentmanager/builtins/ArtifactDownloader.java",
   "local": null,
   "venue": null,
-  "title": "aws-greengrass-nucleus v2.18.4, ArtifactDownloader.java and S3Downloader.java",
+  "title": "aws-greengrass-nucleus v2.18.4, ArtifactDownloader.java",
   "sections": [
    18
   ]
@@ -2259,7 +2364,7 @@
   "url": "https://github.com/aws-greengrass/aws-greengrass-nucleus/blob/v2.18.4/src/main/java/com/aws/greengrass/componentmanager/ComponentManager.java",
   "local": null,
   "venue": null,
-  "title": "aws-greengrass-nucleus v2.18.4, ComponentManager.java",
+  "title": "Greengrass nucleus, componentStoreMaxSizeBytes",
   "sections": [
    18
   ]
@@ -2282,7 +2387,8 @@
   "title": "AWS sample, docs/results.md",
   "sections": [
    8,
-   15
+   15,
+   16
   ]
  },
  {
@@ -2302,7 +2408,7 @@
   "url": "https://github.com/aws/aws-graviton-getting-started/blob/541d1ad524bb1630e16b8e66aef36dcd01a3bbc1/perfrunbook/debug_hw_perf.md",
   "local": null,
   "venue": null,
-  "title": "AWS Graviton guide, PMU support table",
+  "title": "AWS Graviton guide, PMU counters",
   "sections": [
    21,
    22
@@ -2313,9 +2419,10 @@
   "url": "https://github.com/aws/aws-graviton-getting-started/blob/541d1ad524bb1630e16b8e66aef36dcd01a3bbc1/README.md",
   "local": null,
   "venue": null,
-  "title": "AWS Graviton guide, README processor table",
+  "title": "AWS Graviton guide, processor table",
   "sections": [
-   21
+   21,
+   22
   ]
  },
  {
@@ -2357,6 +2464,7 @@
   "venue": null,
   "title": "spec.limits",
   "sections": [
+   19,
    24,
    28
   ]
@@ -2463,7 +2571,8 @@
   "sections": [
    8,
    11,
-   14
+   14,
+   16
   ]
  },
  {
@@ -2540,7 +2649,8 @@
   "sections": [
    12,
    14,
-   20
+   20,
+   22
   ]
  },
  {
@@ -2673,7 +2783,8 @@
   "venue": null,
   "title": "LeRobot groot guide",
   "sections": [
-   5
+   5,
+   15
   ]
  },
  {
@@ -2743,7 +2854,8 @@
   "venue": null,
   "title": "LeRobot pi0 guide",
   "sections": [
-   5
+   5,
+   15
   ]
  },
  {
@@ -2876,7 +2988,8 @@
   "venue": null,
   "title": "LeRobot configuration_groot.py",
   "sections": [
-   5
+   5,
+   17
   ]
  },
  {
@@ -2949,7 +3062,8 @@
   "title": "our arithmetic",
   "sections": [
    1,
-   16
+   16,
+   19
   ]
  },
  {
@@ -2959,7 +3073,8 @@
   "venue": null,
   "title": "LeRobot v0.7.0 release notes and PEFT guide",
   "sections": [
-   5
+   5,
+   15
   ]
  },
  {
@@ -2978,7 +3093,7 @@
   "url": "https://github.com/intel/perfmon/blob/c6875bae4fe4322e88c6b265962901672bfa97c9/README.md",
   "local": null,
   "venue": null,
-  "title": "Intel perfmon README, TMA reference",
+  "title": "Intel perfmon README, its reference to the 2014 ISPASS paper",
   "sections": [
    21
   ]
@@ -2988,12 +3103,13 @@
   "url": "https://github.com/intel/perfmon/blob/c6875bae4fe4322e88c6b265962901672bfa97c9/TMA_Metrics-full.csv",
   "local": null,
   "venue": null,
-  "title": "Intel TMA metrics file, level-1 rows",
+  "title": "Intel TMA metrics file",
   "sections": [
    1,
    2,
    20,
-   21
+   21,
+   22
   ]
  },
  {
@@ -3006,6 +3122,7 @@
    8,
    12,
    13,
+   16,
    20
   ]
  },
@@ -3290,7 +3407,8 @@
   "title": "Isaac-GR00T hardware recommendation",
   "sections": [
    5,
-   15
+   15,
+   17
   ]
  },
  {
@@ -3379,7 +3497,7 @@
   "url": "https://github.com/Physical-Intelligence/openpi/blob/215abfb217dbac7d5f1273282331b9b1866c0479/README.md",
   "local": null,
   "venue": null,
-  "title": "openpi README",
+  "title": "openpi README, requirements",
   "sections": [
    5,
    15
@@ -3394,6 +3512,18 @@
   "sections": [
    4
   ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/pytorch/pytorch/blob/31a77fc9c0a7c6fff15a1ff58c743f53b1a9d457/torch/__init__.py",
+  "local": null,
+  "venue": null,
+  "title": "PyTorch v2.15.0, set_float32_matmul_precision",
+  "sections": [
+   21,
+   22
+  ],
+  "accessed": "2026-11-25"
  },
  {
   "tier": 1,
@@ -3414,6 +3544,17 @@
   "sections": [
    21,
    22
+  ],
+  "accessed": "2026-11-25"
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/torvalds/linux/blob/c03c1a14507dfaf8b856c2608f9ac216021fc222/tools/perf/Documentation/topdown.txt",
+  "local": null,
+  "venue": null,
+  "title": "Linux v7.3, perf topdown documentation, Ice Lake",
+  "sections": [
+   21
   ]
  },
  {
@@ -3452,7 +3593,7 @@
   "url": "https://github.com/torvalds/linux/tree/c03c1a14507dfaf8b856c2608f9ac216021fc222/tools/perf/pmu-events/arch/arm64/arm",
   "local": null,
   "venue": null,
-  "title": "Linux v7.3, perf arm64 per-core directories",
+  "title": "Linux v7.3 perf directories; the fallback is our reading",
   "sections": [
    21
   ]
@@ -3483,7 +3624,7 @@
   "url": "https://gitlab.arm.com/telemetry-solution/telemetry-solution/-/blob/ea533b733b9bad52223d16e768b7dab03cabb830/data/pmu/cpu/specifications/neoverse/neoverse_v2_r0p0_pmu.json",
   "local": null,
   "venue": null,
-  "title": "Arm Telemetry Solution, neoverse_v2 metrics",
+  "title": "Arm Telemetry Solution, neoverse_v2 metrics; the uncorrected V2 error is our arithmetic",
   "sections": [
    21
   ]
@@ -3552,7 +3693,8 @@
   "title": "GR00T N1.7 model card, computational load",
   "sections": [
    5,
-   15
+   15,
+   17
   ]
  },
  {
@@ -3571,9 +3713,10 @@
   "url": "https://raw.githubusercontent.com/aws-samples/sample-rfm-simulation-on-aws/66e0fbef60d4d345d72c38505d3911d6a4cfff89/docs/results.md",
   "local": null,
   "venue": null,
-  "title": "AWS sample, docs/results.md, earlier run",
+  "title": "AWS sample, earlier run",
   "sections": [
-   8
+   8,
+   15
   ]
  },
  {
@@ -3591,9 +3734,10 @@
   "url": "https://raw.githubusercontent.com/facebookresearch/vjepa2/204698b45b3712590f06245fbfba32d3be539812/configs/train/vitl16/pretrain-256px-16f.yaml",
   "local": null,
   "venue": null,
-  "title": "vjepa2 pretrain-256px-16f.yaml, mask block",
+  "title": "V-JEPA 2 released pretraining config",
   "sections": [
-   7
+   7,
+   15
   ]
  },
  {
@@ -3700,7 +3844,8 @@
   "venue": null,
   "title": "LeRobot v0.7.0 hilserl.mdx",
   "sections": [
-   8
+   8,
+   18
   ]
  },
  {
@@ -3728,7 +3873,8 @@
    12,
    17,
    18,
-   20
+   20,
+   23
   ]
  },
  {
@@ -3736,9 +3882,10 @@
   "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/docs/source/installation.mdx",
   "local": null,
   "venue": null,
-  "title": "LeRobot installation guide, platform note",
+  "title": "LeRobot installation guide, Jetson note",
   "sections": [
-   3
+   3,
+   17
   ]
  },
  {
@@ -3752,6 +3899,7 @@
    9,
    10,
    11,
+   15,
    20
   ]
  },
@@ -3762,9 +3910,11 @@
   "venue": null,
   "title": "LeRobot remote inference guide",
   "sections": [
+   2,
    3,
    4,
    17,
+   18,
    23
   ]
  },
@@ -3797,7 +3947,8 @@
   "title": "LeRobot streaming video encoding docs, section 3",
   "sections": [
    9,
-   10
+   10,
+   23
   ]
  },
  {
@@ -3807,7 +3958,8 @@
   "venue": null,
   "title": "raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/docs/source/training_dataset_streaming.mdx",
   "sections": [
-   11
+   11,
+   15
   ]
  },
  {
@@ -3844,6 +3996,7 @@
    9,
    10,
    11,
+   17,
    20
   ]
  },
@@ -3855,7 +4008,8 @@
   "title": "LeRobot v0.7.0 configs/train.py",
   "sections": [
    10,
-   11
+   11,
+   15
   ]
  },
  {
@@ -3897,9 +4051,10 @@
   "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/datasets/dataset_writer.py",
   "local": null,
   "venue": null,
-  "title": "LeRobot dataset_writer.py, lines 547 to 569",
+  "title": "LeRobot v0.7.0 dataset_writer.py",
   "sections": [
-   9
+   9,
+   18
   ]
  },
  {
@@ -3909,7 +4064,8 @@
   "venue": null,
   "title": "LeRobot datasets/utils.py, size defaults",
   "sections": [
-   9
+   9,
+   18
   ]
  },
  {
@@ -3924,6 +4080,7 @@
    9,
    10,
    11,
+   15,
    20
   ]
  },
@@ -3960,6 +4117,16 @@
  },
  {
   "tier": 1,
+  "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/policies/rtc/configuration_rtc.py",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot configuration_rtc.py",
+  "sections": [
+   17
+  ]
+ },
+ {
+  "tier": 1,
   "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/robots/so_follower/config_so_follower.py",
   "local": null,
   "venue": null,
@@ -3977,7 +4144,8 @@
   "sections": [
    1,
    3,
-   14
+   14,
+   22
   ]
  },
  {
@@ -3988,7 +4156,8 @@
   "title": "LeRobot lerobot_record.py, record_loop()",
   "sections": [
    3,
-   9
+   9,
+   18
   ]
  },
  {
@@ -4019,7 +4188,8 @@
   "title": "LeRobot transforms.py",
   "sections": [
    10,
-   11
+   11,
+   15
   ]
  },
  {
@@ -4325,7 +4495,7 @@
   "url": "https://raw.githubusercontent.com/NVlabs/ENPIRE/99ee90acf65b5b18957c8382ad580db999528be3/enpire/policy/autoresearch_instruction.md",
   "local": null,
   "venue": null,
-  "title": "ENPIRE repository, autoresearch_instruction.md",
+  "title": "ENPIRE autoresearch_instruction.md",
   "sections": [
    19
   ]
@@ -4379,7 +4549,8 @@
   "venue": null,
   "title": "Intel VTune cookbook, the classification paragraphs",
   "sections": [
-   21
+   21,
+   22
   ]
  },
  {
@@ -4394,12 +4565,23 @@
  },
  {
   "tier": 1,
+  "url": "https://www.nvidia.com/en-us/autonomous-machines/embedded-systems/jetson-orin/",
+  "local": null,
+  "venue": null,
+  "title": "NVIDIA Jetson Orin page, specifications",
+  "sections": [
+   17
+  ]
+ },
+ {
+  "tier": 1,
   "url": "https://www.nvidia.com/en-us/autonomous-machines/embedded-systems/jetson-orin/nano-super-developer-kit/",
   "local": null,
   "venue": null,
-  "title": "Jetson Orin Nano Super Developer Kit page",
+  "title": "Jetson Orin Nano Super specifications",
   "sections": [
    17,
+   22,
    23
   ]
  },
@@ -4442,7 +4624,8 @@
   "venue": null,
   "title": "Arm Neoverse V1 performance analysis white paper, section 3.2",
   "sections": [
-   21
+   21,
+   22
   ]
  },
  {
@@ -4463,6 +4646,7 @@
   "title": "G7 and G7e launch posts",
   "sections": [
    13,
+   15,
    24,
    29
   ]
@@ -4504,7 +4688,7 @@
   "url": "https://aws.amazon.com/about-aws/whats-new/2026/11/nitro-sandboxes-eks-ecs-ec2/",
   "local": null,
   "venue": null,
-  "title": "AWS What's New post and EKS User Guide, Nitro Sandboxes",
+  "title": "EKS User Guide, Nitro Sandboxes",
   "sections": [
    19
   ]
@@ -4528,6 +4712,16 @@
   "sections": [
    25,
    29
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://aws.amazon.com/blogs/hpc/resilient-hpc-and-ml-on-aws-running-tightly-coupled-workloads-on-spot-instances/",
+  "local": null,
+  "venue": null,
+  "title": "AWS HPC blog, tightly coupled workloads on Spot",
+  "sections": [
+   15
   ]
  },
  {
@@ -4585,6 +4779,7 @@
    8,
    11,
    13,
+   16,
    23,
    29
   ]
@@ -4594,7 +4789,7 @@
   "url": "https://aws.amazon.com/blogs/physical-ai/bringing-a-frontier-world-model-to-the-convenience-store-inside-telexistences-dreamzero-experiment-on-aws/",
   "local": null,
   "venue": null,
-  "title": "AWS Telexistence post",
+  "title": "AWS post on Telexistence",
   "sections": [
    14,
    15,
@@ -4619,7 +4814,7 @@
   "url": "https://aws.amazon.com/blogs/physical-ai/fine-tuning-%CF%800-pi-zero-for-robotic-manipulation-on-amazon-sagemaker-hyperpod-eks/",
   "local": null,
   "venue": null,
-  "title": "AWS pi0 post",
+  "title": "AWS Physical AI Blog, 10 September 2026",
   "sections": [
    15,
    27
@@ -4654,6 +4849,7 @@
   "venue": null,
   "title": "AWS post on RLWRLD",
   "sections": [
+   16,
    29
   ]
  },
@@ -4692,7 +4888,8 @@
    1,
    2,
    13,
-   20
+   20,
+   21
   ]
  },
  {
@@ -4788,6 +4985,16 @@
  },
  {
   "tier": 2,
+  "url": "https://developer.nvidia.com/blog/deploy-agentic-ready-ai-at-the-edge-with-memory-efficiency-in-nvidia-jetpack-7-2/",
+  "local": null,
+  "venue": null,
+  "title": "NVIDIA JetPack 7.2 blog, MIG",
+  "sections": [
+   17
+  ]
+ },
+ {
+  "tier": 2,
   "url": "https://developer.nvidia.com/blog/petabyte-scale-video-processing-with-nvidia-nemo-curator-on-nvidia-dgx-cloud/",
   "local": null,
   "venue": null,
@@ -4815,7 +5022,6 @@
   "venue": null,
   "title": "AWS sample repositories searched",
   "sections": [
-   17,
    18
   ]
  },
@@ -4827,6 +5033,16 @@
   "title": "AWS samples: genai-at-edge and the Physical AI Toolchain edge stack",
   "sections": [
    17,
+   18
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://github.com/aws-samples/sample-the-physical-ai-toolchain-on-aws/blob/84984decc51cc07fb4ceb8f3fc1f85d523924bf5/cdk/lib/edge-stack.ts",
+  "local": null,
+  "venue": null,
+  "title": "AWS Physical AI Toolchain sample, edge-stack.ts",
+  "sections": [
    18
   ]
  },
@@ -4849,7 +5065,8 @@
   "sections": [
    9,
    10,
-   11
+   11,
+   15
   ]
  },
  {
@@ -4871,7 +5088,8 @@
   "sections": [
    2,
    10,
-   11
+   11,
+   15
   ]
  },
  {
@@ -4879,10 +5097,11 @@
   "url": "https://huggingface.co/blog/nvidia/gr00t-n1-7",
   "local": null,
   "venue": null,
-  "title": "Isaac-GR00T N1.7 release",
+  "title": "GR00T N1.7 model record",
   "sections": [
    5,
-   6
+   6,
+   15
   ]
  },
  {
@@ -4932,10 +5151,9 @@
   "url": "https://research.nvidia.com/labs/gear/gr00t-2/assets/gr00t2_whitepaper.pdf",
   "local": null,
   "venue": null,
-  "title": "NVIDIA GR00T 2 whitepaper, table 27",
+  "title": "NVIDIA GR00T 2 whitepaper, section 2",
   "sections": [
-   6,
-   17
+   6
   ]
  },
  {
@@ -5015,6 +5233,7 @@
   "venue": null,
   "title": "Jetson AI Lab tutorial, OpenPi on Thor",
   "sections": [
+   17,
    18
   ]
  },
@@ -5029,7 +5248,8 @@
    2,
    13,
    20,
-   21
+   21,
+   22
   ]
  },
  {
@@ -5090,8 +5310,7 @@
   "venue": null,
   "title": "I-JEPA paper, section 2, and the position paper, section 4.3",
   "sections": [
-   7,
-   15
+   7
   ]
  },
  {
@@ -5114,16 +5333,6 @@
    2,
    4,
    15
-  ]
- },
- {
-  "tier": 3,
-  "url": "https://arxiv.org/abs/2310.12931v2",
-  "local": null,
-  "venue": "ICLR 2024, per the arXiv comment",
-  "title": "Eureka paper, section 3.2 and appendix D.4",
-  "sections": [
-   19
   ]
  },
  {
@@ -5186,7 +5395,8 @@
   "venue": "preprint",
   "title": "HIL-SERL paper, section 3.2",
   "sections": [
-   8
+   8,
+   18
   ]
  },
  {
@@ -5306,6 +5516,7 @@
   "title": "SmolVLA paper, table 4",
   "sections": [
    5,
+   15,
    17
   ]
  },
@@ -5368,7 +5579,7 @@
   "url": "https://arxiv.org/abs/2510.13626v3",
   "local": null,
   "venue": "preprint",
-  "title": "LIBERO-Plus paper, abstract",
+  "title": "LIBERO-Plus and LIBERO-PRO papers, abstracts",
   "sections": [
    16
   ]
@@ -5378,9 +5589,10 @@
   "url": "https://arxiv.org/abs/2510.25889v3",
   "local": null,
   "venue": "preprint",
-  "title": "piRL paper, section 5 and appendix J",
+  "title": "piRL paper, appendix J",
   "sections": [
-   8
+   8,
+   16
   ]
  },
  {
@@ -5422,10 +5634,20 @@
  },
  {
   "tier": 3,
+  "url": "https://arxiv.org/abs/2512.05964v2",
+  "local": null,
+  "venue": "preprint",
+  "title": "Training-time RTC paper, section III",
+  "sections": [
+   17
+  ]
+ },
+ {
+  "tier": 3,
   "url": "https://arxiv.org/abs/2512.16881v2",
   "local": null,
   "venue": "preprint",
-  "title": "PolaRiS paper, section 5.2",
+  "title": "PolaRiS paper, section 4.1",
   "sections": [
    14,
    16
@@ -5472,7 +5694,6 @@
   "sections": [
    6,
    7,
-   15,
    20,
    29
   ]
@@ -5506,7 +5727,6 @@
   "sections": [
    6,
    11,
-   15,
    20
   ]
  },
@@ -5515,7 +5735,7 @@
   "url": "https://arxiv.org/abs/2606.19980v2",
   "local": null,
   "venue": "CoRL 2026",
-  "title": "ENPIRE paper, abstract",
+  "title": "ENPIRE paper, figure 1",
   "sections": [
    19
   ]
@@ -5545,7 +5765,7 @@
   "url": "https://arxiv.org/abs/2607.01060v4",
   "local": null,
   "venue": "preprint",
-  "title": "RoboWorld paper, abstract",
+  "title": "RoboWorld paper, section 5",
   "sections": [
    16
   ]
@@ -5555,7 +5775,7 @@
   "url": "https://arxiv.org/abs/2608.07555v2",
   "local": null,
   "venue": "preprint",
-  "title": "AgenticRobotics paper v2, section 5",
+  "title": "AgenticRobotics paper v2, section 4",
   "sections": [
    19
   ]
@@ -5567,7 +5787,8 @@
   "venue": "preprint",
   "title": "FailBench paper, abstract",
   "sections": [
-   8
+   8,
+   19
   ]
  },
  {
@@ -5592,24 +5813,43 @@
  },
  {
   "tier": 3,
-  "url": "https://arxiv.org/abs/2609.29394v1",
-  "local": null,
-  "venue": "preprint",
-  "title": "RACaP paper, abstract",
-  "sections": [
-   19
-  ]
- },
- {
-  "tier": 3,
   "url": "https://arxiv.org/abs/2610.10515v1",
   "local": null,
   "venue": "preprint",
   "title": "RoboJEPA paper",
   "sections": [
    6,
-   7,
-   15
+   7
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2610.18792v1",
+  "local": null,
+  "venue": "preprint",
+  "title": "SEAR paper, abstract",
+  "sections": [
+   19
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2610.19656v3",
+  "local": null,
+  "venue": "preprint",
+  "title": "Perturbation Informed Execution paper, table 6",
+  "sections": [
+   17
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2610.20474v2",
+  "local": null,
+  "venue": "preprint",
+  "title": "AdaRSI paper v2, section 5.4 and appendix D",
+  "sections": [
+   19
   ]
  },
  {
