@@ -188,5 +188,10 @@
   "term": "GPU utilisation",
   "expansion": null,
   "meaning": "The nvidia-smi figure for the share of time in which at least one kernel was running on the GPU."
+ },
+ {
+  "term": "Newton Warp",
+  "expansion": null,
+  "meaning": "The lightweight ray tracer in Isaac Lab 3.0's base install, which draws direct lighting only and runs without Isaac Sim."
  }
 ]

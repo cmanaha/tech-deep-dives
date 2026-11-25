@@ -5,7 +5,7 @@ import { Arrow, INK, LINE, MUTED, PANEL, PAPER, T, box, useNarrow } from './WmJe
  *
  * Row 1 applies image transforms (SVG filters, a small rotation, a small shift) to the recorded
  * overhead frame. Row 2 shows three randomised MuJoCo scenes with the block in a new place each
- * time. Row 3 leaves its slots empty: this dive has no generated clip of its own. Beside each row,
+ * time. Row 3 leaves its slots empty: no clip was generated for it. Beside each row,
  * the time to make one new sample on one shared log axis.
  */
 
@@ -104,7 +104,7 @@ function Replayed({ x, y, w, h, gap }: { x: number; y: number; w: number; h: num
   );
 }
 
-/** Row 3: empty slots. No generated clip was made for this dive. */
+/** Row 3: empty slots. No clip was generated. */
 function Slots({ x, y, w, h, gap }: { x: number; y: number; w: number; h: number; gap: number }) {
   return (
     <g>
@@ -174,7 +174,7 @@ function Wide() {
     <g>
       {/* the recorded episode */}
       <T x={20} y={228} bold size={14}>
-        One recorded episode
+        One demonstration
       </T>
       <T x={20} y={247}>
         one overhead frame of it
@@ -219,7 +219,7 @@ function Wide() {
         hue and saturation shifted
       </T>
       <T x={830} y={tops[0] + 96}>
-        our estimate: milliseconds per image. No published figure
+        an estimate, not a published figure: milliseconds per image
       </T>
       <T x={830} y={tops[0] + 148}>
         on the training GPU: a peak of 2.4 GB at a batch of 160
@@ -230,7 +230,7 @@ function Wide() {
         Ringed: the block, in a new place in each scene.
       </T>
       <T x={830} y={tops[1] + 96} num="derived">
-        0.9 s each without cameras, 3.6 s with them (our division)
+        0.9 s each, or 3.6 s with cameras: NVIDIA&apos;s totals / 1,000
       </T>
       <T x={830} y={tops[1] + 148}>
         NVIDIA: 1,000 demonstrations take about 15 minutes,
@@ -241,7 +241,7 @@ function Wide() {
 
       <Slots x={314} y={tops[2] + 58} w={fw} h={fh} gap={8} />
       <T x={314} y={tops[2] + 189}>
-        No generated clip is shown: none was produced for this page.
+        Outlines only: no clip was generated.
       </T>
       <T x={1190} y={tops[2] + 96} anchor="end">
         207.78 s for one generated clip
@@ -273,7 +273,7 @@ function Narrow() {
   return (
     <g>
       <T x={180} y={24} anchor="middle" bold>
-        One recorded episode
+        One demonstration
       </T>
       <Pic id="aug-rec" src={GRID} {...REC} x={80} y={34} w={200} h={150} />
       <T x={180} y={203} anchor="middle" fill={MUTED}>
@@ -315,10 +315,10 @@ function Narrow() {
         time per new sample: milliseconds per image
       </T>
       <T x={18} y={tops[0] + fy[0] + fh + 138}>
-        No single published figure. On the training
+        An estimate, not a published figure. On the
       </T>
       <T x={18} y={tops[0] + fy[0] + fh + 155}>
-        GPU: a peak of 2.4 GB at a batch of 160.
+        training GPU: a peak of 2.4 GB at batch 160.
       </T>
 
       <Replayed x={18} y={tops[1] + fy[1]} w={fw} h={fh} gap={8} />
@@ -329,7 +329,7 @@ function Narrow() {
         time per new sample: 0.9 s without cameras,
       </T>
       <T x={18} y={tops[1] + fy[1] + fh + 66} num="derived">
-        3.6 s with them (our division)
+        3.6 s with them (NVIDIA&apos;s totals / 1,000)
       </T>
       <T x={18} y={tops[1] + fy[1] + fh + 138}>
         NVIDIA: 1,000 demonstrations take about 15
@@ -340,10 +340,7 @@ function Narrow() {
 
       <Slots x={18} y={tops[2] + fy[2]} w={fw} h={fh} gap={8} />
       <T x={18} y={tops[2] + fy[2] + fh + 18}>
-        No generated clip is shown: none
-      </T>
-      <T x={18} y={tops[2] + fy[2] + fh + 35}>
-        was produced for this page.
+        Outlines only: no clip was generated.
       </T>
       <T x={18} y={tops[2] + fy[2] + fh + 66}>
         time per new sample: 207.78 s for one clip
@@ -364,13 +361,13 @@ export function AugThreeWays() {
   const H = narrow ? 1292 : 700;
   return (
     <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-labelledby="augmentation-fanout-title" style={{ width: '100%', height: 'auto' }}>
-      <title id="augmentation-fanout-title">One recorded episode turned into three kinds of extra training data, with the time each takes per new sample</title>
+      <title id="augmentation-fanout-title">One demonstration turned into three kinds of extra training data, with the time each takes per new sample</title>
       <desc>
-        One overhead frame of a recorded episode feeds three rows. Image transforms show the same frame brighter and
-        rotated, darker and shifted, and with its hue shifted; they take milliseconds per image. Replay in a simulator
-        shows three scenes with the block in a new place each time; 1,000 demonstrations take about 15 minutes, or
-        about 1 hour with cameras, which our division puts at about one second and a few seconds each. Generation with a world model shows three empty
-        slots, because this dive has no generated clip; one 720p clip takes 207.78 seconds on one H100. The three
+        One overhead frame of a demonstration feeds three rows. Image transforms show the same frame brighter and
+        rotated, darker and shifted, and with its hue shifted; an estimate puts them at milliseconds per image. Replay
+        in a simulator shows three scenes with the block in a new place each time; 1,000 demonstrations take about 15
+        minutes, or about 1 hour with cameras, which comes to under a second each, or a few seconds with cameras. Generation with a world model
+        shows three empty slots, because no clip was generated; one 720p clip takes 207.78 seconds on one H100. The three
         times sit on one log axis from 1 millisecond to 1,000 seconds.
       </desc>
       <defs>

@@ -10,7 +10,7 @@ export const sections = [
   { id: 'robot-rl', title: '8. Reinforcement Learning for Robots: Where the Attempts Come From' },
   { id: 'collecting', title: '9. Collecting Data: What an Episode Weighs and What It Costs to Record' },
   { id: 'curating', title: '10. Processing and Curating: How Many CPU Cores Keep a Training GPU Fed' },
-  { id: 'augmentation', title: '11. Augmentation and Synthetic Data: What Each Method Adds and the Machine It Needs' },
+  { id: 'augmentation', title: '11. Augmentation and Synthetic Data: Match the Method to the Failure and the GPU to the Method' },
   { id: 'physics', title: '12. Physics Simulation: One Scene on a Core, Thousands on a GPU' },
   { id: 'rendering', title: '13. Rendering and Ray Tracing: Why Simulated Cameras Pick the GPU' },
   { id: 'sim-to-real', title: '14. Sim-to-Real and Real-to-Sim: Widen the Simulator or Measure the Arm' },
