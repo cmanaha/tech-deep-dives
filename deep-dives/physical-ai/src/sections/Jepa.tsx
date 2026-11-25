@@ -672,8 +672,8 @@ export function Jepa() {
             peer-reviewed study of the family names it for the squared-error loss its models use: &quot;the MSE
             loss learns the conditional mean of potentially genuinely multi-modal futures&quot;. Its authors add
             that three things soften the effect in their benchmarks: the dynamics there are deterministic, the
-            latent leaves out variation the task does not need, and replanning from the real frame makes the plan
-            robust to prediction errors.{' '}
+            latent leaves out variation the task does not need, and replanning from the real frame lets the plan
+            tolerate prediction errors.{' '}
             <Cite id="F03-110">JEPA-WMs paper, section 7</Cite>
           </Box>
         </SpaceBetween>
