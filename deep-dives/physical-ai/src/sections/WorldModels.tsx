@@ -135,7 +135,7 @@ export function WorldModels() {
             variant="h1"
             description="Know what a world model is for, and the one design choice that separates the two families (sources read 2026-11-20)."
           >
-            6. World Models: Predicting What Happens Next
+            6. World Models: Predict Pixels or Predict a Summary
           </Header>
         }
       >

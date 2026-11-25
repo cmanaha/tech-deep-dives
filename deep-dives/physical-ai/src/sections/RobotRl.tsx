@@ -28,7 +28,7 @@ export function RobotRl() {
             variant="h1"
             description="Know the three places RL is used for robots and what each one waits on (MuJoCo Playground 1.0.1, Isaac Lab 3.0 and LeRobot v0.7.0, sources read 2026-11-20)."
           >
-            8. Reinforcement Learning for Robots
+            8. Reinforcement Learning for Robots: Where the Attempts Come From
           </Header>
         }
       >

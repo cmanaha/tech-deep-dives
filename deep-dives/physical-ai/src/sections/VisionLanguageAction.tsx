@@ -224,7 +224,7 @@ export function VisionLanguageAction() {
             variant="h1"
             description="Read any 2026 robot-model announcement and know what the backbone, the action head and the two rates are (papers, model cards and LeRobot v0.7.0, read 2026-11-20)"
           >
-            5. Vision-Language-Action Models
+            5. Vision-Language-Action Models: A Backbone, an Action Head and Two Clocks
           </Header>
         }
       >
