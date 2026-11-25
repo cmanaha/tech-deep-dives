@@ -116,7 +116,7 @@ export function CaptureSlot({ what, meanwhile }: { what: ReactNode; meanwhile?: 
 export const MUJOCO_SO101: Provenance = {
   software: 'MuJoCo 4.0.1, offscreen renderer',
   date: '2026-11-20',
-  by: 'made for this dive on a Mac; scripted motion, no learned policy',
+  by: 'scripted motion, no learned policy',
   asset: 'SO-101 model from TheRobotStudio/SO-ARM100 at commit 141aea7 (Apache-2.0)',
 };
 
