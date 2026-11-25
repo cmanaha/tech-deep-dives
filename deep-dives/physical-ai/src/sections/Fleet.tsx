@@ -762,7 +762,7 @@ export function Fleet() {
             New versions are not free either. AWS allows 5,000 versions of one component in a Region, so a training
             loop that registers every hourly checkpoint as a component version, deployed or not, runs out in about
             208 days (5,000 / 24). A new S3 key passed in the deployment&apos;s configuration spends no version at
-            all, the one point in favour of the S3 route.{' '}
+            all, a point in favour of the S3 route.{' '}
             <Cite id="F07-167">AWS General Reference, Greengrass V2 quotas</Cite>{' '}
             <Cite id="F07-160">Greengrass developer guide, Create deployments, configuration update</Cite>
           </Box>
@@ -825,7 +825,7 @@ export function Fleet() {
           </Box>
           <Box variant="p">
             Beside an arm, run the Java nucleus. Nucleus lite, written for constrained devices and documented at
-            under 15 MB of memory, saves more than <Derived>81</Derived> MB (96 - 15), little on a board with
+            under 15 MB of memory, saves about <Derived>80</Derived> MB (96 - 15), little on a board with
             gigabytes, and gives up the deferral to do it: its README at v2.7.0 lists 12 IPC operations, and{' '}
             <code>SubscribeToComponentUpdates</code> and <code>DeferComponentUpdate</code> are not among them.{' '}
             <Cite id="F07-84">Greengrass nucleus v2.18.4 requirements</Cite>{' '}
@@ -889,7 +889,7 @@ export function Fleet() {
           <Box variant="p">
             A deployment to many arms targets a thing group. A thing is AWS IoT&apos;s record of one device, here
             the computer beside one arm, and a thing group is a named set of things; adding a replacement computer to
-            the group is how it joins the fleet. A staged update goes first to a canary group, a few arms in a thing
+            the group is how it joins the fleet. A staged update, the general software practice this section recommends, goes first to a canary group, a few arms in a thing
             group of their own that take it before the rest, and then to the fleet group.{' '}
             <Cite id="F07-121">Greengrass developer guide, How it works</Cite>{' '}
             <Cite id="F07-123">Greengrass developer guide, Manage deployments</Cite>
@@ -1041,7 +1041,7 @@ export function Fleet() {
             <Cite id="F07-164">Greengrass developer guide, Cancel deployments</Cite>
           </Box>
           <Box variant="p">
-            At the example&apos;s pace, the failed starts that would set the abort off arrive only after every arm
+            At the example&apos;s pace, on the illustrative link, the failed starts that would set the abort off arrive only after every arm
             has been told to update. For tens of arms the canary group is the brake, and the abort rule guards the
             fleet group&apos;s deployment at a pace slow enough to leave arms queued; a constant rate may go as low
             as 1 arm a minute.{' '}
@@ -1326,7 +1326,7 @@ export function Fleet() {
             A hybrid node assumes the opposite network: it joins a cloud Kubernetes cluster as a worker node, so the
             scheduler that places training pods on cloud GPUs can place a pod on it too. Three questions, asked in
             order, place two machines: a Jetson beside an arm, and a DGX Spark, NVIDIA&apos;s desk-side machine,
-            which can serve the policy to an arm through LeRobot&apos;s remote inference.{' '}
+            the example policy server for LeRobot&apos;s remote inference in section 17 (Running on the Robot).{' '}
             <Cite id="F07-123">Greengrass developer guide, Manage deployments</Cite>{' '}
             <Cite id="F07-25">LeRobot remote inference guide</Cite>{' '}
             <Cite id="F09-119">EKS user guide, Hybrid Nodes overview</Cite>
@@ -1386,7 +1386,7 @@ export function Fleet() {
         <SpaceBetween size="s">
           <Box variant="p">
             The documentation sets the order of work for one arm&apos;s computer, and a DGX Spark that joins as a
-            core device takes the same steps. No worked example covers the whole path: none of the AWS posts and
+            core device takes the same steps. No worked example was found for the whole path: none of the AWS posts and
             samples from 2025 or 2026 that were searched runs a GPU policy container on a Jetson with Greengrass V2
             and uploads its episodes to S3.{' '}
             <Cite id="F07-199">AWS sample repositories searched</Cite>
