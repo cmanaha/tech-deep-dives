@@ -268,7 +268,7 @@ export function PricePerformance() {
             variant="h1"
             description="Compare machines on one unit of work per workload, and know which of the figures exist today (our own measurements are single runs on two edge machines; vendor documentation read 2026-11-20)"
           >
-            23. Price-Performance and Latency
+            23. Price-Performance and Latency: One Unit of Work per Workload
           </Header>
         }
       >

@@ -202,7 +202,7 @@ export function Measurements() {
             variant="h1"
             description="See measured cards for three stand-in workloads on the two edge machines we ran, and know what each card can and cannot tell you (our own measurements on an NVIDIA DGX Spark and an NVIDIA Jetson Orin Nano Super, one run per pass, two passes; results read 2026-11-20)"
           >
-            22. Our Measurements
+            22. Our Measurements: Three Stand-Ins on Two Edge Machines
           </Header>
         }
       >
