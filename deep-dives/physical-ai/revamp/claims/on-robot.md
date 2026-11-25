@@ -29,7 +29,7 @@ LeRobot's guides give no timing for camera exposure, USB transfer or servo bus w
 
 LeRobot's tuning rule: what remains after trimming must cover the next call | F07-22
 A worst call up to about four times the 4.5-tick median still fits under about 20 ticks (our arithmetic) | F07-2, F07-5, F07-22
-Local RTC runs the policy in a background thread with no network transport | F01-40, F07-20
+Local RTC runs the method (RTC) on the robot computer itself, the policy in a background thread with no network transport | F01-40, F07-20
 The 0.5 s default holds until the slowest round trip passes 0.5 - 0.033 = 0.467 s, more than three times the 138.98 ms measured chain with a small on-robot computer (our arithmetic: 0.467 / 0.139 = 3.4) | F07-26, F07-68
 Remote join modes: aligned (default) drops passed steps and replaces only the future, reducing backward bumps (so passed steps are not replayed, by construction); append, the baseline, plays out the old slice and starts the new chunk after it, so the next chunk can begin from an older observation; RTC when the checkpoint supports it, inference conditioning on the remaining trajectory | F07-27
 LeRobot advises trying JPEG at quality 90, then comparing turnaround and task quality | F07-28
@@ -41,13 +41,13 @@ Synchronous idle on the Orin: 149.0 / (1,333 + 149.0) = 10%, a stop every 1.5 s;
 Half-chunk rule H dt - L >= L, so L <= H dt / 2 (our arithmetic from LeRobot's tuning rule) | F07-22
 "If inference takes 1 second out of a 1.67-second prediction, only about 0.67 seconds remain. Another 1-second request cannot fit; no refill value fixes that."; remedies: a shorter call, a longer chunk or a different action rate | F07-22
 For a 40-action chunk the call may take about 20 ticks (our arithmetic) | F07-2, F07-22
-RTC paper: d = floor(delta / dt), the inference delay in controller steps; d is 4 for the 149.0 ms call at 30 Hz (our arithmetic) | F07-63, F07-5
-RTC paper's real-time constraint d <= s <= H - d, with s the actions played before the hand-over; d <= H - s guarantees "that an action is always available when it is needed"; for H = 40 and d = 4, s from 4 to 36 (our arithmetic) | F07-63, F07-65, F07-2
+RTC paper: d = floor(L / Δt), the inference delay in controller steps; the 149.0 ms Orin median is 4.47 ticks, so d = 4 (our application) | F07-63, F07-5
+The paper's constraint d <= s <= H - d, written in LeRobot's names (execution_horizon = H - s, our mapping): execution_horizon between inference_delay and the chunk length minus inference_delay; for a chunk of 40 at the compiled Orin median, 4 to 36; the default 10 leaves 6 guided actions; only the lower bound binds at this chunk length; the PyTorch call's 10.7 ticks gives inference_delay 10 or 11, where the default leaves no guided zone or breaks the constraint (our arithmetic) | F07-63, F07-65, F07-2, F07-5, F07-14
 LeRobot v0.7.0 RTC computes the next chunk in a background thread on the robot computer | F01-40
 Remote inference: checkpoint on a policy server, cameras, motors and recording on the robot computer, "the remote client does not load weights", transport Zenoh | F07-25
 Effective refill = max(refill_seconds, recent maximum turnaround + 1 / fps); default refill_seconds 0.5 s; turnaround spans encoding, network, queueing, inference and decoding | F07-26
 At 30 Hz and 149 ms the floor is 0.149 + 0.033 = 0.182 s, so the 0.5 s default applies: the client asks with 15 actions left (our arithmetic) | F07-26
-Animation: illustrative timing, 50-action chunk at 30 Hz, calls of 5 and 30 ticks | F07-12, F07-22, F07-26, F07-65
+Animation: illustrative timing, the benchmark's 40-action chunk at 30 Hz, calls of 5 and 30 ticks, asked with 15 actions left | F07-2, F07-22, F07-26, F07-65
 Camera frames travel as raw RGB by default (about 1.8 MB for two 640x480 frames); a congested link drops observations rather than blocking motor commands | F07-28
 Remote path validated on a lab network; router, private hosted GPU or Hugging Face Space "has not been validated yet"; "a working transport alone does not establish a usable motion budget" | F07-29
 
@@ -55,7 +55,8 @@ Remote path validated on a lab network; router, private hosted GPU or Hugging Fa
 
 Freezing only the first d actions lets the new chunk still switch strategy when d is small; the last s have no counterpart in the old chunk (the new chunk takes over s actions into the old one) | F07-66, F07-65
 Guidance needs the gradient of the model's output with respect to its input, a backward pass ("RTC slows down inference due to backpropagating through each denoising step") | F07-67
-execution_horizon spans the frozen and guided zones in the figure, H - s in the paper's symbols (our mapping of LeRobot's definition); the paper gives the name execution horizon to s | F07-15, F07-65
+execution_horizon spans the frozen and guided zones, 11 in the paper's example (4 frozen + 7 guided, our arithmetic and mapping of LeRobot's definition) | F07-15, F07-65
+LeRobot's decaying schedules (LINEAR, EXP) run from inference_delay to execution_horizon, so the guided zone is the gap between the two | F07-16
 max_guidance_weight 10.0 is given for 10-step flow matching in SmolVLA, pi0 and pi0.5 | F07-15
 Paper's figure: old chunk goes over an obstacle, new chunk under it; hand-over "may be arbitrarily discontinuous and out-of-distribution", worse as delay grows | F07-64
 RTC treats the new chunk as inpainting: first d actions frozen, overlapping actions guided with weight decaying from 1 to 0, last s free; "actions further in the future should be treated with more uncertainty" | F07-65, F07-66
@@ -106,7 +107,7 @@ DGX Spark has the Thor's 128 GB at 273 GB/s and is still slower (vendor figures)
 GR00T's path on Orin uses JetPack 7.2; LeRobot's container JetPack 6.2 | F07-9, F07-34
 Jetson Orin Nano Super Developer Kit: 8 GB shared at 102 GB/s, 7 W to 25 W (vendor specification) | F07-36
 pi0.5 weights about 6 GB or more | F07-54
-NVIDIA's table says "Jetson Orin" without naming the module (also stated in the opening); the SmolVLA paper and LeRobot's guides give no latency for SmolVLA or ACT on a Jetson Orin Nano | F07-5, F07-117
+NVIDIA's table says "Jetson Orin" without naming the module; the SmolVLA paper and LeRobot's guides give no latency for SmolVLA or ACT on a Jetson Orin Nano | F07-5, F07-117
 Only the Thor has a quantised figure in NVIDIA's table (35.6 ms); the Orin has only the compiled 149.0 ms | F07-4, F07-5
 NVIDIA's Thor page claims 7.5 times the AGX Orin's performance (vendor claim) | F07-39
 Thor bandwidth 273 / 204.8 = 1.33 times the AGX Orin 64GB's; measured ratios 1.94 to 2.08 sit far below the peak claim and above the bandwidth ratio (our arithmetic) | F07-39, F07-35, F07-73, F07-5
@@ -129,7 +130,7 @@ Nucleus footprints against 8 GB: about 1% (Java, documented minimum, a floor) an
 Device flag examples --device /dev/video0 and --device /dev/ttyACM0 (our reading, standard Docker, in none of the AWS pages read on 2026-11-20) | F07-156
 Credential variables AWS_CONTAINER_CREDENTIALS_FULL_URI and AWS_CONTAINER_AUTHORIZATION_TOKEN passed with -e | F07-150
 AWS IoT Greengrass is an open source edge runtime and cloud service, in two halves; the device half is the nucleus | F07-120, F07-133
-A recipe copied from AWS's page gives the container no access to the GPU, camera or servo bus; a container policy is started by a docker run line in its recipe | F07-156, F07-153
+A recipe copied from AWS's page gives the container no access to the GPU, camera or servo bus; a container policy is started by a docker run line in the Run step of its recipe's lifecycle | F07-156, F07-153
 Two nucleus implementations, Java and C (nucleus lite) | F07-133
 Java nucleus v2.18.4 needs a Java runtime, at least 256 MB disk and 96 MB RAM | F07-84
 Nucleus lite v2.7.0 gives up features, among them being driven by the Greengrass CLI on the device | F07-135
@@ -143,7 +144,7 @@ None of the four recipes on AWS's "Run a Docker container" page passes a GPU or 
 Two AWS sample repositories (Tier 2 sample code) pass --runtime nvidia on a Jetson; the samples give no flags for a DGX Spark | F07-157
 NVIDIA's GR00T container command for Jetson and DGX Spark passes --runtime nvidia --gpus all | F07-11
 Camera and servo bus need Docker device flags that no AWS page shows (our inference, marked "would") | F07-156
-Figure: the parts as AWS's and NVIDIA's documents describe them (not run on a device; the placeholder covers the hook-up) | F07-44, F07-120, F07-122, F07-148, F07-153, F07-156
+Figure caption: a plan assembled from AWS's and NVIDIA's documents (not run on a device; the placeholder covers the hook-up) | F07-44, F07-120, F07-122, F07-148, F07-153, F07-156
 TES: local server; X.509 certificate traded for temporary IAM role credentials, held in memory, one hour by default | F07-148
 A container needs --network=host and two environment variables; AWS notes host networking is less secure | F07-150
 Placeholder (unchanged): our own Greengrass hook-up of the Jetson Orin Nano Super and DGX Spark | none (placeholder)
@@ -160,19 +161,47 @@ Cadence report lines give mean, worst and share of work | F07-23
 Opening: compiling the model, and on newer boards quantising it, shortens the call (149.0 ms is compiled, unquantised) | F07-5, F07-4
 Floating-point bits split between exponent (range) and mantissa (precision): general definition, no figure | none (definition)
 Each later action in a chunk is a tick older than the one before (our reasoning) | F07-2
-LeRobot's trained-mode admission rule is the paper's d <= s <= H - d written in LeRobot's names (our arithmetic, with execution_horizon = H - s) | F07-18, F07-63
-Opening scope: LeRobot v0.7.0 ships a wrapper for GR00T N1.7; its RTC settings are given for SmolVLA, pi0 and pi0.5; NVIDIA timed the 149.0 ms on its own TensorRT path; where the Orin figure meets LeRobot's rules it illustrates the arithmetic (ours) | F02-47, F07-15, F07-5
+LeRobot's trained-mode admission rule is the same constraint with rtc_training_max_delay in place of inference_delay and prediction_steps as the chunk length (our mapping) | F07-18, F07-63
+Stack paragraph after the half-chunk rule: NVIDIA timed GR00T N1.7 on its own TensorRT path, which on an Orin needs JetPack 7.2; LeRobot's Jetson container targets JetPack 6.2; LeRobot wraps GR00T N1.7 but gives its RTC settings for SmolVLA, pi0 and pi0.5; so redo the checks with your own call timed on your stack (our advice) | F07-5, F07-9, F07-34, F02-47, F07-15
 The optimised execution profile: cross-attention K/V caching, projection fusion and CUDA graphs (glosses of projection fusion and CUDA graphs are general definitions) | F07-4
 pi0.5 tutorial action horizon 10 = chunks of 10 actions | F07-51
-The benchmark table gives no reason for the DGX Spark being slower than the Thor; the one stated difference is software: a separate dependency stack with TensorRT pinned to 10.16.1.11 (set side by side, no cause claimed) | F07-6, F07-9
-Animation: 50-action chunk is the size LeRobot's RTC guide uses as its example; half is 25 ticks, against 20 for NVIDIA's 40-action chunk (our arithmetic) | F07-12, F07-2
+The benchmark table gives no reason for the DGX Spark being slower than the Thor; one difference the guide does state is software: a separate dependency stack with TensorRT pinned to 10.16.1.11 (set side by side, no cause claimed) | F07-6, F07-9
+Animation caption: the chunk is the benchmark's 40 actions, so the 30-tick call also breaks the half-chunk rule of 20 ticks and no refill value would save it (our arithmetic) | F07-2, F07-22
 The token exchange service hands out temporary AWS credentials | F07-148
 Compiling and rewriting the graph buy more than fewer bits: on Thor the graph rewrite saved 27.8 ms against 13.4 ms from the bits (our arithmetic) | F07-57
 A container that calls AWS (to read weights from S3, for instance) needs a third kind of flag, for credentials | F07-148, F07-150
 The compiled engine needs the GPU; AWS's documented container recipe gives the policy container no GPU, camera or servo bus | F07-76, F07-156
 Adapted run line: docker run --rm --runtime nvidia --network host (the Physical AI Toolchain sample's aarch64 line), --device /dev/video0 and --device /dev/ttyACM0 (ours, in none of the AWS pages read on 2026-11-20), image placeholder from AWS's recipe; not run on a device | F07-157, F07-156, F07-153
-The camera and the servo bus each need Docker's --device flag (our reading, standard Docker) | F07-156
+The camera and the servo bus can be passed with Docker's --device flag, which no AWS page read shows (our reading, standard Docker) | F07-156
 Animation caption: a 30-tick call asked with 15 actions (0.5 s x 30) of playback left runs the queue dry (our arithmetic) | F07-26, F07-22
 LeRobot's rollout prints a per-stage timing (the cadence report) | F07-23
 prediction_steps is the chunk length in the trained-mode bound (our mapping, consistent with F07-63) | F07-18
-Nucleus footprint sentence: 96 MB documented floor (Java) and 15.8 MB measured on a Raspberry Pi 4 (lite); neither taken beside a policy on a Jetson | F07-84, F07-138
+Nucleus footprint sentence: 96 MB documented floor (Java); nucleus lite's v2.5.0 packages measured at 15.8 MB with six small components on a Raspberry Pi 4 (14.6 MB idle); neither taken beside a policy on a Jetson | F07-84, F07-138
+RTC built at first use: a method of asynchronous inference that makes each new chunk continue the motion already under way | F07-12
+The cadence report times recording on its own line (record), apart from infer, so the 620 ms save does not read as a slow policy (our reading of the report's lines) | F07-23, F07-24
+Four bits make 2 x 2 x 2 x 2 = 16 patterns, so FP4 takes a handful of values; NVFP4's per-block scale fits them to each block's range (our arithmetic; scaling factor per F07-81, per-block scaling per F07-58) | F07-81, F07-58
+NVIDIA credits per-block scaling with 4-bit quantisation "without the accuracy collapse you would get from 4-bit integer formats" (vendor claim) | F07-58
+Compile header: on a Jetson every engine must be built on the type of board that runs it (the rule holds on JetPack; Arm server-class Linux has a compatibility mode) | F07-77
+Remote path: time the full turnaround on any new network, "a working transport alone does not establish a usable motion budget" | F07-29
+Opening: a large policy can answer four or five control periods late and still keep the arm supplied with an action on every tick (a timing claim, about supply of actions, not task success; 149.0 / 33.3 = 4.5, our arithmetic) | F07-5
+A shorter call takes its saving off the age of every action in the chunk (our reasoning) | F07-2
+Staleness, the animation's illustrative fast case: with the aligned join each action plays as many ticks after its frame as its place in the chunk; the request goes out with 15 actions left, at action 40 - 15 = 25, the arm plays on through the 5-tick call, so the last action played from a chunk is about action 30, 30 ticks, about 1 s, after its frame, 250 mm of travel at the illustrative 0.25 m/s; compiling takes the call's part off every action, 89 - 37 = 52 mm between the PyTorch and the compiled call, the smaller part (our arithmetic); "Higher usually requests earlier; lower allows more of the plan to execute." | F07-2, F07-26
+How far the slowest call sits from the typical one depends on the setup (our reading of two setups: the LeRobot sample's 5.18 ms mean and 40.00 ms worst; the RTC chain's 0.2 ms model variation) | F07-23, F07-68
+append is offered as a baseline | F07-27
+The run line keeps the samples' Jetson flags as written (--runtime nvidia, --network host) and adds one --device flag each for the camera and the servo bus | F07-157, F07-156
+Nucleus footprints set beside a policy of about 6 GB or more (pi0.5's weights) | F07-54
+The choice between the nuclei turns on features and on whether each installs; check the install first (our reasoning from the feature list and the platform lists) | F07-84, F07-135, F07-140, F07-142
+max_guidance_weight caps how hard the new chunk is held to the old one; 10.0 is the value given for 10-step flow matching (SmolVLA, pi0, pi0.5), while NVIDIA's GR00T benchmark call takes four denoising steps (no value for a 4-step head is published in the sources read) | F07-14, F07-15, F07-2
+Snippet title: the AWS samples' Jetson flags plus one device flag each for the camera and the servo bus (see the adapted run line above) | F07-157, F07-156
+Staleness: the refill setting governs the larger part of an action's age; 52 mm and 250 mm are F01-83's illustrative speed applied to our tick counts (our arithmetic) | F01-83, F07-5, F07-26
+Model parts at first use: a backbone reads the camera images and the instruction; an action head builds the chunk over a few passes, its denoising steps (pointer to section 5, which defines both) | F07-2, F02-40
+Model card 216.5 ms with one camera is slower than the README's two-camera figure because more than the camera count changed: TensorRT on the action head only, an older TensorRT, backbone uncompiled (no single cause claimed) | F02-40, F07-5
+RTC chain lead: the model's time barely moved between the two robot computers (97.43 vs 96.89 ms) while the NUC's chain was 138.98 against 108.76 ms, about 30 ms more, most of it network (+14.31 ms) and image resizing (+9.78 ms) (our arithmetic); the full split is in the budget figure's caption | F07-68
+append join: the new chunk starts at its first action after the old slice plays out, so each of its actions plays late by the actions left at request time, 15 ticks (0.5 s at 30 Hz) in the animation's illustrative fast case (our reading of F07-27 applied to the animation) | F07-27
+LeRobot's RTC guide gives no max_guidance_weight value for a four-step head; treat 10.0 as a starting point and sweep it (our advice) | F07-15, F07-2
+In NVIDIA's table compiling paid most where the call was longest (scoped to the three devices in the table) | F07-1
+Hardware compatibility mode is the way around the engine-portability rule off JetPack; TensorRT 11.5.0 adds it only on Arm server-class Linux, the DGX Spark's category | F07-76, F07-77
+DGX Spark paragraph: budget on a board's timed call, not its memory (our reasoning from 116.6 vs 76.8 ms at the same 128 GB, 273 GB/s); NVIDIA gives no reason; separate dependency stack on the older TensorRT pinned for it | F07-6, F07-47, F07-9
+Which savings a board can take depends on its GPU: Thor's Blackwell GPU runs NVFP4 natively; the table has a quantised figure only for the Thor (35.6 ms), none for the DGX Spark or the Orin | F07-58, F07-4, F07-5
+Nucleus expandable: on paper memory does not separate the nuclei (footprints small beside the policy); nucleus lite runs Docker containers in components | F07-84, F07-138, F07-86
+LeRobot's RTC settings are given for three other VLA policies (SmolVLA, pi0, pi0.5, section 5); ACT is the chunking policy of section 4 | F07-15, F07-29
