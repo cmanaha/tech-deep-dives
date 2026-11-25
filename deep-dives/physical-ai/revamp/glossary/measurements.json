@@ -20,7 +20,7 @@
     "meaning": "The set of event counters inside a processor core, such as cycles, stalled slots and retired micro-operations."
   },
   {
-    "term": "PMU card",
+    "term": "Card (PMU card)",
     "expansion": null,
     "meaning": "The record of one program on one core: its rate, its four slot shares and its memory stall."
   },
@@ -37,7 +37,7 @@
   {
     "term": "Multiplexing (perf)",
     "expansion": null,
-    "meaning": "What perf does when a core has too few counters for the requested events: each event counts for part of the run and its total is scaled up, which costs accuracy in ratios of two events."
+    "meaning": "What perf does when it cannot schedule every requested event at once: each event counts for part of the run and its total is scaled up, and a ratio of two events not counted together can lose accuracy."
   },
   {
     "term": "Top-down analysis",
@@ -45,14 +45,14 @@
     "meaning": "A method that finds a core's bottleneck from its event counters by sorting every slot into one of four shares: retiring, front-end bound, back-end bound and bad speculation."
   },
   {
-    "term": "L2 refill",
+    "term": "Cache refill",
     "expansion": null,
-    "meaning": "A fetch into the core's second-level cache from further out in the memory system; refills per thousand instructions show how hard a program leans on memory."
+    "meaning": "A fetch of data into one of the core's caches (the first-level data cache or the second-level cache) from further out in the memory system; refills per thousand instructions show how hard a program leans on memory."
   },
   {
-    "term": "Second-level events",
+    "term": "Finer events (Arm's second level)",
     "expansion": null,
-    "meaning": "Arm's finer counters that split a first-level share, for example back-end stalls into core causes and memory causes; not counted in these runs."
+    "meaning": "Arm's counters that split a first-level share, for example back-end stalls into core causes and memory causes (STALL_BACKEND_MEMBOUND against STALL_BACKEND); not counted in these runs."
   },
   {
     "term": "Event source",
@@ -178,11 +178,6 @@
     "term": "EGL",
     "expansion": null,
     "meaning": "The interface MuJoCo uses for hardware-accelerated rendering with no display."
-  },
-  {
-    "term": "Rasteriser",
-    "expansion": null,
-    "meaning": "A renderer that draws triangles onto pixels, as MuJoCo's built-in renderers do, with no ray tracing."
   },
   {
     "term": "Kernel (GPU)",
