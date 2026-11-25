@@ -1,25 +1,137 @@
 [
-  { "term": "Augmentation", "expansion": null, "meaning": "Making more training examples out of the ones that were recorded." },
-  { "term": "Image transform", "expansion": null, "meaning": "A small random change to a camera frame at training time, such as brightness or a slight rotation, with the recorded actions left alone." },
-  { "term": "Dataloader", "expansion": null, "meaning": "The part of a training program that fetches samples and assembles them into batches for the GPU." },
-  { "term": "Tensor cores", "expansion": null, "meaning": "The part of a GPU that does the matrix arithmetic of neural networks." },
-  { "term": "Rendering", "expansion": null, "meaning": "Drawing the image a simulated camera would see." },
-  { "term": "Parallel environments", "expansion": null, "meaning": "Independent copies of one simulated scene that a single GPU steps at the same time." },
-  { "term": "Demonstration multiplication", "expansion": null, "meaning": "Replaying a few human demonstrations in a simulator from new object positions and keeping the runs that still succeed." },
-  { "term": "Isaac Lab", "expansion": null, "meaning": "NVIDIA's robot-learning framework built on its simulator." },
-  { "term": "Isaac Lab Mimic", "expansion": null, "meaning": "The Isaac Lab tool that cuts demonstrations into subtasks, fits them to a new scene, replays them and keeps the successes." },
-  { "term": "MimicGen", "expansion": null, "meaning": "The 2023 system that introduced demonstration multiplication in simulation." },
-  { "term": "SkillGen", "expansion": null, "meaning": "The Isaac Lab variant that plans a collision-free motion between skill segments with a GPU motion planner." },
-  { "term": "Yield", "expansion": null, "meaning": "The share of replayed candidate demonstrations that pass the success check and are kept." },
-  { "term": "State-only dataset", "expansion": null, "meaning": "Generated demonstrations saved as joint and object numbers with no camera images." },
-  { "term": "Transfer", "expansion": null, "meaning": "A generative workflow that takes a prompt and a control video and writes a new video with the same geometry and a different appearance." },
-  { "term": "Control video", "expansion": null, "meaning": "A version of an episode reduced to its shapes (edges, depth or a segmentation map) that steers a video generator." },
-  { "term": "Cosmos 3", "expansion": null, "meaning": "NVIDIA's current family of video-generating world models, in Edge, Nano and Super sizes." },
-  { "term": "DreamGen", "expansion": null, "meaning": "A recipe in which a fine-tuned video model invents robot episodes and a second model recovers their actions." },
-  { "term": "Inverse-dynamics model", "expansion": null, "meaning": "A network that looks at two frames and outputs the action that happened between them." },
-  { "term": "ACT", "expansion": "Action Chunking with Transformers", "meaning": "A small imitation policy that predicts a chunk of future actions from camera images and joint angles." },
-  { "term": "NIM", "expansion": "NVIDIA Inference Microservice", "meaning": "NVIDIA's packaged container that serves a model." },
-  { "term": "GiB", "expansion": "gibibyte", "meaning": "The binary unit of memory, slightly larger than a GB." },
-  { "term": "fps", "expansion": "frames per second", "meaning": "How many video frames cover one second." },
-  { "term": "TensorRT-LLM", "expansion": null, "meaning": "NVIDIA's runtime for serving large models." }
+ {
+  "term": "Augmentation",
+  "expansion": null,
+  "meaning": "Making more training examples out of the ones that were recorded."
+ },
+ {
+  "term": "Image transform",
+  "expansion": null,
+  "meaning": "A small random change to a camera frame at training time, such as brightness or a slight rotation, with the recorded actions left alone."
+ },
+ {
+  "term": "Dataloader",
+  "expansion": null,
+  "meaning": "The part of a training program that fetches samples and assembles them into batches for the GPU."
+ },
+ {
+  "term": "Tensor cores",
+  "expansion": null,
+  "meaning": "The part of a GPU that does the matrix arithmetic of neural networks."
+ },
+ {
+  "term": "Rendering",
+  "expansion": null,
+  "meaning": "Drawing the image a simulated camera would see."
+ },
+ {
+  "term": "Parallel environments",
+  "expansion": null,
+  "meaning": "Independent copies of one simulated scene that a single GPU steps at the same time."
+ },
+ {
+  "term": "Demonstration multiplication",
+  "expansion": null,
+  "meaning": "Replaying a few human demonstrations in a simulator from new object positions and keeping the runs that still succeed."
+ },
+ {
+  "term": "Isaac Lab",
+  "expansion": null,
+  "meaning": "NVIDIA's robot-learning framework built on its simulator."
+ },
+ {
+  "term": "Isaac Lab Mimic",
+  "expansion": null,
+  "meaning": "The Isaac Lab tool that cuts demonstrations into subtasks, fits them to a new scene, replays them and keeps the successes."
+ },
+ {
+  "term": "MimicGen",
+  "expansion": null,
+  "meaning": "The 2023 system that introduced demonstration multiplication in simulation."
+ },
+ {
+  "term": "SkillGen",
+  "expansion": null,
+  "meaning": "The Isaac Lab variant that plans a collision-free motion between skill segments with a GPU motion planner."
+ },
+ {
+  "term": "Yield",
+  "expansion": null,
+  "meaning": "The share of replayed candidate demonstrations that pass the success check and are kept."
+ },
+ {
+  "term": "Transfer",
+  "expansion": null,
+  "meaning": "A generative workflow that takes a prompt and a control video and writes a new video with the same geometry and a different appearance."
+ },
+ {
+  "term": "Control video",
+  "expansion": null,
+  "meaning": "A version of an episode reduced to its shapes (edges, depth or a segmentation map) that steers a video generator."
+ },
+ {
+  "term": "Cosmos 3",
+  "expansion": null,
+  "meaning": "NVIDIA's current family of world models that generate video, in Edge, Nano and Super sizes."
+ },
+ {
+  "term": "DreamGen",
+  "expansion": null,
+  "meaning": "A recipe in which a fine-tuned video model invents robot episodes and a second model recovers their actions."
+ },
+ {
+  "term": "Inverse-dynamics model",
+  "expansion": null,
+  "meaning": "A network that looks at two frames and outputs the action that happened between them."
+ },
+ {
+  "term": "ACT",
+  "expansion": "Action Chunking with Transformers",
+  "meaning": "A small imitation policy that predicts a chunk of future actions from camera images and joint angles."
+ },
+ {
+  "term": "NIM",
+  "expansion": "NVIDIA Inference Microservice",
+  "meaning": "NVIDIA's packaged container that serves a model."
+ },
+ {
+  "term": "GiB",
+  "expansion": "gibibyte",
+  "meaning": "The binary unit of memory, slightly larger than a GB."
+ },
+ {
+  "term": "fps",
+  "expansion": "frames per second",
+  "meaning": "How many video frames cover one second."
+ },
+ {
+  "term": "Simulated replay",
+  "expansion": null,
+  "meaning": "Another name used here for demonstration multiplication: demonstrations replayed in a simulator from new object positions."
+ },
+ {
+  "term": "Policy",
+  "expansion": null,
+  "meaning": "The network that turns observations into actions."
+ },
+ {
+  "term": "World model",
+  "expansion": null,
+  "meaning": "A network that predicts the next state of the scene; the kind used here generates video."
+ },
+ {
+  "term": "Pseudo-actions",
+  "expansion": null,
+  "meaning": "Action labels inferred from a generated video by a second model, the DreamGen paper's term."
+ },
+ {
+  "term": "TensorRT-LLM",
+  "expansion": null,
+  "meaning": "NVIDIA's runtime for serving large models."
+ },
+ {
+  "term": "vCPU",
+  "expansion": "virtual CPU",
+  "meaning": "The unit in which EC2 counts an instance's processor capacity."
+ }
 ]
