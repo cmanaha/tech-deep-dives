@@ -1,16 +1,142 @@
 [
-  { "term": "Unit of work", "expansion": null, "meaning": "The thing one stage of the loop hands to the next, such as a decoded frame, a simulation step, a training sample or an action, counted per second to compare machines." },
-  { "term": "Edge machine", "expansion": null, "meaning": "A computer that sits beside the robot, where power is the scarce resource and nothing is billed by the hour." },
-  { "term": "Stand-in", "expansion": null, "meaning": "A small program that loads a machine the way a real workload does without being that workload." },
-  { "term": "Units per joule", "expansion": null, "meaning": "Units of work per second divided by watts drawn: how much work a machine does with a fixed amount of energy." },
-  { "term": "Purchase option", "expansion": null, "meaning": "How an instance hour is bought: on demand, as spare capacity that AWS can take back, or as a reservation; each has its own price." },
-  { "term": "Region", "expansion": null, "meaning": "The AWS location an instance runs in; prices differ between Regions." },
-  { "term": "GPU-hour", "expansion": null, "meaning": "One GPU running for one hour." },
-  { "term": "Control period", "expansion": null, "meaning": "The time between two commands to the motors: 33.3 ms when the arm is driven at 30 Hz." },
-  { "term": "Chunk", "expansion": null, "meaning": "Several future actions returned by one policy call, played while the next call computes." },
-  { "term": "p50", "expansion": "50th percentile (median)", "meaning": "The time within which half of all calls finish; it describes the typical call." },
-  { "term": "p99", "expansion": "99th percentile", "meaning": "The time within which ninety-nine calls in every hundred finish; a robot's deadline is judged against it." },
-  { "term": "tegrastats", "expansion": null, "meaning": "The Jetson's own command-line monitor of power and load." },
-  { "term": "nvidia-smi", "expansion": null, "meaning": "NVIDIA's command-line tool that reports GPU status, including utilisation and power." },
-  { "term": "Graviton", "expansion": null, "meaning": "AWS's own Arm processors, offered as EC2 CPU instances." }
+ {
+  "term": "Unit of work",
+  "expansion": null,
+  "meaning": "The thing one stage of the loop hands to the next, such as a decoded frame, a simulation step, a training sample or an action, counted per second to compare machines."
+ },
+ {
+  "term": "Edge machine",
+  "expansion": null,
+  "meaning": "A computer that sits beside the robot, where power is the scarce resource and nothing is billed by the hour."
+ },
+ {
+  "term": "Stand-in",
+  "expansion": null,
+  "meaning": "A small program run in place of a real workload, loading a machine the way that workload does without being it."
+ },
+ {
+  "term": "Units per joule",
+  "expansion": null,
+  "meaning": "Units of work per second divided by watts drawn under load: how much work a machine does with a fixed amount of energy."
+ },
+ {
+  "term": "Purchase option",
+  "expansion": null,
+  "meaning": "How an instance hour is bought: on demand, as Spot capacity that AWS can take back, or reserved ahead; each has its own price."
+ },
+ {
+  "term": "Region",
+  "expansion": null,
+  "meaning": "The AWS location an instance runs in; prices differ between Regions."
+ },
+ {
+  "term": "Spot",
+  "expansion": null,
+  "meaning": "Spare EC2 capacity that AWS may take back; for a batch on Spot, count only the units that finished, since a unit lost when the machine is reclaimed delivers nothing."
+ },
+ {
+  "term": "GPU-hour",
+  "expansion": null,
+  "meaning": "One GPU running for one hour."
+ },
+ {
+  "term": "Kernel (GPU)",
+  "expansion": null,
+  "meaning": "A program launched on the GPU; nvidia-smi's utilisation counts the time at least one is running, not how much of the GPU it uses."
+ },
+ {
+  "term": "Control period",
+  "expansion": null,
+  "meaning": "The time between two commands to the motors: 33.3 ms when the arm is driven at 30 Hz. A policy call's deadline is counted in control periods."
+ },
+ {
+  "term": "Chunk",
+  "expansion": null,
+  "meaning": "Several future actions returned by one policy call, played one per control period while the next call computes."
+ },
+ {
+  "term": "Asynchronous inference",
+  "expansion": null,
+  "meaning": "Starting the next policy call while the current chunk is still playing, so the arm does not stop to wait."
+ },
+ {
+  "term": "p50",
+  "expansion": "50th percentile (median)",
+  "meaning": "The time within which half of all calls finish; it describes the typical call."
+ },
+ {
+  "term": "p99",
+  "expansion": "99th percentile",
+  "meaning": "The time within which ninety-nine calls in every hundred finish; held against the room a chunk leaves when one late call in a hundred is tolerable."
+ },
+ {
+  "term": "Part a workload exhausts first",
+  "expansion": null,
+  "meaning": "The resource that fills while the rest of the machine sits partly idle; a workload is priced on the instance built around that part. For the policy stand-in it is memory bandwidth."
+ },
+ {
+  "term": "G family",
+  "expansion": null,
+  "meaning": "EC2 GPU instances whose GPUs also carry graphics and video hardware, including RT cores."
+ },
+ {
+  "term": "P family",
+  "expansion": null,
+  "meaning": "EC2 GPU instances built for training; their GPUs lack RT cores, and the H100 in P5 does not decode AV1."
+ },
+ {
+  "term": "RT cores",
+  "expansion": "ray-tracing cores",
+  "meaning": "GPU units that trace rays, which a ray-traced camera renderer needs."
+ },
+ {
+  "term": "AV1",
+  "expansion": "AOMedia Video 1",
+  "meaning": "The video compression LeRobot records in by default; decoding it needs a decoder that supports it, or CPU cores."
+ },
+ {
+  "term": "MuJoCo",
+  "expansion": null,
+  "meaning": "A robot physics simulator; two releases (4.0.1 and 3.17.0) ran our physics and render stand-ins."
+ },
+ {
+  "term": "TensorRT",
+  "expansion": null,
+  "meaning": "NVIDIA's inference compiler, the runtime behind its 149.0 ms Jetson Orin median for GR00T N1.7."
+ },
+ {
+  "term": "tegrastats",
+  "expansion": null,
+  "meaning": "The Jetson's own command-line monitor of power and load; its VDD_IN rail covers the whole board."
+ },
+ {
+  "term": "nvidia-smi",
+  "expansion": null,
+  "meaning": "NVIDIA's command-line tool that reports GPU status, including utilisation and GPU power."
+ },
+ {
+  "term": "Graviton",
+  "expansion": null,
+  "meaning": "AWS's own Arm processors, offered as EC2 CPU instances."
+ },
+ {
+  "term": "EGL",
+  "expansion": null,
+  "meaning": "The interface MuJoCo's offscreen renderer used for hardware-accelerated drawing without a display; our render run did not establish how much of each frame the GPU drew."
+ },
+ {
+  "term": "Percentile as a miss rate",
+  "expansion": null,
+  "meaning": "One call in a hundred is slower than the p99, so holding the p99 against the room a chunk leaves accepts one late call in a hundred; accepting none means holding the worst call."
+ },
+ {
+  "term": "Purchase figure (edge)",
+  "expansion": null,
+  "meaning": "A board's purchase price divided by the units per second it sustains: what each unit per second of capacity cost to buy."
+ },
+ {
+  "term": "Like-for-like checks",
+  "expansion": null,
+  "meaning": "The three conditions under which a ratio of two rates belongs to the two machines: the same unit, the same model and the same software release."
+ }
 ]
