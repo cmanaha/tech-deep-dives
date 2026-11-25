@@ -36,8 +36,8 @@ const TD: CSSProperties = { padding: '6px 10px', borderBottom: '1px solid #d5dbd
 
 const GPU_SUB = "the station's own card; in a cluster, a queue";
 const FROZEN_ROWS = [
-  'Grader: passes or fails each attempt',
-  'Reset: sets the scene for the next attempt',
+  'Success check: passes or fails each attempt',
+  'Reset: sets the scene for the next rollout',
   'Safety limits and the emergency stop',
 ];
 
@@ -62,7 +62,7 @@ function AgentLoopDiagram() {
         <desc>
           A coding agent proposes one idea and edits what it may change: the training code and policy code, the
           learning method and its settings, and its own Git branch. It starts a training run on a GPU, the new policy
-          runs on the robot, and each attempt is scored. The grader, the reset and the safety limits are frozen: the
+          runs on the robot, and each attempt is scored. The success check, the reset and the safety limits are frozen: the
           agent reads them and never changes them. The grade goes back to the agent, which tries again.
         </desc>
         <defs>
@@ -284,7 +284,7 @@ export function AgentsLoop() {
         header={
           <Header
             variant="h1"
-            description="Know what must sit beyond a coding agent's reach before it runs a robot's improvement loop unattended, and why the 99% within eight attempts reported for ENPIRE, an agent-run robot loop, cannot stand for a first-try rate (ENPIRE paper v2 and repository, AWS documentation, read 2026-11-20)"
+            description="Know what must sit beyond a coding agent's reach before it runs a robot's improvement loop unattended, and why the 99% within eight attempts one agent-run loop reports cannot stand for a first-try rate (ENPIRE paper v2 and repository, AWS documentation, read 2026-11-20)"
           >
             19. Agents Running the Loop: What the Agent May Touch and Who Grades It
           </Header>
@@ -293,32 +293,40 @@ export function AgentsLoop() {
         <SpaceBetween size="m">
           <Box variant="p">
             A coding agent can be left to improve a robot&apos;s policy unattended only if three things sit outside
-            its reach: the reset that puts the scene back before each attempt at the task, the success check that
-            grades the attempt, and the safety limits that stop the arm. The agent is a language model that reads and
-            writes files and runs commands, and the policy is the model that drives the arm. Asked to raise a success
+            its reach: the reset that puts the scene back, the success check that grades each attempt at the task,
+            and the safety limits that stop the arm. The agent is a language model working through an agent
+            program that lets it read and write files and run commands, and the policy is the model that drives the
+            arm. Asked to raise a success
             rate, an agent that can edit the check can change what counts as a success, and one that runs the reset
             can choose its own test and retry for free. The rate cannot tell either from a better policy.
           </Box>
           <Box variant="p">
             ENPIRE, a 2026 research system from NVIDIA and two universities, gives each of eight real robot stations
             its own agent. A person and the agent build the three parts once and freeze them, and the training is left
-            to the agent. Its authors report 99% &quot;pass@8&quot; across the tasks they showcase. An attempt is one
-            try at the task, ending when the policy succeeds, fails or runs out of time, and pass@8 counts a success
-            anywhere in a rollout of up to eight attempts, each made after seeing the previous failure. <Cite id="F04-2">ENPIRE paper, sections 1, 2.1 and 2.2</Cite>{' '}
+            to the agent. Its authors report 99% &quot;pass@8&quot; across the tasks they showcase.{' '}
+            <Cite id="F04-2">ENPIRE paper, sections 1, 2.1 and 2.2</Cite>{' '}
             <Cite id="F04-5">ENPIRE paper, figure 1</Cite>{' '}
             <Cite id="F04-16">ENPIRE paper, abstract and section 3</Cite>
           </Box>
           <Box variant="p">
+            An attempt is one try at the task, ending when the policy succeeds, fails or runs out of time. A rollout
+            is one reset followed by up to eight attempts, and pass@8 counts a rollout as a success if any of its
+            attempts succeeds. No reset comes between the attempts, and each retry is made, in the authors&apos;
+            words, &quot;after witnessing the previous failure&quot;; their definition does not say how that failure
+            is passed on to the next attempt.{' '}
+            <Cite id="F04-16">ENPIRE paper, section 3</Cite>
+          </Box>
+          <Box variant="p">
             That count mixes first tries with retries. If the eight attempts were independent, a policy that
-            succeeds on <Derived>44</Derived>% of first tries would already reach 99%, since{' '}
-            <M>{'0.56^8 \\approx 0.01'}</M>. It is a different quantity from the success rate section 16 counts, the
-            share of single attempts that succeed, and read as one it can make a <Derived>44</Derived>% policy look like
+            succeeds on <Derived>44</Derived>% of first tries would already reach 99%, since all eight fail together
+            with probability <M>{'0.56^8 \\approx 0.01'}</M>. It is a different quantity from the success rate section 16 counts, the
+            share of single attempts that succeed, and mistaken for that rate it can make a <Derived>44</Derived>% policy look like
             a 99% one.{' '}
             <Cite id="F04-16">ENPIRE paper, abstract and section 3</Cite>
           </Box>
           <Box variant="p">
-            The same rule covers compute once the loop leaves its station. On the station the cap is physical, one
-            GPU per robot; on a shared cluster it becomes a setting, and the agent must not be able to edit that
+            The same rule covers compute once the loop leaves the robot&apos;s own workstation. On the workstation
+            the cap is physical, one GPU per robot; on a shared cluster it becomes a setting, and the agent must not be able to edit that
             setting either. Anything the agent&apos;s grade, test or spend depends on belongs outside its reach.{' '}
             <Cite id="F04-49">ENPIRE repository, autoresearch_instruction.md</Cite>
           </Box>
@@ -329,7 +337,7 @@ export function AgentsLoop() {
         header={
           <Header
             variant="h2"
-            description="Divide one improvement cycle between the agent and the code around it, and spend robot time last in every idea"
+            description="Divide one improvement cycle between the agent and the code around it, and spend robot time last when testing each change"
           >
             One cycle: code resets, runs and grades; the agent reads, edits and trains
           </Header>
@@ -339,26 +347,26 @@ export function AgentsLoop() {
           <Box variant="p">
             Improving a policy by hand is a cycle an engineer repeats: put the scene back, run the policy, decide
             whether the attempt worked, study the failures, edit the training code, train again. ENPIRE splits that
-            cycle between code and the agent. Code does the first three steps on every attempt: the reset, the run
-            and the success check, which the paper calls the verifier. Its verdict is the grade the agent works to
-            raise. The agent does the other three steps: it reads logs and papers, edits the training code and
+            cycle between code and the agent. Code does the first three steps on every rollout: the reset, the run
+            and the success check, the paper&apos;s verifier. Its verdict is the grade the agent works to raise. The agent does the other three steps: it reads logs and papers, edits the training code and
             launches the next training run. <Cite id="F04-1">ENPIRE paper, abstract</Cite>{' '}
             <Cite id="F04-2">ENPIRE paper, sections 1 and 2.1</Cite>
           </Box>
           <Box variant="p">
-            Each station pairs one robot with one GPU that both trains and runs the policy, and its own agent. Only
-            the agent&apos;s language model runs elsewhere, as a hosted model. Robot, GPU and agent together make the
-            station, the unit the fleet scales by.{' '}
+            Each station, the unit the fleet scales by, is one robot, one GPU that both trains and runs the policy,
+            and its own agent. No policy work leaves the station; only the agent&apos;s language model runs elsewhere,
+            as a hosted model.{' '}
             <Cite id="F04-5">ENPIRE paper, figure 1 and appendix B.2</Cite>{' '}
+            <Cite id="F04-25">ENPIRE paper, appendix C.4</Cite>{' '}
             <Cite id="F04-49">ENPIRE repository, autoresearch_instruction.md</Cite>
           </Box>
-          <ExpandableSection headerText="What one ENPIRE station holds">
+          <ExpandableSection headerText="Station hardware, for reference">
             <Box variant="p">
-              Each station is one two-arm robot with three cameras, on one workstation. Its single NVIDIA RTX 5090 (32
-              GB) trains and runs the policy, beside a 24-core CPU and 128 GB of RAM, with no shared cluster or
-              off-station compute.{' '}
-              <Cite id="F04-5">ENPIRE paper, figure 1 and appendix B.2</Cite>{' '}
-              <Cite id="F04-25">ENPIRE paper, appendix C.4</Cite>
+              Two arms and three cameras; one NVIDIA RTX 5090 (32 GB), a 24-core CPU and 128 GB of RAM. That one
+              32 GB card carries all the station&apos;s GPU work: training, the policy, and the reset&apos;s detection
+              and motion planning.{' '}
+              <Cite id="F04-5">ENPIRE paper, appendix B.2</Cite>{' '}
+              <Cite id="F04-14">ENPIRE paper, appendix A.1</Cite>
             </Box>
           </ExpandableSection>
           <Box variant="p">
@@ -366,8 +374,8 @@ export function AgentsLoop() {
             freeze it; in stage two, the agent runs its half with no person in the loop. Stage one starts from a few
             minutes of recorded successes and failures, from which the agent writes the success check as code that
             returns pass or fail for one attempt. For inserting a pin, the check requires three conditions at once:
-            the pin aligned in the camera image, the gripper at the right height, and a force estimate in range. Two
-            of the three are not vision. <Cite id="F04-2">ENPIRE paper, section 2.1</Cite>{' '}
+            the pin aligned in the camera image, the gripper at the right height, and a force estimate in range.{' '}
+            <Cite id="F04-2">ENPIRE paper, section 2.1</Cite>{' '}
             <Cite id="F04-12">ENPIRE paper, section 2.1 and figure 9</Cite>
           </Box>
           <Box variant="p">
@@ -390,7 +398,8 @@ export function AgentsLoop() {
             the time reports <Toy>0.2 + 0.8 x 0.1 = 0.28</Toy>, a precision of <Toy>0.2 / 0.28 = 0.71</Toy>. The
             figure that stays put is the share of failures the check passes, one in ten in both cases. A precision
             measured on the stage-one recordings therefore holds only for their mix of successes and failures, and
-            drifts as the policy improves.
+            drifts as the policy improves. When you set the bar, state the share of failures the check may pass, the
+            figure that belongs to the check, and re-measure precision as the policy changes.
           </Box>
           <Box variant="p">
             The person also states the check&apos;s recall, the share of true successes it passes, and its latency,
@@ -414,18 +423,19 @@ export function AgentsLoop() {
             learning (RL, which improves a policy from its own scored attempts, here on the real robot), a scripted
             policy, or a mix. It also sets the training settings, such as the batch size. In the published
             eight-agent run on pin insertion, the most notable gain came from a mix: adding a behaviour-cloning term
-            to the training loss raised what the authors call the &quot;team-average best success rate&quot; by 10.8
-            percentage points.{' '}
+            to the training loss raised the &quot;team-average best success rate&quot;, a running best averaged over the
+            team, by 10.8 percentage points.{' '}
             <Cite id="F04-3">ENPIRE paper, sections 2.2 and 3.2</Cite>{' '}
             <Cite id="F04-23">ENPIRE paper, appendix B.6</Cite>
           </Box>
           <Box variant="p">
             Every idea follows one order, set in the repository&apos;s instruction file, and the order spends robot
-            time last, the resource the authors call binding. The agent records one hypothesis that real attempts
-            could prove wrong, makes the smallest change to the policy side that tests it, and runs the unit tests and
-            an offline evaluation. Only then does it run the approved number of real attempts. It reads the result
-            file, the metrics and the video, and keeps the change only if it passes the success and regression gates.
-            Failed attempts stay in the record.{' '}
+            time last, because on hardware the budget of real attempts, not compute, is the loop&apos;s scarcest
+            input. The agent records one hypothesis that real attempts could prove wrong, makes the smallest
+            change to the policy side that tests it, and runs the unit tests and an offline evaluation. Only then does
+            it run the approved number of real attempts. It reads the result file, the metrics and the video, and
+            keeps the change only if it passes the configured gates: enough successes, and no regression on what
+            already worked. Failed attempts stay in the record.{' '}
             <Cite id="F04-9">ENPIRE repository, autoresearch_instruction.md</Cite>{' '}
             <Cite id="F04-21">ENPIRE paper, section 5.2</Cite>
           </Box>
@@ -434,7 +444,8 @@ export function AgentsLoop() {
             server on the station. ENPIRE&apos;s policy acts 30 times a second, the same rate as the {ARM}&apos;s
             host loop (section 3), while the station&apos;s joint controllers track each target 100 times a second.
             The agent works on a far slower clock: the eight-agent run tried 86 ideas in about 3.4 hours, about{' '}
-            <Derived>86 / 3.4 / 8 = 3.2</Derived> per agent-hour.{' '}
+            <Derived>86 / 3.4 / 8 = 3.2</Derived> per agent-hour. The agent&apos;s loop is counted in minutes per
+            idea, the arm&apos;s in milliseconds per action.{' '}
             <Cite id="F04-6">ENPIRE paper, appendix B.1</Cite>{' '}
             <Cite id="F04-23">ENPIRE paper, appendix B.6 and figure 12</Cite>
           </Box>
@@ -449,9 +460,9 @@ export function AgentsLoop() {
             cites="F04-3 F04-6 F04-7 F04-8 F04-12"
             caption={
               <>
-                The blue box is all the agent may edit; the dashed box is built once with a person and then only
-                read. One pass runs down the grey arrows, and the blue arrow carries the grade back to the agent for
-                its next idea. Illustrative layout, not measured.
+                The box headed &quot;The agent may change&quot; is all the agent may edit; the dashed box headed
+                &quot;Frozen&quot; is built once with a person and then only read. One pass runs down the middle arrows,
+                and the arrow up the right side carries the grade back to the agent for its next idea. Illustrative layout, not measured.
               </>
             }
           >
@@ -499,9 +510,14 @@ export function AgentsLoop() {
           </Box>
           <Box variant="p">
             Two kinds of limit catch what the agent&apos;s code gets wrong. Position and motion limits are software:
-            crossing one ends the attempt and triggers a reset, and because they are code, they are on the list of
-            what the agent must not change. Keep them outside its repository. The gripper&apos;s force bound sits in
-            the actuator: it is torque-limited, so a bad contact stalls instead of pushing hard enough to damage the
+            crossing one fails the rollout at once and triggers a reset, and because they are code, they are on the list of
+            what the agent must not change. Keep them outside its repository.{' '}
+            <Cite id="F04-10">ENPIRE paper, section 2.1</Cite>{' '}
+            <Cite id="F04-8">ENPIRE repository, autoresearch_instruction.md</Cite>
+          </Box>
+          <Box variant="p">
+            The second kind sits in the hardware: the gripper&apos;s force bound is in the actuator, which is
+            torque-limited, so a bad contact stalls instead of pushing hard enough to damage the
             hardware, and the paper calls that bound essential because the eight stations run unattended, with no
             person to intervene. The repository&apos;s security notes require &quot;explicit operator intent&quot; and
             &quot;a physical emergency stop within reach&quot; for every real-robot command, and neither source says
@@ -513,7 +529,7 @@ export function AgentsLoop() {
             Simulation shows what else the agent could reach. In ENPIRE&apos;s simulated kitchen tasks, to stop the
             agent cheating, the environment removes calls such as <code>get_task_info</code>,{' '}
             <code>reset_env</code>, <code>reset_to_initial</code>, task-specific command-line helpers and queries for
-            the true target. Each leaks the task&apos;s state or grants a retry, the two routes to a grade without a
+            the true target. Each leaks the task&apos;s state or grants a retry, two routes to a grade without a
             better policy.{' '}
             <Cite id="F04-24">ENPIRE paper, appendix D.1</Cite>
           </Box>
@@ -604,7 +620,7 @@ export function AgentsLoop() {
         header={
           <Header
             variant="h2"
-            description="Catch a test the agent chose, a judge that leans toward success and a count too small to rank a change, each with the check that exposes it"
+            description="Catch a test the agent chose, a model check that leans toward success and a count too small to rank a change, each with the measure that exposes it"
           >
             How an agent&apos;s score parts from the robot&apos;s skill
           </Header>
@@ -612,10 +628,10 @@ export function AgentsLoop() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            An agent improving against a grader is an optimiser, and an optimiser takes the cheapest route to a high
-            score (the <Link href="../rl-agentic-loops/">Learning From Feedback dive</Link> builds the idea in its
-            section 13, The Reward Is a Proxy). One such route runs through the reset, because whoever resets the
-            scene chooses the test. SEAR reports that on a real robot &quot;success in practice overstates success in
+            An agent improving against its success check is an optimiser, and{' '}
+            <Link href="../rl-agentic-loops/#reward-proxy">an optimiser takes the cheapest route to a high score</Link>.
+            On a robot, one cheap route runs through the reset, because whoever resets the scene chooses the test.
+            SEAR reports that on a real robot &quot;success in practice overstates success in
             the test&quot;: during practice the agent resets the scene itself and rarely creates the hard starting
             states an operator sets up for the test. Keep a set of start states the agent never chose, and score the
             policy on those. <Cite id="F04-84">SEAR paper, section 4</Cite>
@@ -623,47 +639,61 @@ export function AgentsLoop() {
           <Box variant="p">
             When the success check is a call to a general vision-language model (a language model that also reads
             images) rather than code, ambiguous attempts tend to come back as successes, and an agent optimising
-            against such a check is paid for the failures among them. FailBench, a 2026 test of 13 such judges
+            against such a check is paid for the failures among them. FailBench, a 2026 test of 13 such models
             on 2,197 real and simulated manipulation attempts, scores them by balanced accuracy, the average of the
             detection rates on successes and on failures, so 0.5 is chance. It found &quot;a systematic bias toward
             predicting success under ambiguous evidence&quot;. <Cite id="F04-45">FailBench paper, abstract</Cite>
           </Box>
           <Box variant="p">
-            Where such a judge fails is predictable. In the FailBench authors&apos; words, detection &quot;approaches
+            Where such a model fails is predictable. In the FailBench authors&apos; words, detection &quot;approaches
             saturation when success is determined by observable object motion, but approaches chance when success
-            depends on establishing contact&quot;, with no judge above 0.60 on contact-intensive assembly. ENPIRE&apos;s
+            depends on establishing contact&quot;, with no model above 0.60 on contact-intensive assembly. ENPIRE&apos;s
             check for pin insertion, a contact task, does not rest on the camera alone: two of its three conditions are
             the gripper&apos;s height and a force estimate.{' '}
             <Cite id="F04-45">FailBench paper, abstract</Cite>{' '}
             <Cite id="F04-12">ENPIRE paper, figure 9</Cite>
           </Box>
           <Box variant="p">
-            Too few evaluation episodes matter most late in a run, when the gains get small. After ENPIRE&apos;s early
+            The number of evaluation episodes matters most late in a run, when the gains get small. After ENPIRE&apos;s early
             10.8-point gain, later ideas such as batch-size tuning (+0.9) and controller compensation (+1.3) added
-            about one point each. AgenticRobotics, which runs its loop on one GPU, measured its own instrument:
-            &quot;100 held-out episodes give a +/-9.5-point interval&quot;. A gain is the difference of two such rates, so its interval is wider still. Re-running one evaluation with the same
-            seeds left the total unchanged while 22 of the 100 episodes flipped outcome: fixed seeds reproduce
-            &quot;an episode&apos;s initial state, not its outcome&quot;. Measured on 100 episodes each,
-            AgenticRobotics&apos; count, gains of +0.9 and +1.3 would sit inside the interval that count gives.{' '}
-            <Cite id="F04-23">ENPIRE paper, appendix B.6</Cite>{' '}
+            about one point each. Whether a one-point gain is real depends on how many episodes measured it, and the
+            project page&apos;s data for the 86 ideas gives each one&apos;s time, its agent and whether it raised the
+            best rate, with no episode count.{' '}
+            <Cite id="F04-23">ENPIRE paper, appendix B.6, and project page data</Cite>
+          </Box>
+          <Box variant="p">
+            AgenticRobotics, which runs its loop on one GPU, measured the noise in its own evaluation: &quot;100
+            held-out episodes give a +/-9.5-point interval&quot;, at the success rates it was measuring. A gain is the
+            difference of two such rates, so at those rates its interval is wider still: about{' '}
+            <Derived>
+              <M>{'9.5\\sqrt{2} \\approx 13.4'}</M>
+            </Derived>{' '}
+            points when the two counts are independent. Fixing the seeds does not fix
+            the outcomes: re-running one evaluation with the same seeds left the total unchanged while 22 of the 100
+            episodes flipped. Without the count, a reader cannot tell ENPIRE&apos;s one-point gains from noise.{' '}
             <Cite id="F04-36">AgenticRobotics paper v2, section 4</Cite>{' '}
             <Cite id="F04-35">AgenticRobotics paper v2, sections 3.5 and 5</Cite>{' '}
             <Cite id="F04-37">AgenticRobotics paper v2, section 5</Cite>
           </Box>
           <Box variant="p">
-            AgenticRobotics answers with a gate. With <M>w</M> the half-width of the 95% interval on the difference
-            between two success rates, a new checkpoint replaces the best outright only if it beats it by at least{' '}
-            <M>{'1.5w'}</M>; a smaller positive gain is kept only if a paired test, which scores both checkpoints on
-            the same episodes, confirms it, and a round with no improvement forces a change of strategy. The same paper reports against its own design: on the one
+            AgenticRobotics answers with a gate against false promotions, because the best of several noisy scores
+            is partly noise. Its own example: a checkpoint that measured 63% once &quot;pooled to 56.5% over 1,200
+            episodes, so 63% is a metric-best observation, not an estimate of skill&quot;. So with <M>w</M> the
+            half-width of the 95% interval on the difference between two success rates, a new checkpoint replaces the
+            best outright only if it beats it by at least <M>{'1.5w'}</M>; a smaller positive gain is kept only if a
+            paired test, which scores both checkpoints on the same episodes, confirms it.{' '}
+            <Cite id="F04-35">AgenticRobotics paper v2, sections 3.5, 4.2 and 5</Cite>
+          </Box>
+          <Box variant="p">
+            The same paper reports against its own design: on the one
             training run it measured, taking the final checkpoint with no measurement at all beat every
             measurement-driven selector, its own included, by 5.6 to 10.0 points of held-out success. One run is
             itself a small count, so take the narrower lesson: a selector is no better than the evaluation count
             behind it, and a kept change has to clear the interval at the attempts you actually ran.{' '}
-            <Cite id="F04-35">AgenticRobotics paper v2, section 3.5</Cite>{' '}
             <Cite id="F04-37">AgenticRobotics paper v2, section 5</Cite>
           </Box>
           <Box variant="p">
-            The nearest published agent loop on the {ARM} shows the count at small scale. In AdaRSI, a coding agent
+            AdaRSI, an agent loop tested on the {ARM} itself, shows the count at small scale. There a coding agent
             first rewrites the instructions, tools and procedure around a frozen VLA (vision-language-action model: a
             vision-language model with an action head, section 5), and fine-tunes only the sub-steps that stay
             unreliable. Its authors tested placing a toy in a bowl on an {ARM}, with objects, sizes and orientations
@@ -696,27 +726,19 @@ export function AgentsLoop() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The authors define the score in one sentence: &quot;We measure success as the chance of completing a task
-            in one rollout, given a fixed number of retries (here, eight).&quot; In the same notation, pass@1 is the
-            first-try rate, the number section 16 counts. The retries are not fresh draws: &quot;our retries happen after witnessing the
-            previous failure&quot;, the authors add, unlike best-of-N sampling, which draws each attempt fresh.{' '}
+            pass@1 is the first-try rate, the number section 16 counts, and pass@8 can sit far above it. How far
+            depends on what a retry is. The authors contrast their retries with best-of-N sampling, where each attempt
+            is a fresh, independent draw, and that independent case is the reference: with a first-try rate{' '}
+            <M>p</M> and independent attempts, a rollout fails only if all eight fail, so pass@8 is{' '}
+            <M>{'1-(1-p)^8'}</M>.{' '}
             <Cite id="F04-16">ENPIRE paper, section 3</Cite>
           </Box>
           <Box variant="p">
-            Fresh draws give the reference case. If each attempt succeeded with the same first-try rate <M>p</M>,
-            independently of the others, a rollout would fail only if all eight failed, with probability{' '}
-            <M>{'(1-p)^8'}</M>, so pass@8 would be <M>{'1-(1-p)^8'}</M>, which reaches <M>{'0.99'}</M> at{' '}
-            <Derived>
-              <M>{'p = 1 - 0.01^{1/8} \\approx 0.44'}</M>
-            </Derived>
-            . <Cite id="F04-16">ENPIRE paper, section 3</Cite>
-          </Box>
-          <Box variant="p">
-            The authors&apos; project page gives the opposite case, a policy that cannot recover from a failure:
-            &quot;a policy that can&apos;t stays near pass@1 (a 13% policy stays ~13%, not 99%)&quot;. Under fresh
-            draws the same 13% policy would pass <Derived>1 - 0.87^8 = 0.67</Derived> of its rollouts. The two
-            figures rest on different assumptions: <Derived>0.67</Derived> treats every retry as a fresh, independent draw, and the
-            authors&apos; 13% is their case of retries that add nothing.{' '}
+            The authors&apos; project page gives the opposite case, a policy that cannot recover from a failure,
+            which &quot;stays near pass@1 (a 13% policy stays ~13%, not 99%)&quot;. Under fresh draws the same 13%
+            policy would pass <Derived>1 - 0.87^8 = 0.67</Derived> of its rollouts. The two figures differ only in
+            what a retry is: <Derived>67%</Derived> if every retry is a fresh draw, 13% if a retry after a failure
+            almost never succeeds.{' '}
             <Cite id="F04-16">ENPIRE project page and paper, section 3</Cite>
           </Box>
           <Box variant="p">
@@ -730,8 +752,8 @@ export function AgentsLoop() {
           <Box variant="p">
             By our reading, SEAR&apos;s caution about practice and test applies to the 99% as well. In stage two the
             scene is set by the one reset frozen in stage one, which returns it to the start of the hardest phase.
-            The score then covers the task from that phase on, from the
-            starts that reset produces, and none an operator chose for a test.{' '}
+            So the 99% covers the task from that phase on, started from scenes that reset produced, none of them
+            chosen by an operator for a test.{' '}
             <Cite id="F04-16">ENPIRE paper, abstract</Cite>{' '}
             <Cite id="F04-2">ENPIRE paper, section 2.1</Cite>{' '}
             <Cite id="F04-14">ENPIRE paper, section 2.1 and appendix A.1</Cite>{' '}
@@ -757,13 +779,13 @@ export function AgentsLoop() {
             variant="h2"
             description="Find what an eight-robot fleet waited on, and budget tokens, the cost the authors found growing faster than the fleet"
           >
-            Eight robots reached the target 2.4 to 3.7 times sooner, and the robots waited
+            Eight robots bought less than four times the speed, because the agents set the pace
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The authors timed fleets of one, four and eight agents, one robot each, against two finish lines: the first
+            Handing the loop to agents hands them its pace. The authors timed fleets of one, four and eight agents, one robot each, against two finish lines: the first
             time a task reaches its target, and the prompt&apos;s own objective of 100% over every window of 50
             consecutive episodes. To the first target, 100% success on pin insertion, the time fell from 2.5 hours
             with one agent to 0.89 with four and 0.67 with eight. On Push-T, a pushing task scored from 0 to 1, the fleets took 4.7, 3.1 and 2.0
@@ -791,10 +813,11 @@ export function AgentsLoop() {
             The cause is the agent&apos;s pace. A robot waits while its agent reads logs, writes code, debugs or waits
             for its language model, and as the fleet grows, agents spend more of their time summarising each
             other&apos;s branches and less operating the robot. They &quot;may also fail to launch parallel training
-            sessions to exhaust GPU resources&quot;. The authors still write that on hardware &quot;the binding
-            resource is the agent&apos;s robot-access budget, not its compute&quot;, and both hold: the budget rations
-            the real attempts each idea may spend, while the pace of the fleet was set by the agents, whose robots sat
-            idle more than half the time at every fleet size.{' '}
+            sessions to exhaust GPU resources&quot;. So the robots did not set the fleet&apos;s pace; the agents did,
+            and left the robots idle more than half the time at every fleet size. What stays scarce on hardware, in
+            the authors&apos; words &quot;the agent&apos;s robot-access budget, not its compute&quot;, is the number of
+            real attempts each idea may spend, a number the operator approves in advance. That cap binds even while
+            robot hours go unused.{' '}
             <Cite id="F04-21">ENPIRE paper, sections 4 and 5.2</Cite>{' '}
             <Cite id="F04-9">ENPIRE repository, autoresearch_instruction.md</Cite>{' '}
             <Cite id="F04-19">ENPIRE project page, utilisation chart data</Cite>
@@ -836,22 +859,30 @@ export function AgentsLoop() {
             Those figures may leave out most of what an agent sends. On a simplified real Push-T task, one agent used
             80M tokens in total: 77M cached input, 2.4M fresh input and 0.27M output. Cached input is context the model
             provider has already processed on an earlier call and reads again, so about{' '}
-            <Derived>77 / 80 = 96%</Derived> of the tokens are the agent re-sending its own history. The paper does
-            not say whether the fleet figures count cached input. One agent&apos;s 80M on this task, against the 2.5
-            million the fleet chart gives one agent to complete the objective on pin insertion, suggests they do not,
-            though the two are different tasks. The bar the same figure labels uncached work, 2.6M, sits at the fleet
-            figures&apos; scale. Budget from the full count, and price the cached share at your provider&apos;s
+            <Derived>77 / 80 = 96%</Derived> of the tokens are the agent re-sending its own history.{' '}
+            <Cite id="F04-22">ENPIRE paper, appendix C.2, figure 13</Cite>
+          </Box>
+          <Box variant="p">
+            The paper does not say whether the fleet figures count cached input, and its numbers suggest they do not.
+            The fleet chart gives one agent 2.5 million tokens to complete the objective on pin insertion. The Push-T
+            agent used 80M, but the paper gives its uncached work as 2.6M, close to the chart&apos;s figure. The
+            two are different tasks, so the match is a hint, not proof. Budget from the full count, and price the cached share at your provider&apos;s
             cached-input rate, the line that decides the bill.{' '}
             <Cite id="F04-22">ENPIRE paper, appendix C.2, figure 13</Cite>
           </Box>
           <Box variant="p">
-            The agent itself is a setting with a large effect. On the same simplified task, the ENPIRE authors timed
-            three pairings of agent program and model, one run each: first success came after 54.41 minutes with
+            If the agents set the pace, so does the choice of agent program and language model. On the same
+            simplified task, the ENPIRE authors timed three pairings of agent program and model, one run each: first success came after 54.41 minutes with
             Codex driving GPT-5.5, 62.01 with Claude Code driving Opus 4.7, and 105.00 with Codex driving Opus 4.7.
-            The slowest pairing took <Derived>105.00 / 54.41 = 1.9</Derived> times as long as the fastest. Varying how
-            a Codex agent sees the cameras gave 54.67 minutes with images in the model&apos;s own input, 72.32 with no
-            images and 99.18 with images behind a tool it had to call. Each figure is one run on one simplified task,
-            so treat the gaps as indicative.{' '}
+            The slowest pairing took <Derived>105.00 / 54.41 = 1.9</Derived> times as long as the fastest.{' '}
+            <Cite id="F04-25">ENPIRE paper, appendix C.4</Cite>
+          </Box>
+          <Box variant="p">
+            How the agent sees the cameras matters as well. Varying it for a Codex agent gave 54.67 minutes with
+            images in the model&apos;s own input, 72.32 with no images and 99.18 with images behind a tool it had to
+            call. Each figure is one run on one simplified task, so treat the gaps as indicative. The authors suggest
+            why no images beat the tool: the agent can infer the task&apos;s state from its logs, while repeated calls
+            to an image tool add overhead.{' '}
             <Cite id="F04-25">ENPIRE paper, appendix C.3 and C.4</Cite>
           </Box>
           <Box variant="p">
@@ -891,10 +922,10 @@ export function AgentsLoop() {
             <Cite id="F04-52">AWS Batch User Guide, resource-aware scheduling</Cite>
           </Box>
           <Box variant="p">
-            The grade goes first, because it is what the agent works to raise, and it takes two graders. The
-            per-attempt check, whose verdict the agent trains against, stays in the station&apos;s code with the reset
-            and the safety limits, where the agent&apos;s credentials can read its verdicts and cannot write its code.
-            The final judge runs the way SEAR&apos;s does: a separate job that receives the frozen policy, holds the
+            The grade goes first, because it is what the agent works to raise, and it takes two parts. The success
+            check, whose verdict the agent trains against, sits with the reset and the safety limits outside the
+            repository the agent edits, where the agent&apos;s credentials can read its verdicts and cannot change its
+            code. The final judge runs the way SEAR&apos;s does: a separate job that receives the frozen policy, holds the
             evaluation start states, and returns only the verdict. <Cite id="F04-83">SEAR paper, section 2.4, sealed judge</Cite>{' '}
             <Cite id="F04-8">ENPIRE repository, autoresearch_instruction.md</Cite>
           </Box>
@@ -905,7 +936,8 @@ export function AgentsLoop() {
             agent cannot edit. Time comes first, because Batch sets no limit by default, and a job without one runs
             until its container exits. For scale, ENPIRE&apos;s agents spent about{' '}
             <Derived>3.4 x 60 x 8 / 86 = 19</Derived> agent-minutes per idea, robot and training time included, so a
-            training job that runs for hours is far out of step with the pace of that run.{' '}
+            training job that runs for hours is far out of step with the pace of that run. Set the timeout from the
+            longest training run one idea should need.{' '}
             <Cite id="F04-50">AWS Batch User Guide, job timeouts</Cite>{' '}
             <Cite id="F04-23">ENPIRE paper, appendix B.6</Cite>
           </Box>
@@ -930,35 +962,44 @@ export function AgentsLoop() {
             <Cite id="F10-407">Karpenter v1.15.3 docs, NodePool limits</Cite>
           </Box>
           <Box variant="p">
-            The robot is the cap no instance type provides: one physical arm, one experiment at a time. It applies once
+            The robot is the cap no instance type provides: one physical robot, one experiment at a time. It applies once
             robot attempts are submitted as jobs too, each calling the station&apos;s local server. Batch&apos;s
             consumable resources make a job wait until a counted resource, such as a licence token, is free. Model each
-            station as one such resource with a count of one, and no two jobs that declare it can drive the same arm at
-            once; the submit service adds the declaration to every robot job, so the agent cannot leave it out.
+            station as one such resource with a count of one, and no two jobs that declare it can drive the same robot at
+            once; the submit service adds the declaration to every robot job, so the agent cannot leave it out.{' '}
+            <Cite id="F04-52">AWS Batch User Guide, resource-aware scheduling</Cite>
+          </Box>
+          <Box variant="p">
             Consumable resources also work under fair-share scheduling, which divides the queue among teams or agents
-            by weight and keeps a burst of agent jobs from starving people; it divides in proportion, and the
-            fair-share page names no GPU-hour cap.{' '}
+            by weight. Use it to keep a burst of agent jobs from starving people; it divides in proportion, and the
+            fair-share page names no GPU-hour cap, so leave the ceiling to <code>maxvCpus</code> and the submit
+            step.{' '}
             <Cite id="F04-52">AWS Batch User Guide, resource-aware scheduling</Cite>{' '}
             <Cite id="F04-51">AWS Batch User Guide, fair-share scheduling</Cite>
           </Box>
           <Box variant="p">
-            The agent&apos;s own process runs code a language model wrote, with permission prompts off and, in ENPIRE,
-            unrestricted internet access, so it needs a stronger fence than one repository. A design picks one of two
-            AWS hosts for it; neither keeps the agent from the grader, which is a matter of what its credentials can
+            The agent&apos;s own process runs code a language model wrote, and ENPIRE runs it with permission prompts
+            off and unrestricted internet access, so it needs a stronger fence than one repository. A design picks one of two
+            AWS hosts for it; neither keeps the agent from the success check or the judge, which is a matter of what its credentials can
             write. <Cite id="F04-11">ENPIRE paper, appendix B.1</Cite>
           </Box>
           <Box variant="p">
-            The first host, for when you need to control the agent&apos;s network, is a Nitro Sandbox on EKS. AWS
-            Nitro Sandboxes, announced on 9 November 2026, run each pod or task in its own Firecracker microVM, a
-            lightweight virtual machine with its own Linux kernel, pitched by AWS to &quot;safely execute
-            LLM-generated code&quot;. A pod opts in by setting <code>runtimeClassName</code> to{' '}
-            <code>isolated-sandbox</code>, on Kubernetes 1.36 or later. An annotation can boot the sandbox with no
-            network device at all, but that would cut the agent off from its model and Git, so the agent&apos;s
-            sandbox keeps a network, and what that network may reach is the setting you control.{' '}
-            <Cite id="F09-43">AWS What&apos;s New post and EKS User Guide, Nitro Sandboxes</Cite>
+            The first host is a Nitro Sandbox on EKS. AWS Nitro Sandboxes, announced on 9 November 2026, run each pod
+            or task in its own Firecracker microVM, a lightweight virtual machine with its own Linux kernel, pitched
+            by AWS to &quot;safely execute LLM-generated code&quot;. A pod opts in by setting{' '}
+            <code>runtimeClassName</code> to <code>isolated-sandbox</code>, on Kubernetes 1.36 or later, and the
+            isolated mode is there to &quot;Protect the node and other pods from a compromised workload&quot;.{' '}
+            <Cite id="F09-43">AWS What&apos;s New post and EKS User Guide, Nitro Sandboxes</Cite>{' '}
+            <Cite id="F09-44">EKS User Guide, Auto Mode release notes</Cite>
           </Box>
           <Box variant="p">
-            One limit shapes that design: on accelerated instances a sandbox &quot;runs CPU workloads only&quot;, and
+            The sandbox&apos;s network annotation is all or nothing: set, it boots the sandbox with no network device,
+            which would also cut the agent off from its model and Git. So the agent&apos;s sandbox keeps a network,
+            and where that network may reach is a limit to design separately.{' '}
+            <Cite id="F09-43">EKS User Guide, Nitro Sandboxes</Cite>
+          </Box>
+          <Box variant="p">
+            The GPU is the other limit: on accelerated instances a sandbox &quot;runs CPU workloads only&quot;, and
             GPU passthrough &quot;is currently unavailable&quot;. So the tenant splits in two. The agent&apos;s own
             work (editing code, running unit tests, reading logs) runs inside the sandbox, and the training job it
             launches runs outside, as a Batch job under a timeout and a capacity ceiling. The submit step between the
@@ -968,24 +1009,29 @@ export function AgentsLoop() {
           <Box variant="p">
             The second host, Amazon Bedrock AgentCore Runtime, is AWS&apos;s managed service for running agents, the
             choice when you would rather not run the cluster. A session on its microVMs ends after at most 8 hours,
-            and an idle one after 15 minutes by default. A
-            campaign, the whole run of ideas toward the goal, reaches that cap: ENPIRE&apos;s comparison of coding
-            agents, an experiment apart from the fleet timings, ran one agent for 8 hours on Push-T (4 on pin
-            insertion), and AgenticRobotics&apos; published campaign ran over five calendar days. ENPIRE keeps its
-            state in Git, which outlasts any session. Keep the campaign&apos;s state outside the session the same way,
-            and a session that ends, at 8 hours or after 15 idle minutes, ends a session and not the campaign.{' '}
+            and an idle one after 15 minutes by default. The idle default can bite first: if the session sees no
+            activity while its agent waits on a training job, it ends at 15 minutes, so raise that default for an
+            agent that waits on jobs.{' '}
+            <Cite id="F04-53">AgentCore Developer Guide, quotas</Cite>
+          </Box>
+          <Box variant="p">
+            The 8-hour cap bites a campaign, the whole run of ideas toward the goal:
+            ENPIRE&apos;s comparison of coding agents, an experiment apart from the fleet timings, ran one agent for 8
+            hours on Push-T (4 on pin insertion), and AgenticRobotics&apos; published campaign ran over five calendar
+            days. ENPIRE keeps its state in Git, which outlasts any session. Keep the campaign&apos;s state outside
+            the session the same way, and the end of a session no longer ends the campaign.{' '}
             <Cite id="F04-53">AgentCore Developer Guide, quotas</Cite>{' '}
             <Cite id="F04-17">ENPIRE project page, figure 3 data</Cite>{' '}
             <Cite id="F04-36">AgenticRobotics paper v2, section 4</Cite>{' '}
             <Cite id="F04-7">ENPIRE paper, section 2.2</Cite>
           </Box>
           <Box variant="p">
-            Before an agent&apos;s first unattended night, put the grader, the reset, the evaluation start states and
-            the safety limits where its credentials cannot write, and give every job it submits a timeout through a step
+            Before an agent&apos;s first unattended night, put the success check, the judge, the reset, the evaluation
+            start states and the safety limits where its credentials cannot write, and give every job it submits a timeout through a step
             it cannot edit. From the first run, log robot utilisation, GPU utilisation and tokens per minute, and
             measure the policy&apos;s first-try rate on start states the agent never chose. That rate is the number to
-            compare across policies; a 99% within eight attempts is reached by independent tries at{' '}
-            <Derived>44</Derived>%.{' '}
+            compare across policies: with independent tries, a first try of <Derived>44</Derived>% is already enough
+            for 99% within eight.{' '}
             <Cite id="F04-16">ENPIRE paper, section 3</Cite>
           </Box>
         </SpaceBetween>

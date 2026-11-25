@@ -2,7 +2,7 @@
  {
   "term": "Coding agent",
   "expansion": null,
-  "meaning": "A language model that reads and writes files and runs commands, here put in charge of improving a robot's policy."
+  "meaning": "A language model working through an agent program that lets it read and write files and run commands, here put in charge of improving a robot's policy."
  },
  {
   "term": "Agent program",
@@ -32,12 +32,12 @@
  {
   "term": "Rollout (in pass@8)",
   "expansion": null,
-  "meaning": "In ENPIRE's headline score, a run of up to eight attempts at the task, each made after seeing the previous failure."
+  "meaning": "In ENPIRE's headline score, one reset followed by up to eight attempts at the task; the scene is not reset between attempts, and each retry follows the previous failure."
  },
  {
   "term": "pass@k",
   "expansion": null,
-  "meaning": "The share of rollouts with a success within k attempts. pass@1 is the first-try rate; pass@8 counts first tries and retries together and cannot be split into the two without the first-try rate."
+  "meaning": "The share of rollouts with a success within k attempts after one reset. pass@1 is the first-try rate; pass@8 counts first tries and retries together and cannot be split into the two without the first-try rate."
  },
  {
   "term": "Best-of-N sampling",
@@ -45,14 +45,14 @@
   "meaning": "Drawing N independent attempts and counting a success if any succeeds; ENPIRE's retries are not independent because each follows a seen failure."
  },
  {
-  "term": "Verifier (success check, grader)",
+  "term": "Success check (verifier)",
   "expansion": null,
-  "meaning": "Code that returns pass or fail for one attempt; its verdict is the grade the agent works to raise. In ENPIRE the agent writes it once with a person and it is then frozen."
+  "meaning": "Code that returns pass or fail for one attempt (the ENPIRE paper calls it the verifier); its verdict is the grade the agent works to raise. In ENPIRE the agent writes it once with a person and it is then frozen."
  },
  {
   "term": "Reset",
   "expansion": null,
-  "meaning": "The routine that sets the scene for the next attempt; whoever controls it chooses the test, and in an agent's hands it is a free retry."
+  "meaning": "The routine that puts the scene back at the start of each rollout; whoever controls it chooses the test, and in an agent's hands it is a free retry."
  },
  {
   "term": "Frozen",
@@ -72,7 +72,7 @@
  {
   "term": "Vision-language model",
   "expansion": null,
-  "meaning": "A language model that also reads images; used as a general success judge it leans toward declaring success."
+  "meaning": "A language model that also reads images; used as a success check it leans toward declaring success when the evidence is ambiguous."
  },
  {
   "term": "Balanced accuracy",
