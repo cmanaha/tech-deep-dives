@@ -21,8 +21,8 @@ One worker builds a default batch of 8 in 8 / 186 = 43 ms, so 4 workers keep up 
 The same pull request: batches of 32 read at random with a five-frame history window, 16.98 ms per item on main and 4.95 ms with its change (3.43x); 59 rows per second per worker on main, 32 / 59 = 0.54 s per batch for one worker (our arithmetic) | F05-62
 Paired for illustration with the guide's 0.167 s Diffusion Policy update, those rows need 32 / (59 x 0.167) = 3.2 workers' worth; the change divides that by 3.43, to about one (our arithmetic across two sources, labelled an illustration) | F05-62, F01-91
 The pull request ("batched reader access + faster torchcodec decode") was open on 2026-11-20 | F05-62
-Hugging Face's release post reports 2.1 to 2.5 times more samples per second from four workers in the streaming reader (blog, Tier 2; the blog is cited through F05-59's URL, the figure is recorded in F05-60) | F05-60, F05-59
-Neither the pull request nor the release post names the hardware behind its figure | F05-62, F05-60
+Hugging Face's release post reports 2.1 to 2.5 times more samples per second from four workers in the streaming reader (blog, Tier 2) | F05-109 (split from F05-60 on 2026-11-25)
+Neither the pull request nor the release post names the hardware behind its figure | F05-62, F05-109
 LeRobot's image transforms are off by default | F05-84
 Once enabled, image transforms run per sample in the dataloader workers by default; with several cameras that is often the most expensive thing the workers do, "and the GPU ends up waiting for data"; backend=gpu leaves the workers decoding only | F05-58
 Eight-GPU sizes of G5, G6, G6e, G7e, P5, P5e, P5en, P6-B200, P6-B300: 192 vCPUs, 24 per GPU, which is 12 physical cores at 2 threads per core | F05-65, F08-57
@@ -51,7 +51,7 @@ On an eight-GPU G6e (L40S, a 48 GB card) each GPU holds four quarter-GPU model w
 The captioning-input stage is a separate CPU stage so that it can spawn many CPU workers to keep the captioning stage's GPU workers busy | F05-70
 One input-bound curation run (design note, incubating robot captioning recipe): 32 H100s (4 nodes of 8), 32 captioning replicas, 7.1 rows of its input table per second against a capacity near 43, about 17% GPU utilisation, 10 replicas never received a request, fetch-bound, run cancelled | F05-76
 Deduplication is a second pipeline over the stored clip embeddings: K-Means clustering, clips ordered within a cluster by cosine similarity to the centroid; dropping near copies under --eps-to-extract (default 0.01) is our reading of the option | F05-73
-In the robot recipes deduplication uses no video model: a clip is embedded by instruction text, first frame and wrist motion; text and image embeddings are 384 numbers each from small models | F05-75
+Cut in round 3 (off the section's argument): the robot recipes' deduplication without a video model | F05-75 (no longer cited)
 A curation pass is short independent units, interruptible, so a lost machine costs the clips it held (section 24 places it on Spot) | F08-78
 The nearest published curation rate located is from a March 2025 NVIDIA post about a predecessor, NeMo Video Curator on DGX Cloud: about 195 seconds per video-hour per GPU in streaming mode, 3,600 / 195 = 18.5 video-hours per GPU-hour; an illustrative 1,000 hours is about 54 GPU-hours (our arithmetic); the post names no software version | F05-78
 nvidia-smi GPU utilisation is the percentage of the sample period during which at least one kernel was executing; it says nothing about how much of the GPU the kernel used | F08-30
