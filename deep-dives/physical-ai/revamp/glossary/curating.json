@@ -2,17 +2,17 @@
   {
     "term": "Embedding",
     "expansion": null,
-    "meaning": "A list of numbers a model returns for a clip, placed so that clips with similar content get lists that sit close together."
+    "meaning": "A vector, a list of numbers that a model computes for a clip. Clips with similar content get vectors that are close together."
   },
   {
     "term": "Transcode",
     "expansion": null,
-    "meaning": "Decoding a video and encoding it again, usually into a different codec or as separate clips."
+    "meaning": "To decode a video and encode it again, usually in a different codec or as separate clips."
   },
   {
     "term": "Cosmos Curator",
     "expansion": null,
-    "meaning": "NVIDIA's toolkit for curating physical AI training data as a pipeline of CPU and GPU stages on a cluster."
+    "meaning": "NVIDIA's toolkit for curating physical AI training data. It runs as a pipeline of CPU and GPU stages on a cluster."
   },
   {
     "term": "Ray",
@@ -22,47 +22,47 @@
   {
     "term": "GPU video engines",
     "expansion": null,
-    "meaning": "Fixed circuits on a GPU that only compress and decompress video, separate from the tensor cores that run neural networks."
+    "meaning": "Fixed-function circuits on a GPU that only compress and decompress video. They are separate from the tensor cores that run neural networks."
   },
   {
     "term": "NVENC",
     "expansion": "NVIDIA Encoder",
-    "meaning": "NVIDIA's name for the fixed-function circuit on a GPU that compresses video."
+    "meaning": "The fixed-function circuit on an NVIDIA GPU that compresses video."
   },
   {
     "term": "NVDEC",
     "expansion": "NVIDIA Decoder",
-    "meaning": "NVIDIA's name for the fixed-function circuit on a GPU that decompresses video."
+    "meaning": "The fixed-function circuit on an NVIDIA GPU that decompresses video."
   },
   {
     "term": "AV1",
     "expansion": "AOMedia Video 1",
-    "meaning": "The open video codec LeRobot writes by default."
+    "meaning": "An open video codec. LeRobot records in AV1 by default."
   },
   {
     "term": "Dataloader",
     "expansion": null,
-    "meaning": "The part of a training program that fetches samples from storage and assembles them into batches for the GPU."
+    "meaning": "The part of a training program that fetches samples from storage and stacks them into batches for the GPU."
   },
   {
     "term": "Worker",
     "expansion": null,
-    "meaning": "One of the dataloader's parallel processes; each runs on CPU cores and, in LeRobot, also decodes video."
+    "meaning": "One of the dataloader's parallel processes. Each worker runs on CPU cores, and in LeRobot it also decodes the video."
   },
   {
     "term": "torchcodec",
     "expansion": null,
-    "meaning": "The PyTorch project's video decoder, which LeRobot runs on the CPU by default."
+    "meaning": "The PyTorch project's video decoder. LeRobot runs it on the CPU by default."
   },
   {
     "term": "vCPU",
     "expansion": "virtual CPU",
-    "meaning": "The unit EC2 counts processor capacity in; on x86 instances with two threads per core, one vCPU is one hardware thread."
+    "meaning": "The unit in which EC2 counts processor capacity. On x86 instances with two threads per core, one vCPU is one hardware thread."
   },
   {
     "term": "SMT",
     "expansion": "simultaneous multithreading",
-    "meaning": "One physical core presenting itself as two hardware threads so that it can interleave two programs."
+    "meaning": "A technique in which one physical core presents itself as two hardware threads, so that it can interleave two programs on the same execution units."
   },
   {
     "term": "Augmentation",
@@ -72,32 +72,32 @@
   {
     "term": "ACT",
     "expansion": "Action Chunking with Transformers",
-    "meaning": "A small imitation policy that predicts a chunk of future actions from camera images and joint angles."
+    "meaning": "A small policy that learns by imitating demonstrations. It predicts a chunk of future actions from camera images and joint angles."
   },
   {
     "term": "Decode",
     "expansion": null,
-    "meaning": "Turning compressed video back into frames of pixels; it is repeated every time training reads a frame."
+    "meaning": "To turn compressed video back into frames of pixels. Training repeats this work every time it reads a frame."
   },
   {
     "term": "Keyframe",
     "expansion": null,
-    "meaning": "A video frame stored whole, which a decoder can decode with no other frame."
+    "meaning": "A video frame that is stored whole, so that a decoder can decode it without any other frame."
   },
   {
     "term": "GOP",
     "expansion": "group of pictures",
-    "meaning": "The spacing of keyframes in a video; a random read costs at most that many decoded frames."
+    "meaning": "The spacing between keyframes in a video. Reading one frame at a random position costs at most that many decoded frames."
   },
   {
     "term": "Codec",
     "expansion": null,
-    "meaning": "A format for compressing video into a file and turning it back into frames."
+    "meaning": "A format for compressing video into a file and decoding it back into frames."
   },
   {
     "term": "HEVC",
     "expansion": "High Efficiency Video Coding",
-    "meaning": "A video codec, also called H.265, that LeRobot can record in place of AV1."
+    "meaning": "A video codec, also called H.265. LeRobot can record in HEVC instead of AV1."
   },
   {
     "term": "Tensor cores",
@@ -107,12 +107,12 @@
   {
     "term": "Curation",
     "expansion": null,
-    "meaning": "Choosing which recordings a model learns from, by dropping failed attempts, still clips and near copies."
+    "meaning": "Choosing which recordings a model learns from, for example by dropping failed attempts, clips where nothing moves and near copies."
   },
   {
     "term": "Deduplication",
     "expansion": null,
-    "meaning": "Clustering clip embeddings and dropping clips that sit too close to another, so near-identical recordings do not outweigh the rest."
+    "meaning": "The curation step that removes near copies. It clusters the clip embeddings and drops clips that are too close to another clip, so that near-identical recordings do not outweigh the rest."
   },
   {
     "term": "K-Means",
@@ -122,17 +122,27 @@
   {
     "term": "Cosine similarity",
     "expansion": null,
-    "meaning": "A score for two vectors that is 1 when they point the same way."
+    "meaning": "A score for two vectors that is 1 when they point in the same direction."
   },
   {
     "term": "Physical core",
     "expansion": null,
-    "meaning": "One real processor core; with two threads per core, 24 vCPUs are 12 physical cores."
+    "meaning": "One real processor core. With two threads per core, 24 vCPUs are 12 physical cores."
+  },
+  {
+    "term": "Kernel",
+    "expansion": null,
+    "meaning": "A function that runs on the GPU. GPU utilisation in nvidia-smi counts the time during which at least one kernel is executing."
+  },
+  {
+    "term": "Replica",
+    "expansion": null,
+    "meaning": "One running copy of a model, such as the captioning model in a curation pipeline."
   },
   {
     "term": "Decoder utilisation",
     "expansion": null,
-    "meaning": "The share of time a GPU's video decoder was in use, reported by nvidia-smi separately from the compute part."
+    "meaning": "The share of time that a GPU's video decoder was in use. nvidia-smi reports it separately from the utilisation of the GPU's compute part."
   },
   {
     "term": "GPU utilisation",
@@ -142,7 +152,7 @@
   {
     "term": "Spot",
     "expansion": null,
-    "meaning": "EC2 capacity that AWS may take back from a running job."
+    "meaning": "Spot Instances are spare EC2 capacity that AWS can reclaim from a running job."
   },
   {
     "term": "CUDA",
@@ -152,21 +162,21 @@
   {
     "term": "MIG",
     "expansion": "Multi-Instance GPU",
-    "meaning": "NVIDIA's way of dividing one GPU into isolated slices; on a split card nvidia-smi cannot report decoder or GPU utilisation."
+    "meaning": "NVIDIA's way of dividing one GPU into isolated slices. On a GPU split this way, nvidia-smi cannot report decoder or GPU utilisation."
   },
   {
     "term": "Streaming reader",
     "expansion": null,
-    "meaning": "LeRobot's mode that trains from a dataset without downloading it first; Hugging Face reports 2.1 to 2.5 times more samples per second from four workers."
+    "meaning": "LeRobot's mode that trains from a dataset without downloading it first. Hugging Face reports 2.1 to 2.5 times more samples per second from four workers."
   },
   {
     "term": "Row",
     "expansion": null,
-    "meaning": "In a LeRobot dataset, one control tick of one episode; in the curation run's design note, one entry of the recipe's input table."
+    "meaning": "In a LeRobot dataset, a row holds the joint positions and camera frames at one control tick of one episode. In the curation design note, a row is one entry of the recipe's input table."
   },
   {
     "term": "Update time",
     "expansion": null,
-    "meaning": "The time the GPU takes for one training step on a batch; LeRobot's guide reports it as update_s beside the data-loading time dataloading_s."
+    "meaning": "The time the GPU takes for one training step on a batch. LeRobot's hardware guide reports it as update_s, next to the data-loading time, dataloading_s."
   }
 ]

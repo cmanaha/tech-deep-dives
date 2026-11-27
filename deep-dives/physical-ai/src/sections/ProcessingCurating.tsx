@@ -27,36 +27,37 @@ const NARROW: CSSProperties = { maxWidth: 520, margin: '0 auto' };
 
 const TH: CSSProperties = { textAlign: 'left', padding: '6px 10px', borderBottom: '2px solid #5f6b7a', verticalAlign: 'bottom' };
 const TD: CSSProperties = { padding: '6px 10px', borderBottom: '1px solid #d5dbdb', verticalAlign: 'top' };
+const LIST: CSSProperties = { margin: 0, paddingLeft: 22 };
 
 /** The thread task, stated once for this section. */
-const TASK_CLAUSE = `the ${ARM} asked to ${TASK_STORY}, with two cameras recording`;
+const TASK_CLAUSE = `the example task, in which the ${ARM} learns to ${TASK_STORY} and two cameras record each episode`;
 
 /* ------------------------------------------------------------------------ */
 /* Diagram 10.2 (animated): decode bounds the trainer                        */
 /* ------------------------------------------------------------------------ */
 
 const DECODE_STEPS: ReactNode[] = [
-  'Compressed video sits on disk. Nothing in an MP4 file is a picture yet: every frame the trainer wants has to be decoded first.',
-  'The dataloader workers, running on CPU cores, are asked for a batch. Each one seeks into the video files and decodes the frames it needs.',
-  'Decoded frames are stacked into batches that queue for the GPU. While the queue holds a batch, the GPU runs one training step after another.',
-  'With few cores beside the GPU the queue runs empty. The workers are flat out and the GPU waits for data between steps. On most eight-GPU EC2 sizes the budget is 24 vCPUs per GPU.',
-  'Two ways to keep the queue full: more cores per GPU, or decode on the GPU video engine where the card supports the codec and the loader can use it.',
+  'The recorded video is stored on disk as compressed MP4 files. Before the trainer can use a frame, a decoder has to turn it back into pixels.',
+  'The trainer asks the dataloader workers for a batch. The workers run on CPU cores, and each one seeks into the video files and decodes the frames it needs.',
+  'The workers stack the decoded frames into batches, and the batches wait in a queue for the GPU. As long as the queue holds a batch, the GPU runs one training step after another.',
+  'When the GPU has too few CPU cores to supply it, the queue runs empty. The workers are fully busy, and the GPU waits for data between steps. Most eight-GPU EC2 instance sizes provide 24 vCPUs per GPU.',
+  "There are two ways to keep the queue full. You can give each GPU more CPU cores, or you can decode on the GPU's video engine, if the GPU supports the codec and the loader can use the engine.",
 ];
 
 const CPU_SUB = [
-  'waiting to be asked for a batch',
+  'idle until the trainer asks for a batch',
   'each worker decodes the frames it was asked for',
   'each worker decodes the frames it was asked for',
-  'all busy, and still too slow for the GPU',
-  'more cores per GPU: more frames per second',
+  'all busy, but still too slow for the GPU',
+  'more cores per GPU decode more frames per second',
 ];
 const QUEUE_STATE = ['empty', 'empty', 'full', 'empty again', 'stays full'];
 const GPU_STATE = [
   'nothing to train on yet',
   'nothing to train on yet',
-  'running: a batch is always ready',
+  'running, because a batch is always ready',
   'waiting for data',
-  'running every step',
+  'running at every step',
 ];
 /** How many of the 12 cells of the GPU activity strip are filled at each step (illustrative). */
 const GPU_BUSY = [0, 0, 12, 4, 12];
@@ -143,11 +144,11 @@ function DecodeBoundsDiagram({ step, reduced }: { step: number; reduced: boolean
         </text>
         {swap(
           [
-            'idle: the stock loader decodes on the CPU',
-            'idle: the stock loader decodes on the CPU',
-            'idle: the stock loader decodes on the CPU',
-            'idle: the stock loader decodes on the CPU',
-            'or decode here, where the card supports the codec',
+            "idle, because LeRobot's loader decodes on the CPU",
+            "idle, because LeRobot's loader decodes on the CPU",
+            "idle, because LeRobot's loader decodes on the CPU",
+            "idle, because LeRobot's loader decodes on the CPU",
+            'or decode here, if the GPU supports the codec',
           ],
           34,
           238,
@@ -236,11 +237,11 @@ const CARD_ROWS: CardRow[] = [
     family: 'P5e, P5en',
     nvenc: 'No row',
     nvdec: 'No row',
-    av1: <>No row in NVIDIA&apos;s matrix, so not established</>,
+    av1: <>Not known, because NVIDIA&apos;s matrix has no row for the H200</>,
     source: <Cite id="F05-49">NVIDIA support matrix, searched for H200</Cite>,
   },
   {
-    card: 'B200, B300 and GB200 (Blackwell data-centre parts)',
+    card: 'B200, B300 and GB200 (Blackwell data-centre GPUs)',
     family: 'P6-B200, P6-B300, P6e-GB200',
     nvenc: '0',
     nvdec: '7',
@@ -258,13 +259,14 @@ const CARD_ROWS: CardRow[] = [
   {
     card: (
       <>
-        A10 (the matrix lists &quot;NVIDIA A10&quot;; the G5 card is sold as the A10G, which has no row of its own)
+        A10, listed in the matrix as &quot;NVIDIA A10&quot;. AWS sells the G5 GPU as the A10G, which has no row of its
+        own.
       </>
     ),
     family: 'G5',
     nvenc: '1',
     nvdec: '2',
-    av1: 'Yes, decode only: it cannot encode AV1',
+    av1: 'Yes. It decodes AV1 but cannot encode it.',
     source: <Cite id="F05-54">NVIDIA support matrix, row NVIDIA A10</Cite>,
   },
   {
@@ -308,7 +310,7 @@ export function ProcessingCurating() {
         header={
           <Header
             variant="h1"
-            description="Tell before you rent, and confirm from one short run, whether the CPU cores decoding your video or the GPU will set your training speed (LeRobot v0.7.0, Cosmos Curator v2.10.0, NVIDIA's support matrix and the EC2 instance tables, read 2026-11-20)"
+            description="Robot video is stored compressed, and in LeRobot the CPU cores of the training instance decode each frame before the GPU can train on it. You can estimate, before you rent an instance, whether those CPU cores or the GPU will limit your training speed, and then confirm it with one short run."
           >
             10. Processing and Curating: How Many CPU Cores Keep a Training GPU Fed
           </Header>
@@ -316,58 +318,76 @@ export function ProcessingCurating() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            A training GPU fed robot video can sit idle while the CPU cores beside it decode the frames. The frames
-            are stored compressed, and each one has to be decoded into pixels before the model sees it. LeRobot, the
-            library that drives the {ARM} robot arm, does that decoding on CPU cores inside the training job, in its
-            dataloader: the part of a trainer that fetches samples and stacks them into batches, using several worker
-            processes in parallel. EC2 fixes how many cores the job gets: most eight-GPU sizes carry 24 vCPUs (virtual CPUs,
-            the unit EC2 counts processor capacity in) per GPU. When the workers turn out batches more slowly than
-            the GPU trains on them, the GPU waits, and a faster GPU only waits longer.{' '}
-            <Cite id="F05-39">LeRobot v0.7.0 video_utils.py</Cite>{' '}
+            When a GPU trains a policy on robot video, it can sit idle while CPU cores decode the video frames. The
+            recordings are stored as compressed video, and each frame has to be decoded back into pixels before the
+            model can use it. LeRobot, the open-source library for recording robot data and training robot models,
+            does this decoding on CPU cores inside the training job.{' '}
+            <Cite id="F05-39">LeRobot v0.7.0 video_utils.py</Cite>
+          </Box>
+          <Box variant="p">
+            The decoding happens in the dataloader. The dataloader is the part of a training program that fetches
+            samples from storage and stacks them into batches for the GPU. It runs several worker processes in
+            parallel, and each worker runs on CPU cores. <Cite id="F05-39">LeRobot v0.7.0 video_utils.py</Cite>
+          </Box>
+          <Box variant="p">
+            When you choose the instance type, you also choose how many CPU cores the training job gets. EC2 counts processor capacity in vCPUs
+            (virtual CPUs), and most eight-GPU instance sizes have 24 vCPUs per GPU. If the workers produce batches
+            more slowly than the GPU trains on them, the GPU waits for data. In that case a faster GPU does not
+            speed up training, because it only spends more of its time waiting.{' '}
             <Cite id="F05-65">EC2 accelerated computing specifications</Cite>
           </Box>
           <Box variant="p">
-            ACT (Action Chunking with Transformers, the small imitation policy of section 4) trained 2.8x faster
-            on an H100, Hugging Face reports, once its image augmentation, random
-            changes applied to each training image, moved from the CPU workers to the GPU; the report gives no dataset, camera count, batch
-            size or CPU. A step that shrinks 2.8x when work leaves the CPU was mostly waiting on the CPU: the GPU was busy
-            for at most 1 / 2.8 = <Derived>36</Derived>% of it.{' '}
+            Hugging Face reports a speedup that came from moving work off the CPU workers. The policy in that report was ACT
+            (Action Chunking with Transformers), a small policy that learns by imitating demonstrations and predicts
+            a chunk of future actions at a time. Section 4, Learning From Demonstrations, describes it. Its training
+            used augmentation, which applies random changes to each image, such as shifts in brightness or framing.
+            When this augmentation moved from the CPU workers to the GPU, ACT trained 2.8x faster on an H100. The report does not give the dataset, the number of cameras, the batch size or the CPU.{' '}
             <Cite id="F05-59">LeRobot v0.7.0 release blog, Augment on the GPU</Cite>
           </Box>
           <Box variant="p">
-            LeRobot&apos;s hardware guide reports the opposite case on the same card. Diffusion Policy, the denoising
-            policy of section 4, trained on four H100s at a batch of 32 in 0.167 s per update and spent 0.015 s per
-            step loading data, so there the GPUs set the pace. Which case a run is in follows from two rates, what
-            the workers can supply and what the GPU can train, and one short run shows it.{' '}
+            Even without those details, the speedup tells you where the time went. If a training step becomes 2.8x
+            shorter when work leaves the CPU, the step was mostly spent waiting for the CPU. The GPU was busy for at
+            most 1 / 2.8 = <Derived>36</Derived>% of the original step.{' '}
+            <Cite id="F05-59">LeRobot v0.7.0 release blog, Augment on the GPU</Cite>
+          </Box>
+          <Box variant="p">
+            LeRobot&apos;s hardware guide reports the opposite case on the same GPU model. It trained Diffusion
+            Policy, a policy that generates actions by removing noise step by step (section 4, Learning From
+            Demonstrations), on four H100s with a batch size of 32. Each update took 0.167 s, and loading the data
+            for a step took 0.015 s, so in this run the GPUs set the pace. Whether your run looks like the first
+            case or the second depends on two rates: how fast the workers can supply batches, and how fast the GPU
+            can train on them. One short run is enough to measure both.{' '}
             <Cite id="F01-91">LeRobot hardware guide, benchmark table</Cite>
           </Box>
           <Box variant="p">
-            Augmentation moves with one flag, <code>--dataset.image_transforms.backend=gpu</code>. Decode does not
-            move. Taking it off the cores needs the GPU&apos;s video decode engine, NVDEC (NVIDIA Decoder): a fixed
-            circuit on the card that only decompresses video, separate from the tensor cores, the part of the GPU
-            that multiplies matrices for a neural network. LeRobot&apos;s loader never calls NVDEC, so a LeRobot run
-            decodes on the cores beside its GPU whatever the card.{' '}
+            You can move augmentation to the GPU with one flag, <code>--dataset.image_transforms.backend=gpu</code>.
+            There is no such flag for decoding. To take decoding off the CPU cores, the software has to use the
+            GPU&apos;s video decode engine, which NVIDIA calls NVDEC (NVIDIA Decoder). NVDEC is a fixed-function
+            circuit on the GPU that only decompresses video. It is separate from the tensor cores, which are the part
+            of the GPU that multiplies matrices for a neural network. LeRobot&apos;s loader never calls NVDEC, so a
+            LeRobot training run decodes on the instance&apos;s CPU cores, whatever GPU the instance has.{' '}
             <Cite id="F05-39">LeRobot v0.7.0 video_utils.py</Cite>{' '}
             <Cite id="F05-59">LeRobot v0.7.0 release blog, Augment on the GPU</Cite>{' '}
             <Cite id="F05-67">join of the NVIDIA matrix and the EC2 specifications</Cite>
           </Box>
           <Box variant="p">
-            The engine matters to software that does call it: a curation pipeline, the step that chooses which
-            recordings a model learns from, or a loader of your own. An engine handles only the codecs (compression
-            formats) it was built for. LeRobot records AV1 (AOMedia Video 1), an open codec, by default, and the H100
-            has no engine that decodes AV1, so the codec chosen at the bench decides which instances that software
-            can use. <Cite id="F05-35">LeRobot v0.7.0 configs/video.py</Cite>{' '}
+            The decode engine matters for software that does call it, such as a curation pipeline or a dataloader
+            you write yourself. Curation is the step that chooses which recordings a model learns from. A codec is a
+            format for compressing video and decoding it again, and each decode engine handles only the codecs it
+            was built for. By default, LeRobot records in AV1 (AOMedia Video 1), an open codec, and the H100 has no
+            engine that decodes AV1. So for software that decodes on the GPU, the codec you choose when you record
+            the data limits which instances you can use. <Cite id="F05-35">LeRobot v0.7.0 configs/video.py</Cite>{' '}
             <Cite id="F05-47">NVIDIA support matrix, rows NVIDIA H100</Cite>
           </Box>
           <AnimatedFigure
-            name="decode bounds the trainer"
+            name="how CPU decoding can leave the GPU waiting"
             steps={DECODE_STEPS}
             intervalMs={2600}
             cites="F05-39 F05-58 F05-65 F05-67"
             caption={
               <>
-                Grey squares are frames on their way from the files to the GPU, and the strip in the GPU box shows
-                the share of time the GPU is working. The picture is illustrative, not measured.
+                The grey squares are frames moving from the video files to the GPU. The strip in the GPU box shows
+                the share of time the GPU is working. The diagram is an illustration, not a measurement.
               </>
             }
           >
@@ -380,34 +400,42 @@ export function ProcessingCurating() {
         header={
           <Header
             variant="h2"
-            description="Count the decodes behind one training step, and see why the recording's keyframe interval is a training-speed setting"
+            description="Training reads video frames at random positions, and each read can cost many decoded frames. You can count the decodes behind one training step and see why the keyframe interval of the recording affects training speed."
           >
-            One random frame costs every frame back to its keyframe
+            Counting the video decodes in one training step
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            A video codec stores a few frames whole and the rest as differences from the frames before them. A frame
-            stored whole is a keyframe, and the spacing of the keyframes is the GOP (group of pictures) size. To
-            return one frame, a decoder loads the keyframe before it and decodes every frame from there to the one
-            requested. Playback hides the cost, because it decodes each frame once on the way through. Training asks
-            for a few frames at random places, so every request can cost a whole group.{' '}
+            A video codec stores a few frames whole and stores the others as differences from the frames before
+            them. A frame that is stored whole is called a keyframe. The spacing between keyframes is the GOP (group
+            of pictures) size. To return one frame, a decoder starts at the keyframe before it and decodes every
+            frame from there up to the requested one. During normal playback this adds no extra work, because the
+            player decodes every frame once, in order. Training reads a few frames at random positions, so each read
+            can cost the decoding of a whole group of pictures.{' '}
             <Cite id="F05-37">LeRobot v0.7.0 video_utils.py, decoder docstrings</Cite>{' '}
             <Cite id="F05-64">LeRobot v0.4.0 video benchmark, Requested timestamps</Cite>
           </Box>
           <Box variant="p">
-            Count one training step for {TASK_CLAUSE}. LeRobot trains with a batch of 8 rows by default, each row
-            the arm&apos;s joints and camera frames at one control tick of one recorded episode, so a step needs 8 x
-            2 = <Derived>16</Derived> frames. LeRobot&apos;s recorder makes this the cheap case: its default GOP is
-            2, a keyframe every second frame, so a frame costs at most 2 decodes and the step at most{' '}
-            <Derived>16</Derived> x 2 = <Derived>32</Derived>. The GOP is a setting, though. At 250, a common value
-            for streaming video used here as an illustration, the worst case for the same step is{' '}
-            <Derived>16</Derived> x 250 = <Derived>4,000</Derived> decodes, <Derived>125</Derived> times the
-            default&apos;s, all on the workers&apos; cores. The GOP is set when a video is encoded, which trades
-            decode time against file size, so a dataset re-encoded at a long GOP for a smaller file pays for it on
-            every training step. Re-encoding is also how a GOP changes, and <code>lerobot-edit-dataset</code> can
-            re-encode a downloaded dataset&apos;s videos. <Cite id="F05-61">LeRobot v0.7.0 configs/train.py</Cite>{' '}
+            To see what this costs, count the decodes in one training step for {TASK_CLAUSE}. By default, LeRobot trains with
+            a batch of 8 rows. A row holds the arm&apos;s joint positions and the camera frames at one control tick
+            of one recorded episode. With two cameras, one step needs 8 x 2 = <Derived>16</Derived> frames.{' '}
+            <Cite id="F05-61">LeRobot v0.7.0 configs/train.py</Cite>
+          </Box>
+          <Box variant="p">
+            With LeRobot&apos;s recorder, this is a cheap case. Its default GOP size is 2, which means a keyframe every
+            second frame. So one frame costs at most 2 decodes, and one step costs at most <Derived>16</Derived> x 2
+            = <Derived>32</Derived> decodes. <Cite id="F05-37">LeRobot v0.7.0 video_utils.py, decoder docstrings</Cite>
+          </Box>
+          <Box variant="p">
+            The GOP size is a setting, though. For illustration, take a GOP size of 250, a common value for streaming
+            video. The worst case for the same step is then <Derived>16</Derived> x 250 = <Derived>4,000</Derived>{' '}
+            decodes, <Derived>125</Derived> times as many as with the default, and the workers&apos; CPU cores do
+            all of them. When you encode a video, you choose its GOP size, and with it the balance between decode
+            time and file size. If you re-encode a dataset with a long GOP to make the files smaller, every training
+            step needs more decodes. Re-encoding is also the way to change the GOP size, and <code>lerobot-edit-dataset</code> can
+            re-encode the videos of a dataset you have downloaded.{' '}
             <Cite id="F05-37">LeRobot v0.7.0 video_utils.py, decoder docstrings</Cite>{' '}
             <Cite id="F05-81">LeRobot v0.7.0 using_dataset_tools.mdx</Cite>
           </Box>
@@ -418,90 +446,127 @@ export function ProcessingCurating() {
         header={
           <Header
             variant="h2"
-            description="Turn worker count, batch size and one measured rate into the time the workers need per batch, and set it against the GPU's update time"
+            description="A short formula tells you whether the dataloader workers can build batches as fast as the GPU trains on them. You can apply it to published LeRobot timings, and then compare how many CPU cores each EC2 GPU instance provides for the workers."
           >
-            The workers set a step rate that no GPU can raise
+            How many dataloader workers keep a GPU busy
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The dataloader&apos;s workers run in parallel on CPU cores, and in LeRobot each one also decodes: the
-            default decoder is torchcodec, the PyTorch project&apos;s video decoder, run on the CPU. LeRobot&apos;s
-            code warns that pointing it at the GPU from inside a worker leads to initialisation errors in CUDA,
-            NVIDIA&apos;s GPU programming layer, which is why decode stays on the cores even on cards with an AV1
+            The dataloader&apos;s workers run in parallel on CPU cores, and in LeRobot each worker also decodes the
+            video. LeRobot&apos;s default decoder is torchcodec, the PyTorch project&apos;s video decoder, and
+            LeRobot runs it on the CPU. LeRobot&apos;s code warns that pointing torchcodec at the GPU from inside a
+            worker causes initialisation errors in CUDA, NVIDIA&apos;s programming layer for its GPUs.
+            Because of these errors, LeRobot keeps decoding on the CPU cores, even on GPUs that have an AV1 decode
             engine. <Cite id="F05-39">LeRobot v0.7.0 video_utils.py</Cite>{' '}
             <Cite id="F05-41">LeRobot v0.7.0 video_utils.py, decoder note</Cite>{' '}
-            <Cite id="F08-77">the CPU beside the GPU</Cite>
+            <Cite id="F08-77">the CPU cores that supply the GPU</Cite>
+          </Box>
+          <Box variant="div">
+            The GPU waits whenever the workers need longer to build a batch than the GPU needs to train on one. To
+            check this before a long run, you need four numbers:
+            <ul style={LIST}>
+              <li>
+                <code>B</code>, the batch size, which is the number of rows one training step uses.
+              </li>
+              <li>
+                <code>r</code>, the number of rows one worker returns per second.
+              </li>
+              <li>
+                <code>u</code>, the update time, which is how long the GPU takes for one training step.
+              </li>
+              <li>
+                <code>W</code>, the number of workers.
+              </li>
+            </ul>
           </Box>
           <Box variant="p">
-            The GPU waits whenever the workers take longer to build a batch than the GPU takes to train on one.
-            Write <code>B</code> for the batch size (the rows one step consumes), <code>r</code> for the rows one
-            worker returns per second, <code>u</code> for the GPU&apos;s update time per step and <code>W</code> for
-            the number of workers. One worker needs <code>B / r</code> seconds to build a batch, and the GPU asks
-            for one every <code>u</code> seconds, so the workers keep the GPU fed when:
+            One worker needs <code>B / r</code> seconds to build a batch. If <code>W</code> workers each deliver at
+            that rate, a new batch is ready about every <code>B / (r x W)</code> seconds. The GPU asks for a new
+            batch every <code>u</code> seconds. So the workers keep the GPU supplied when:
           </Box>
           <Box variant="p">
             <code>W &gt;= B / (r x u)</code>
           </Box>
           <Box variant="p">
-            <code>W</code> and <code>B</code> are settings, and <code>u</code> belongs to the policy and the GPU.{' '}
-            <code>r</code> is where the recording and the loader&apos;s code show up: every decode a row needs lowers
-            it. An open pull request in LeRobot&apos;s repository times dataset access, fetching one row with its
-            frames, on a two-camera, 50-episode dataset with torchcodec: 5.37 ms per random single row on
-            LeRobot&apos;s main branch and 5.16 ms with the pull request&apos;s change (medians, one process, warm
-            file cache, hardware not stated). That is about{' '}
-            <Derived>186</Derived> rows per second, so one worker builds a default batch of 8 in 8 /{' '}
-            <Derived>186</Derived> = <Derived>43</Derived> ms, and the default 4 workers keep up with any update of
-            about <Derived>11</Derived> ms or longer, if four of them deliver four times the rows of one. <Cite id="F05-62">LeRobot pull request 4549</Cite>{' '}
+            You choose <code>W</code> and <code>B</code> as settings. The update time <code>u</code> depends on the
+            policy and the GPU. The recording and the loader&apos;s code affect <code>r</code>, because every extra
+            decode that a row needs makes a worker return fewer rows per second.
+          </Box>
+          <Box variant="p">
+            An open pull request in LeRobot&apos;s repository proposes a change and reports timings for dataset
+            access, which means fetching one row together with its video frames. The test used a dataset with two cameras and 50 episodes, decoded with
+            torchcodec. Fetching a random single row took a median of 5.37 ms on LeRobot&apos;s main branch and 5.16
+            ms with the pull request&apos;s change. The test ran in one process with a warm file cache, and the pull
+            request does not state the hardware. <Cite id="F05-62">LeRobot pull request 4549</Cite>
+          </Box>
+          <Box variant="p">
+            At 5.37 ms per row, one worker returns about <Derived>186</Derived> rows per second. So one worker builds
+            a default batch of 8 rows in 8 / <Derived>186</Derived> = <Derived>43</Derived> ms. If four workers
+            deliver four times the rows of one, LeRobot&apos;s default of 4 workers keeps up with any update time of
+            about <Derived>11</Derived> ms or longer. <Cite id="F05-62">LeRobot pull request 4549</Cite>{' '}
             <Cite id="F05-61">LeRobot v0.7.0 configs/train.py</Cite>
           </Box>
           <Box variant="p">
-            Heavier rows and larger batches raise the number of workers needed. The same pull request times batches of 32 rows read at
-            random, each reading a five-frame history window, several recent frames instead of one: 16.98 ms per
-            row on main, <Derived>59</Derived> rows per second from one worker, so one worker needs 32 /{' '}
-            <Derived>59</Derived> = <Derived>0.54</Derived> s per batch. That is one worker building one batch of
-            heavier rows, a different measurement from the guide&apos;s 0.015 s of loading per training step on its
-            own dataset. Pair those rows, for illustration, with an
-            update as long as the guide&apos;s Diffusion Policy step, 0.167 s, and the GPU needs 32 / (
-            <Derived>59</Derived> x 0.167) = <Derived>3.2</Derived> workers&apos; worth of rows. The default four
-            cover that only if together they return at least <Derived>3.2</Derived> times the rows of one. The pull request&apos;s own change, still open on
-            2026-11-20, cuts the row to 4.95 ms (3.43x faster), which divides the workers needed by the same factor,
-            to about one. <Cite id="F05-62">LeRobot pull request 4549</Cite>{' '}
+            Heavier rows and larger batches raise the number of workers you need. The same pull request also times
+            batches of 32 rows read at random positions, where each row reads a five-frame history window, which
+            means several recent frames instead of one. On the main branch, each of these rows took 16.98 ms. That is{' '}
+            <Derived>59</Derived> rows per second from one worker, so one worker needs 32 / <Derived>59</Derived> ={' '}
+            <Derived>0.54</Derived> s to build one batch. This figure is for one worker building one batch of heavier
+            rows. It is a different measurement from the 0.015 s of data loading per training step that the hardware
+            guide reports for its own dataset. <Cite id="F05-62">LeRobot pull request 4549</Cite>{' '}
             <Cite id="F01-91">LeRobot hardware guide, benchmark table</Cite>
           </Box>
           <Box variant="p">
-            Workers do not always scale that well. For LeRobot&apos;s streaming reader, the mode that trains without
-            downloading the dataset first, Hugging Face&apos;s release post reports 2.1 to 2.5 times more samples per
-            second from four workers. Neither the pull request nor the release post names the machine behind its figure, so time one worker and
-            four on the instance you will rent, and check that four return at least <code>B / (r x u)</code> times
-            what one does. <Cite id="F05-109">LeRobot v0.7.0 release blog, Disk-less streaming</Cite>{' '}
+            For illustration, pair these rows with an update time as long as the guide&apos;s Diffusion Policy step,
+            0.167 s. The GPU then needs 32 / (<Derived>59</Derived> x 0.167) = <Derived>3.2</Derived> workers&apos;
+            worth of rows. LeRobot&apos;s default of four workers covers that only if, together, they return at least{' '}
+            <Derived>3.2</Derived> times the rows of one worker. As of November 2026, the pull request is still open.
+            Its change cuts the time per row to 4.95 ms, 3.43x faster, which divides the number of workers needed by
+            the same factor, to about one. <Cite id="F05-62">LeRobot pull request 4549</Cite>{' '}
+            <Cite id="F01-91">LeRobot hardware guide, benchmark table</Cite>
+          </Box>
+          <Box variant="p">
+            Adding workers does not always multiply the rate by the number of workers. LeRobot has a streaming
+            reader, a mode that trains from a dataset without downloading it first. For this reader, Hugging
+            Face&apos;s release post reports 2.1 to 2.5 times more samples per second from four workers. Neither the
+            pull request nor the release post names the machine behind its figures. So time one worker and four
+            workers on the instance you plan to rent, and check that four return at least <code>B / (r x u)</code>{' '}
+            times what one returns. <Cite id="F05-109">LeRobot v0.7.0 release blog, Disk-less streaming</Cite>{' '}
             <Cite id="F05-62">LeRobot pull request 4549</Cite>
           </Box>
           <Box variant="p">
-            Augmentation, once switched on, lowers <code>r</code> further, because by default it runs per sample in
-            the same workers. LeRobot&apos;s docs call it, with several cameras, often the most expensive thing the
-            workers do, and state the result: &quot;the GPU ends up waiting for data&quot;. The{' '}
-            <code>backend=gpu</code> flag leaves the workers decoding only and applies the transforms to each batch
-            on the GPU. It is the change behind Hugging Face&apos;s 2.8x for ACT on an H100, and 3.3x on an A100.{' '}
+            When augmentation is switched on, it lowers <code>r</code> further, because by default it runs on each
+            sample inside the same workers. LeRobot&apos;s documentation says that with several cameras, augmentation
+            is often the most expensive work the workers do, and that &quot;the GPU ends up waiting for data&quot;.
+            The <code>backend=gpu</code> flag leaves the workers with only the decoding and applies the augmentation
+            to each whole batch on the GPU. This is the change behind the speedups that Hugging Face reports for ACT:
+            2.8x on an H100 and 3.3x on an A100.{' '}
             <Cite id="F05-84">LeRobot v0.7.0 transforms.py, ImageTransformsConfig</Cite>{' '}
             <Cite id="F05-58">LeRobot v0.7.0 lerobot-dataset-v3.mdx</Cite>{' '}
             <Cite id="F05-59">LeRobot v0.7.0 release blog, Augment on the GPU</Cite>
           </Box>
           <Box variant="p">
-            <code>W</code> can grow only to the cores beside the GPU, and the instance type fixes those. The
-            eight-GPU sizes of G5, G6, G6e, G7e, P5, P5e, P5en, P6-B200 and P6-B300 all have 192 vCPUs, 24 per GPU.
-            On these x86 sizes a vCPU is one hardware thread and two threads share a physical core (SMT,
-            simultaneous multithreading: one core presenting itself as two so that it can interleave two programs on the same execution units),
-            so the 24 vCPUs are 12 physical cores. p4d.24xlarge has 96 vCPUs for 8 A100s, 12 vCPUs and 6 physical
-            cores per GPU. g7.48xlarge runs 1 thread per core, so its 24 vCPUs per GPU are 24 physical cores, twice
-            the 12 of the other eight-GPU x86 sizes and four times p4d&apos;s 6.{' '}
+            The number of workers you can run is limited by the CPU cores that the instance provides for each GPU,
+            and that number depends on the instance type. The eight-GPU sizes of G5, G6, G6e, G7e, P5, P5e, P5en, P6-B200 and
+            P6-B300 all have 192 vCPUs, which is 24 per GPU. On these x86 sizes, a vCPU is one hardware thread, and
+            two threads share one physical core. This is called SMT (simultaneous multithreading): one physical core
+            presents itself as two, so that it can interleave two programs on the same execution units. So the 24
+            vCPUs per GPU are 12 physical cores. <Cite id="F05-65">EC2 accelerated computing specifications</Cite>{' '}
+            <Cite id="F08-57">vCPUs and physical cores per GPU, from the EC2 specifications</Cite>
+          </Box>
+          <Box variant="p">
+            Two eight-GPU sizes differ from that. p4d.24xlarge has 96 vCPUs for 8 A100s, which is 12 vCPUs and 6
+            physical cores per GPU. g7.48xlarge runs one thread per core, so its 24 vCPUs per GPU are 24 physical
+            cores. That is twice the 12 of the other eight-GPU x86 sizes and four times the 6 of p4d.24xlarge.{' '}
             <Cite id="F05-65">EC2 accelerated computing specifications</Cite>{' '}
             <Cite id="F08-57">vCPUs and physical cores per GPU, from the EC2 specifications</Cite>
           </Box>
           <Box variant="p">
-            A one-GPU size lets you pick the ratio: from 4 vCPUs (g6.xlarge) to 64 (g6.16xlarge) beside one L4.
-            p5.4xlarge puts 16 vCPUs beside its one H100, fewer per GPU than the eight-GPU P5.{' '}
+            With a one-GPU size, you can choose how many vCPUs come with the GPU. For one L4, you can choose from 4
+            vCPUs (g6.xlarge) up to 64 vCPUs (g6.16xlarge). p5.4xlarge has 16 vCPUs for its one H100, which is fewer
+            per GPU than the eight-GPU P5 size.{' '}
             <Cite id="F08-57">vCPUs and physical cores per GPU, from the EC2 specifications</Cite>{' '}
             <Cite id="F05-66">EC2 accelerated computing specifications, single-GPU sizes</Cite>
           </Box>
@@ -512,58 +577,69 @@ export function ProcessingCurating() {
         header={
           <Header
             variant="h2"
-            description="For a loader or pipeline that decodes on the GPU, rule an instance family in or out by one row of NVIDIA's matrix, and know what to do when the row says no"
+            description="If your loader or curation pipeline decodes on the GPU, one row of NVIDIA's support matrix tells you whether an instance family can decode your codec. You can look up that row for each EC2 GPU family and decide what to do when the answer is no."
           >
-            The H100 has no engine that decodes AV1
+            Which GPUs can decode AV1 video
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The H100 of P5 carries 7 NVDEC engines, and none of them decodes AV1. NVIDIA&apos;s support matrix,
-            which lists for each card how many engines it carries and which codecs each one handles, gives the same
-            no for the A100 of P4d and the T4 of G4dn (the EC2 family beside each card is our pairing of the matrix
-            with the EC2 tables). The matrix had no row for the H200 of P5e and P5en when read on 2026-11-20, so run
-            a decode test before you commit a GPU-decoding pipeline to either family. NVDEC and its encoding partner,
-            NVENC (NVIDIA Encoder), sit apart from the tensor cores, so a card can train at full load while they
-            sit unused; the H100 and the A100 carry no NVENC at all.{' '}
-            <Cite id="F05-67">join of the NVIDIA matrix and the EC2 specifications</Cite>{' '}
-            <Cite id="F05-47">NVIDIA support matrix, rows NVIDIA H100</Cite>{' '}
+            NVIDIA publishes a support matrix that lists, for each GPU, how many video engines it has and which
+            codecs each engine handles. The matrix is organised by GPU, so the EC2 family given here for each GPU
+            comes from the EC2 instance specifications.{' '}
+            <Cite id="F05-67">join of the NVIDIA matrix and the EC2 specifications</Cite>
+          </Box>
+          <Box variant="p">
+            The H100 in P5 instances has 7 NVDEC engines, and none of them decodes AV1. The matrix gives the same
+            answer for the A100 in P4d and the T4 in G4dn. As of November 2026, the matrix has no row for the H200 in
+            P5e and P5en. So before you commit a pipeline that decodes on the GPU to either of these two families,
+            run a decode test. <Cite id="F05-47">NVIDIA support matrix, rows NVIDIA H100</Cite>{' '}
             <Cite id="F05-46">NVIDIA support matrix, row NVIDIA A100</Cite>{' '}
             <Cite id="F05-53">NVIDIA support matrix, row Tesla T4</Cite>{' '}
             <Cite id="F05-49">NVIDIA support matrix, searched for H200</Cite>
           </Box>
           <Box variant="p">
-            AV1 does decode on the Blackwell parts of P6-B200, P6-B300 and P6e-GB200, and in the G families from the L4 of G6 upward. G5&apos;s answer rests on the matrix&apos;s A10 row, which
-            decodes AV1: AWS sells the G5 card as the A10G, which has no row of its own, so a decode test settles G5 as it
-            does the H200.{' '}
+            NVDEC has an encoding counterpart, NVENC (NVIDIA Encoder), which compresses video. Both engines are
+            separate from the tensor cores, so a GPU can train at full load while its video engines stay unused. The
+            H100 and the A100 have no NVENC engine at all.{' '}
+            <Cite id="F05-47">NVIDIA support matrix, rows NVIDIA H100</Cite>{' '}
+            <Cite id="F05-46">NVIDIA support matrix, row NVIDIA A100</Cite>
+          </Box>
+          <Box variant="p">
+            AV1 decoding in hardware is available on the Blackwell GPUs of P6-B200, P6-B300 and P6e-GB200. It is
+            also available on the G-family GPUs from the L4 in G6 upward. For G5, the answer is less certain. AWS
+            sells the G5 GPU as the A10G, and the matrix has no row for the A10G. The matrix row for the A10 says it
+            decodes AV1, so a decode test is the way to confirm G5, as it is for the H200.{' '}
             <Cite id="F05-48">NVIDIA support matrix, rows HGX B200, HGX B300, GB200</Cite>{' '}
             <Cite id="F05-54">NVIDIA support matrix, row NVIDIA A10</Cite>{' '}
             <Cite id="F05-67">join of the NVIDIA matrix and the EC2 specifications</Cite>
           </Box>
           <Box variant="p">
-            When the row says no, rent a card whose row says yes, or go back to the bench and record a codec the
-            card does decode. LeRobot can also record H.264 or HEVC (High Efficiency Video Coding), at a price its
-            docs state: H.264 encoded on the CPU comes out about 30-50% larger than AV1, and AV1 stays the default
-            because it gives the best training performance, with other codecs that &quot;may affect training
-            time&quot;. Read your card&apos;s decode columns for the new codec in NVIDIA&apos;s matrix before you
-            record in it.{' '}
+            If the matrix says that your GPU cannot decode your codec, you have two options. You can rent a GPU
+            whose row says it can, or you can record new data in a codec that your GPU does decode. LeRobot can also
+            record in H.264 or in HEVC (High Efficiency Video Coding, also called H.265). Its documentation states
+            the cost: H.264 encoded on the CPU produces files about 30-50% larger than AV1. The documentation also
+            says that AV1 stays the default because it gives the best training performance, and that other codecs
+            &quot;may affect training time&quot;. Before you record in a new codec, check your GPU&apos;s decode
+            columns for that codec in NVIDIA&apos;s matrix.{' '}
             <Cite id="F05-42">LeRobot v0.7.0 configs/video.py, codec list</Cite>{' '}
             <Cite id="F05-43">LeRobot streaming video encoding docs, Choosing a Codec</Cite>
           </Box>
           <Box variant="p">
-            When the row says yes, test the software path as well as the card. Cosmos Curator, NVIDIA&apos;s video
-            curation pipeline, removed its FFmpeg GPU decode mode because its benchmarks showed it performing the same as FFmpeg on the CPU, and it now
-            decodes on the GPU through NVIDIA&apos;s PyNvVideoCodec library instead.{' '}
+            If the matrix says that your GPU can decode your codec, you still need to test the software that calls
+            the engine. For example, Cosmos Curator, NVIDIA&apos;s video curation pipeline, removed its FFmpeg GPU
+            decode mode, because its benchmarks showed that mode performing the same as FFmpeg on the CPU. Cosmos
+            Curator now decodes on the GPU through NVIDIA&apos;s PyNvVideoCodec library instead.{' '}
             <Cite id="F05-77">Cosmos Curator slim-image.md</Cite>
           </Box>
-          <ExpandableSection headerText="Engine counts and AV1 decode by card and EC2 family, for lookup" variant="footer">
+          <ExpandableSection headerText="Video engines and AV1 decode support by GPU and EC2 instance family" variant="footer">
             <div style={{ overflowX: 'auto' }}>
               <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 760 }}>
                 <thead>
                   <tr>
-                    <th style={TH}>Card</th>
-                    <th style={TH}>EC2 family (our pairing)</th>
+                    <th style={TH}>GPU</th>
+                    <th style={TH}>EC2 instance family</th>
                     <th style={TH}>NVENC engines</th>
                     <th style={TH}>NVDEC engines</th>
                     <th style={TH}>AV1 hardware decode</th>
@@ -592,99 +668,136 @@ export function ProcessingCurating() {
         header={
           <Header
             variant="h2"
-            description="Size a curation instance from each stage's CPU and GPU budget, and find the slow link in the feed before you add GPUs"
+            description="A curation pipeline mixes CPU stages and GPU stages, and a GPU stage can only run as fast as the stages that feed it. You can size an instance from each stage's CPU and GPU budget, and find the slowest link before you add GPUs."
           >
-            In curation, a GPU stage runs at the speed of what feeds it
+            Sizing the CPU and GPU stages of a curation pipeline
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            At the bench, curation is a person and one command. You watch the 50 episodes LeRobot&apos;s recorder
-            makes by default and delete the failed ones by index with <code>lerobot-edit-dataset</code>, which also
-            recomputes the dataset statistics. <Cite id="F05-2">LeRobot v0.7.0 configs/dataset.py</Cite>{' '}
+            For one arm&apos;s dataset, a person can do the curation by hand. LeRobot&apos;s recorder makes 50
+            episodes by default. You watch them and delete the failed ones by their index with one command,{' '}
+            <code>lerobot-edit-dataset</code>, which also recomputes the dataset statistics.{' '}
+            <Cite id="F05-2">LeRobot v0.7.0 configs/dataset.py</Cite>{' '}
             <Cite id="F05-81">LeRobot v0.7.0 using_dataset_tools.mdx</Cite>
           </Box>
           <Box variant="p">
-            At thousands of hours nobody watches. Small models drop the clips where nothing moves, score how a clip
-            looks, caption it and compare it with the others for near copies, and the job becomes a pipeline of CPU
-            stages feeding GPU stages. NVIDIA&apos;s Cosmos Curator (v2.10.0, released 2026-11-10) runs that
-            pipeline on Ray, a framework that spreads Python jobs across a cluster, and gives each stage a budget in
-            CPUs or in fractions of a GPU: 3 CPUs per worker to decode frames, 5 to transcode (re-encode each clip,
-            here to H.264), and for most of its models 0.25 of a GPU per worker, with defaults tuned for a 48 GB
-            card. <Cite id="F05-68">Cosmos Curator v2.10.0 README</Cite>{' '}
+            With thousands of hours of video, nobody can watch every clip, so small models do the work. They drop
+            the clips where nothing moves, score how each clip looks, write a caption for it, and compare it with the
+            other clips to find near copies. The job becomes a pipeline in which CPU stages feed GPU stages.{' '}
+            <Cite id="F05-69">Cosmos Curator video-pipelines.md, stage list</Cite>
+          </Box>
+          <Box variant="div">
+            NVIDIA&apos;s Cosmos Curator (v2.10.0, released 2026-11-10) runs this kind of pipeline on Ray, a
+            framework that spreads Python jobs across the machines of a cluster. Cosmos Curator gives each stage a
+            budget in CPUs or in fractions of a GPU. The defaults include these budgets:
+            <ul style={LIST}>
+              <li>
+                <strong>Decoding frames</strong> gets 3 CPUs per worker.
+              </li>
+              <li>
+                <strong>Transcoding</strong>, which re-encodes each clip (here to H.264), gets 5 CPUs per worker.
+              </li>
+              <li>
+                <strong>Most of the model stages</strong> get 0.25 of a GPU per worker. These defaults are tuned for a GPU
+                with 48 GB of memory.
+              </li>
+            </ul>
+            <Cite id="F05-68">Cosmos Curator v2.10.0 README</Cite>{' '}
             <Cite id="F05-69">Cosmos Curator video-pipelines.md, stage list</Cite>{' '}
             <Cite id="F05-71">Cosmos Curator video-pipelines.md, Options for Performance</Cite>
           </Box>
           <Box variant="p">
-            Put those budgets on an eight-GPU G6e, whose L40S is a 48 GB card. Each GPU holds four of the
-            quarter-GPU model workers, and the CPU stages share the 24 vCPUs beside it: 24 / 3 = 8 decode workers
-            would take all 24, and 4 transcode workers at 5 each take 20, so a pipeline running both has to split
-            the cores. The budgets cannot say how: that comes from each stage&apos;s measured throughput on your own
-            clips, the measurement a short run gives. On P instances transcoding stays on the cores: the
-            pipeline&apos;s default encoder is a CPU one for cards without an encoder engine, the A100 and H100 by
-            name, and no P-family card in the matrix has one.{' '}
+            As an example, apply these budgets to an eight-GPU G6e instance, whose L40S GPUs have 48 GB of memory
+            each. Each GPU can hold four model workers at a quarter of a GPU each. The CPU stages share the 24 vCPUs
+            that come with each GPU. Eight decode workers at 3 CPUs each (24 / 3 = 8) would take all 24 vCPUs, and 4
+            transcode workers at 5 CPUs each take 20. So a pipeline that runs both stages has to split the vCPUs
+            between them. The budgets do not tell you how to split them. You get that from each stage&apos;s measured
+            throughput on your own clips, which is what a short run measures.{' '}
             <Cite id="F05-71">Cosmos Curator video-pipelines.md, Options for Performance</Cite>{' '}
             <Cite id="F05-65">EC2 accelerated computing specifications</Cite>{' '}
-            <Cite id="F08-45">EC2 accelerated computing specifications, accelerator memory</Cite>{' '}
+            <Cite id="F08-45">EC2 accelerated computing specifications, accelerator memory</Cite>
+          </Box>
+          <Box variant="p">
+            For GPUs without an encoder engine, the pipeline&apos;s default encoder runs on the CPU, and the
+            pipeline&apos;s documentation names the A100 and the H100 as such GPUs. None of the P-family GPUs in
+            NVIDIA&apos;s matrix has an encoder engine, so on P instances, transcoding stays on the CPU cores.{' '}
             <Cite id="F05-77">Cosmos Curator slim-image.md</Cite>{' '}
             <Cite id="F05-67">join of the NVIDIA matrix and the EC2 specifications</Cite>
           </Box>
           <Box variant="p">
-            For sizing the GPUs, NVIDIA published in March 2025 an end-to-end rate for 720p video: about 195 seconds
-            per hour of video per GPU in streaming mode, for the whole pipeline, or 3,600 / 195 = 18.5 hours of
-            video per GPU-hour. It was measured on a predecessor, NeMo Video Curator (version unnamed), on
-            NVIDIA&apos;s DGX Cloud service, and it is the nearest published rate we located. At that rate an
-            illustrative <Toy>1,000</Toy> hours of video take about <Derived>54</Derived> GPU-hours, a dated order of
-            magnitude to check against a short run of your own.{' '}
+            To size the number of GPUs, you need a processing rate. In March 2025, NVIDIA published an end-to-end
+            rate for the whole pipeline on 720p video: in streaming mode, one GPU processed one hour of video in
+            about 195 seconds. That is 3,600 / 195 = 18.5 hours of video per GPU-hour. NVIDIA measured it on NeMo
+            Video Curator, the predecessor of Cosmos Curator, on its DGX Cloud service, and did not name the
+            version. It is the closest published rate we found. At that rate, an illustrative <Toy>1,000</Toy> hours
+            of video take about <Derived>54</Derived> GPU-hours. Treat this as a rough order of magnitude from an
+            older version, and check it against a short run of your own.{' '}
             <Cite id="F05-78">NVIDIA Technical Blog, NeMo Video Curator on DGX Cloud (2025-03-18)</Cite>
           </Box>
           <Figure
             cites="F05-69 F05-70 F05-71 F05-73 F05-77"
             caption={
               <>
-                The decode, transcode and caption-preparation stages are counted in CPUs per
-                worker and the model stages in fractions of a GPU, so one instance&apos;s vCPUs and its GPUs both
-                bound the pipeline. Clip counts and which clips drop are illustrative, and the frames are simulated.
+                The decode, transcode and caption-preparation stages have budgets in CPUs per worker, and the model
+                stages have budgets in fractions of a GPU. So both the vCPUs and the GPUs of one instance limit how
+                fast the pipeline runs. The clip counts and the choice of which clips are dropped are illustrations,
+                and the frames are simulated.
               </>
             }
           >
             <CurFunnel />
           </Figure>
           <Box variant="p">
-            One CPU stage exists only to keep a GPU stage busy. Preparing the captioning model&apos;s inputs is CPU
-            work that would otherwise hold a GPU idle, so the pipeline makes it a stage of its own, 3 CPUs per
-            worker, which can spawn many CPU workers to keep the captioning stage&apos;s GPU workers busy.{' '}
+            One CPU stage exists only to keep a GPU stage busy. Preparing the inputs for the captioning model is CPU
+            work, and if the captioning stage did this work itself, its GPU would sit idle. So the pipeline makes
+            input preparation a stage of its own, with 3 CPUs per worker. This stage can start many CPU workers to
+            keep the captioning stage&apos;s GPU workers busy.{' '}
             <Cite id="F05-70">Cosmos Curator video-pipelines.md, note under the stage list</Cite>{' '}
             <Cite id="F05-71">Cosmos Curator video-pipelines.md, Options for Performance</Cite>
           </Box>
           <Box variant="p">
-            Two runs on 32 GPUs, measured differently, show a fed and a starved pipeline. The same March 2025 post
-            describes a controller that measures each stage&apos;s throughput and
-            resizes its pool of workers every three minutes, over-provisioning the CPU-only stages, and NVIDIA reports
-            the GPU-stage workers busy over 99.5% of the time after a warm-up, on 32 GPUs across four nodes.{' '}
-            <Cite id="F05-79">NVIDIA Technical Blog, NeMo Video Curator on DGX Cloud, architecture</Cite>{' '}
+            Two published runs on 32 GPUs show the difference between a pipeline that keeps its GPUs busy and one
+            whose GPUs wait. The two runs were measured in different ways. The first run is in the same March 2025
+            NVIDIA post. The post describes a controller that measures the throughput of each stage and resizes that
+            stage&apos;s pool of workers every three minutes. The controller over-provisions the CPU-only stages,
+            which means it gives them more workers than their measured load requires. NVIDIA reports that, after a
+            warm-up, the workers of the GPU stages were busy more than 99.5% of the time, on 32 GPUs across four
+            nodes. <Cite id="F05-79">NVIDIA Technical Blog, NeMo Video Curator on DGX Cloud, architecture</Cite>{' '}
             <Cite id="F05-78">NVIDIA Technical Blog, NeMo Video Curator on DGX Cloud (2025-03-18)</Cite>
           </Box>
           <Box variant="p">
-            A design note for the current toolkit&apos;s incubating robot captioning recipe records the other end:
-            on 32 H100s (4 nodes of 8), 32 captioning replicas delivered 7.1 rows of its input table per second against a capacity near 43, at about 17% aggregate GPU utilisation, and 10 replicas
-            never received a request. The slow link was fetching the clips. It is one run, cancelled before it completed, and the authors list the slow fetch as a known weakness.{' '}
+            The second run shows the opposite case. It comes from a design note for a robot captioning recipe that
+            is still incubating in the current Cosmos Curator toolkit. A replica here is one running copy of the
+            captioning model. On 32 H100s (4 nodes of 8 GPUs), 32 captioning replicas processed 7.1 rows of the
+            recipe&apos;s input table per second, while their combined capacity was about 43 rows per second.
+            Aggregate GPU utilisation was about 17%, which means the GPUs had work running for less than a fifth of
+            the time. Ten of the 32 replicas never received a request. The slowest link was fetching the clips. This
+            is a single run that was cancelled before it completed, and the authors list the slow fetch as a known
+            weakness.{' '}
             <Cite id="F05-76">Cosmos Curator curator-next-robot-action-caption.md</Cite>
           </Box>
           <Box variant="p">
-            Deduplication never decodes the video again. The first pass&apos;s embedding model turns each clip into
-            an embedding, a list of numbers placed so that similar clips get lists that sit close together. A second
-            pipeline clusters those lists with K-Means, which groups vectors around a chosen number of centres,
-            orders each cluster by cosine similarity to its centre (1 when two vectors point the same way) and, by
-            our reading of its options, drops the clips that sit too close to another.{' '}
+            Deduplication, the step that removes near copies, does not decode the video again. During the main
+            curation pipeline, an embedding model has already turned each clip into an embedding. An embedding is a
+            vector, a list of numbers computed so that similar clips get vectors that are close together. A second
+            pipeline then groups these vectors into clusters with K-Means, an algorithm that groups vectors around a
+            chosen number of centres. The pipeline orders each cluster by cosine similarity to the cluster&apos;s
+            centre. Cosine similarity is a score for two vectors that is 1 when they point in the same direction.
+            The pipeline&apos;s options indicate that it then drops the clips that are too close to another clip.{' '}
             <Cite id="F05-73">Cosmos Curator video-pipelines.md, Dedup Pipeline</Cite>
           </Box>
           <Box variant="p">
-            A curation pass splits into short independent units of work, so a machine lost in the middle costs only
-            the clips it held, which makes it a job for Spot, the capacity AWS may take back (section 24,
-            Orchestrating Physical AI on AWS, places it there). <Cite id="F08-78">the five shapes</Cite> Size it
-            from a short run on your own clips, and find the slow link, the fetch included, before you add GPUs.{' '}
+            A curation pass splits into short, independent pieces of work. If a machine is lost in the middle of the
+            pass, you lose only the clips that machine was processing. So curation has the workload type called
+            independent tasks, and it can run on Spot Instances, the spare EC2 capacity that AWS can reclaim.
+            Section 24, Orchestrating Physical AI on AWS, places curation in this workload type.{' '}
+            <Cite id="F08-78">the five workload types</Cite>
+          </Box>
+          <Box variant="p">
+            To size a curation pass, run it briefly on your own clips. Find the slowest link in the pipeline,
+            including the fetching of clips, before you add GPUs.{' '}
             <Cite id="F05-76">Cosmos Curator curator-next-robot-action-caption.md</Cite>
           </Box>
         </SpaceBetween>
@@ -694,63 +807,89 @@ export function ProcessingCurating() {
         header={
           <Header
             variant="h2"
-            description="Confirm from one short run whether the GPU waits for frames, then change the loader's settings first, the instance second and the codec last"
+            description="One short run tells you whether the GPU waits for frames. If it does, change the loader's settings first, then the instance, and the codec last."
           >
-            Measure one short run, then fix the loader, the instance or the codec
+            Checking a short run and fixing a slow data feed
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Set your run&apos;s data-loading time per step beside its update time. LeRobot&apos;s hardware guide
-            reports the pair as <code>dataloading_s</code> and <code>update_s</code>, counting preprocessing in the
-            first, and across its three policies data loading is 0.011 to 0.015 s against updates of 0.167 to 2.548
-            s, under a tenth of the update in every run, and in all three the GPUs set the pace. The firmer test is to change <code>W</code>. If
-            steps per second rise when you add workers, the workers were setting the pace; if they stay flat, the limit is
-            elsewhere: set the loading time beside the update time to tell the GPU from a slow read. <Cite id="F01-91">LeRobot hardware guide, benchmark table</Cite>
+            To find out whether the GPU waits for data, compare your run&apos;s data-loading time per step with its
+            update time. LeRobot&apos;s hardware guide reports these two times as <code>dataloading_s</code> and{' '}
+            <code>update_s</code>, and the data-loading time includes preprocessing. For the guide&apos;s three
+            policies, data loading takes 0.011 to 0.015 s per step, and the update takes 0.167 to 2.548 s. Data
+            loading is under a tenth of the update time in every run, so in all three runs the GPUs set the pace.{' '}
+            <Cite id="F01-91">LeRobot hardware guide, benchmark table</Cite>
           </Box>
           <Box variant="p">
-            GPU utilisation in <code>nvidia-smi</code> shows the same wait from the other side. It is the
-            percentage of the sample period during which at least one kernel was executing on the GPU, so a GPU
-            that waits for batches reads low: the guide reports about 80 to 95% for its runs, and the curation note
-            about 17%. A high reading proves less, since the figure says nothing about how much of the GPU each
-            kernel used. <Cite id="F08-30">nvidia-smi documentation, Utilization</Cite>{' '}
+            A firmer test is to change the number of workers, <code>W</code>. If the number of steps per second rises
+            when you add workers, the workers were setting the pace. If it stays flat, the limit is somewhere else.
+            In that case, compare the loading time with the update time to tell whether the GPU or a slow read is
+            the limit. <Cite id="F01-91">LeRobot hardware guide, benchmark table</Cite>
+          </Box>
+          <Box variant="p">
+            GPU utilisation in <code>nvidia-smi</code> shows the same wait from the GPU&apos;s side. A kernel
+            is a function that runs on the GPU. GPU utilisation is the percentage of the sample period during
+            which at least one kernel was executing on the GPU. So a GPU that waits for batches shows a low
+            reading. The hardware guide reports about 80 to 95% for its runs, and the curation design note
+            reports about 17%. A high reading proves less than a low one, because the figure does not say how
+            much of the GPU each kernel used.{' '}
+            <Cite id="F08-30">nvidia-smi documentation, Utilization</Cite>{' '}
             <Cite id="F01-91">LeRobot hardware guide, benchmark table</Cite>{' '}
             <Cite id="F05-76">Cosmos Curator curator-next-robot-action-caption.md</Cite>
           </Box>
           <Box variant="p">
-            <code>nvidia-smi</code> also says who is decoding, because it reports decoder utilisation as its own
-            figure, separate from the compute part of the card. If that figure reads zero while the job trains on
-            video, the decode engine is unused and the decoding is on the CPU. On a GPU split with MIG
-            (Multi-Instance GPU, which divides one card into isolated slices), none of these figures can be
-            queried. <Cite id="F08-31">nvidia-smi documentation, Utilization</Cite>
+            <code>nvidia-smi</code> also shows where the decoding happens. It reports decoder utilisation as a
+            separate figure from the utilisation of the GPU&apos;s compute part. If decoder utilisation reads zero
+            while the job trains on video, the decode engine is unused, and the decoding runs on the CPU. A GPU
+            can be divided into isolated slices with NVIDIA&apos;s MIG (Multi-Instance GPU) feature. On a GPU split
+            this way, none of these figures can be queried.{' '}
+            <Cite id="F08-31">nvidia-smi documentation, Utilization</Cite>
           </Box>
-          <Box variant="p">
-            When the workers set the pace, change settings before you change machines. Raise the worker count from its
-            default of 4 toward <code>B / (r x u)</code>, within the physical cores beside the GPU, and measure what
-            each added worker returns. Move
-            augmentation to the GPU, which leaves the workers decoding only. Keep the recording at a short GOP. If
-            the GPU still waits, move to more physical cores per GPU: g7.48xlarge among the eight-GPU sizes, or a
-            one-GPU size with more vCPUs. <Cite id="F05-61">LeRobot v0.7.0 configs/train.py</Cite>{' '}
+          <Box variant="div">
+            If the workers set the pace, change the settings before you change the machine. Work through these steps
+            in order:
+            <ul style={LIST}>
+              <li>
+                <strong>Add workers.</strong> Raise the worker count from its default of 4 toward{' '}
+                <code>B / (r x u)</code>, and stay within the physical cores available to each GPU. Measure how much
+                each added worker returns.
+              </li>
+              <li>
+                <strong>Move augmentation to the GPU.</strong> This leaves the workers with only the decoding.
+              </li>
+              <li>
+                <strong>Keep a short GOP.</strong> Record at a short GOP size, such as LeRobot&apos;s default of 2,
+                so that each random frame costs only a few decodes.
+              </li>
+              <li>
+                <strong>Change the instance.</strong> If the GPU still waits, move to an instance with more physical
+                cores per GPU. Among the eight-GPU sizes, that means g7.48xlarge. Otherwise, choose a one-GPU size
+                with more vCPUs.
+              </li>
+            </ul>
+            <Cite id="F05-61">LeRobot v0.7.0 configs/train.py</Cite>{' '}
             <Cite id="F05-58">LeRobot v0.7.0 lerobot-dataset-v3.mdx</Cite>{' '}
             <Cite id="F05-37">LeRobot v0.7.0 video_utils.py, decoder docstrings</Cite>{' '}
             <Cite id="F08-57">vCPUs and physical cores per GPU, from the EC2 specifications</Cite>
           </Box>
           <Box variant="p">
-            For software that decodes on the GPU, the codec and the instance are one decision: the card&apos;s row
-            for your codec decides, and a default AV1 recording rules out P5 and P4d. With LeRobot&apos;s stock
-            loader the cores beside each GPU do all the decoding whatever the card, so compare instances by physical
-            cores per GPU instead: 12 (24 vCPUs) on most eight-GPU sizes, 6 on p4d.24xlarge, 24 on g7.48xlarge. If
-            the instance is already fixed, fit the codec to it while you can still record, and where no engine
-            decodes it, budget the cores.{' '}
+            For software that decodes on the GPU, you choose the codec and the instance together. The GPU&apos;s row
+            in NVIDIA&apos;s matrix tells you whether it can decode your codec, and a recording in LeRobot&apos;s
+            default AV1 rules out P5 and P4d. With LeRobot&apos;s own loader, the CPU cores do all the decoding
+            whatever the GPU, so compare instances by the number of physical cores per GPU instead. Most eight-GPU
+            sizes have 12 physical cores (24 vCPUs) per GPU, p4d.24xlarge has 6, and g7.48xlarge has 24. If the
+            instance is already fixed, choose a codec that its GPU can decode while you can still record. If no
+            engine on that instance decodes your codec, plan enough CPU cores for the decoding.{' '}
             <Cite id="F05-39">LeRobot v0.7.0 video_utils.py</Cite>{' '}
             <Cite id="F05-65">EC2 accelerated computing specifications</Cite>{' '}
             <Cite id="F08-57">vCPUs and physical cores per GPU, from the EC2 specifications</Cite>{' '}
             <Cite id="F05-67">join of the NVIDIA matrix and the EC2 specifications</Cite>
           </Box>
           <Box variant="p">
-            Then, before you rent eight GPUs for the long run, run one short job on the instance you mean to use and
-            set its data-loading time beside its update time.
+            Before you rent eight GPUs for the long training run, run one short job on the instance you plan to use,
+            and compare its data-loading time with its update time.
           </Box>
         </SpaceBetween>
       </Container>
