@@ -60,9 +60,15 @@
   "section": 4
  },
  {
+  "term": "Action queue",
+  "expansion": null,
+  "meaning": "The list of actions that the robot computer holds and has not played yet. It plays one of them on every tick.",
+  "section": 17
+ },
+ {
   "term": "action_starvation_grace_s",
   "expansion": null,
-  "meaning": "LeRobot's grace period, 1 s by default, for which a supported robot holds its last target when the action queue runs dry before the run faults.",
+  "meaning": "LeRobot's grace period, 1 s by default. When the action queue runs dry, a supported robot holds its last target for this long before the run faults.",
   "section": 17
  },
  {
@@ -128,7 +134,7 @@
  {
   "term": "Aligned merge",
   "expansion": null,
-  "meaning": "LeRobot remote inference's default: drop incoming actions whose time has passed and replace only the future part of the queue.",
+  "meaning": "The default merge in LeRobot remote inference. It drops incoming actions whose time has passed and replaces only the future part of the queue.",
   "section": 17
  },
  {
@@ -188,7 +194,7 @@
  {
   "term": "Artifact",
   "expansion": null,
-  "meaning": "A file a component needs on the device, such as a script, a binary or a container image.",
+  "meaning": "A file that a component needs on the device, such as a script, a binary or a container image.",
   "section": 17
  },
  {
@@ -200,7 +206,7 @@
  {
   "term": "Asynchronous inference",
   "expansion": null,
-  "meaning": "Starting the next policy call early, while the current chunk is still playing.",
+  "meaning": "A way of scheduling policy calls in which the robot computer starts the next call early, while the current chunk is still playing.",
   "section": 17
  },
  {
@@ -236,7 +242,7 @@
  {
   "term": "Augment",
   "expansion": null,
-  "meaning": "Vary a training image (a crop, a colour shift) so the policy sees more variety.",
+  "meaning": "To vary a training image, for example with a crop or a colour shift, so that the policy sees more variety.",
   "section": 20
  },
  {
@@ -344,7 +350,7 @@
  {
   "term": "Backward pass",
   "expansion": null,
-  "meaning": "The gradient computation of training; guided RTC runs one at every denoising step.",
+  "meaning": "The gradient computation used in training. Guided RTC runs one at every denoising step.",
   "section": 17
  },
  {
@@ -644,7 +650,7 @@
  {
   "term": "Component",
   "expansion": null,
-  "meaning": "The unit of software Greengrass runs: a recipe plus its artifacts.",
+  "meaning": "The unit of software that Greengrass runs. A component is a recipe plus its artifacts.",
   "section": 17
  },
  {
@@ -668,7 +674,7 @@
  {
   "term": "Compute capability",
   "expansion": null,
-  "meaning": "A major.minor number naming a GPU generation, recorded in an engine and checked when it loads.",
+  "meaning": "A major.minor version number that names a GPU generation. An engine records it, and TensorRT checks it when the engine loads.",
   "section": 17
  },
  {
@@ -836,13 +842,13 @@
  {
   "term": "CPU back end",
   "expansion": null,
-  "meaning": "The part of a core that executes the decoded instructions on its arithmetic units.",
+  "meaning": "The part of a CPU core that executes the decoded instructions on its arithmetic units.",
   "section": 20
  },
  {
   "term": "CPU front end",
   "expansion": null,
-  "meaning": "The part of a core that fetches instructions and decodes them.",
+  "meaning": "The part of a CPU core that fetches instructions and decodes them.",
   "section": 20
  },
  {
@@ -866,7 +872,7 @@
  {
   "term": "CUDA graph",
   "expansion": null,
-  "meaning": "A sequence of GPU kernel launches recorded once and started again with one call.",
+  "meaning": "A sequence of GPU kernel launches that is recorded once and then started again with one call.",
   "section": 17
  },
  {
@@ -920,7 +926,7 @@
  {
   "term": "DCGM",
   "expansion": "Data Center GPU Manager",
-  "meaning": "NVIDIA's fleet monitoring tool, which reports per-part GPU fields such as SM, tensor and memory activity.",
+  "meaning": "NVIDIA's tool for monitoring a fleet of GPUs. It reports separate fields for each GPU resource, such as SM activity, tensor activity and memory activity.",
   "section": 20
  },
  {
@@ -1022,7 +1028,7 @@
  {
   "term": "DGX Spark",
   "expansion": null,
-  "meaning": "NVIDIA's desk-side Arm computer with a GPU and 128 GB of memory shared between CPU and GPU.",
+  "meaning": "NVIDIA's desk-side Arm computer. It has a GPU and 128 GB of memory that the CPU and the GPU share.",
   "section": 17
  },
  {
@@ -1082,7 +1088,7 @@
  {
   "term": "Docker application manager",
   "expansion": null,
-  "meaning": "The AWS-provided Greengrass component that pulls container images, including from private Amazon ECR repositories.",
+  "meaning": "The AWS-provided Greengrass component that pulls container images, including images from private Amazon ECR repositories.",
   "section": 17
  },
  {
@@ -1148,7 +1154,7 @@
  {
   "term": "EBS",
   "expansion": "Elastic Block Store",
-  "meaning": "The network disk of an EC2 instance, with a throughput ceiling set by the instance type.",
+  "meaning": "The network disk of an EC2 instance. The instance type sets its maximum throughput.",
   "section": 20
  },
  {
@@ -1262,7 +1268,7 @@
  {
   "term": "ENA",
   "expansion": "Elastic Network Adapter",
-  "meaning": "The EC2 network device for ordinary IP networking: it moves data.",
+  "meaning": "The EC2 network device that moves data over ordinary IP networking.",
   "section": 20
  },
  {
@@ -1304,7 +1310,7 @@
  {
   "term": "Engine",
   "expansion": null,
-  "meaning": "The file TensorRT writes: a model compiled for the GPU type and TensorRT version it was built with, which fails to deserialize elsewhere.",
+  "meaning": "The file that TensorRT writes. It holds a model compiled for the GPU type and the TensorRT version it was built with, and it fails to deserialize anywhere else.",
   "section": 17
  },
  {
@@ -1358,7 +1364,7 @@
  {
   "term": "execution_horizon",
   "expansion": null,
-  "meaning": "LeRobot's RTC setting for how many actions of the old chunk the new one stays consistent with (the frozen and guided zones together); 10 by default, typically 8 to 12, and at least inference_delay.",
+  "meaning": "LeRobot's RTC setting for how many actions of the old chunk the new chunk stays consistent with, which covers the frozen and guided zones together. The default is 10, typical values are 8 to 12, and it must be at least inference_delay.",
   "section": 17
  },
  {
@@ -1478,19 +1484,19 @@
  {
   "term": "FP16",
   "expansion": "16-bit floating point",
-  "meaning": "A sixteen-bit format with a five-bit exponent; it overflows in pi0.5's attention layers.",
+  "meaning": "A sixteen-bit format with a five-bit exponent. It overflows in pi0.5's attention layers.",
   "section": 17
  },
  {
   "term": "FP32",
   "expansion": "32-bit floating point",
-  "meaning": "Single-precision floating point, the full-precision format; GR00T N1.7's vision encoder stays at FP32.",
+  "meaning": "Single-precision floating point, the full-precision format. GR00T N1.7's vision encoder stays at FP32.",
   "section": 17
  },
  {
   "term": "FP4",
   "expansion": "4-bit floating point",
-  "meaning": "Four bits with two for the exponent and one for the mantissa; NVFP4 adds a scale per block.",
+  "meaning": "A four-bit format with two exponent bits and one mantissa bit. NVFP4 adds a scale factor per block.",
   "section": 17
  },
  {
@@ -1550,7 +1556,7 @@
  {
   "term": "Frozen, guided and free zones",
   "expansion": null,
-  "meaning": "The three parts of a new chunk under real-time chunking: actions already played from the old chunk, actions pulled toward the old chunk with a decaying weight, and new actions past its end.",
+  "meaning": "The three parts of a new chunk under real-time chunking. Frozen actions were already played from the old chunk, guided actions are pulled toward the old chunk with a decaying weight, and free actions lie beyond the old chunk's end.",
   "section": 17
  },
  {
@@ -1736,7 +1742,7 @@
  {
   "term": "Gradients",
   "expansion": null,
-  "meaning": "The corrections to the weights that a training step computes; in multi-node training every node exchanges them at every step.",
+  "meaning": "The corrections to a model's weights that a training step computes. In multi-node training, every node exchanges them with the others at every step.",
   "section": 20
  },
  {
@@ -1760,7 +1766,7 @@
  {
   "term": "Guided mode",
   "expansion": null,
-  "meaning": "LeRobot's default RTC mode: guidance at run time, working with ordinary flow-matching checkpoints.",
+  "meaning": "LeRobot's default RTC mode. It applies guidance at run time and works with ordinary flow-matching checkpoints.",
   "section": 17
  },
  {
@@ -1772,7 +1778,7 @@
  {
   "term": "Half-chunk rule",
   "expansion": null,
-  "meaning": "Our arithmetic from LeRobot's tuning rule: an asynchronous call must take at most half of what its chunk lasts, L <= H Δt / 2.",
+  "meaning": "LeRobot's tuning rule written as a formula: with asynchronous inference, one call may take at most half the time its chunk lasts, L <= H Δt / 2.",
   "section": 17
  },
  {
@@ -1784,7 +1790,7 @@
  {
   "term": "Hardware compatibility mode",
   "expansion": null,
-  "meaning": "A TensorRT build option that makes an engine loadable on other GPU types; in 11.5.0 it exists on Arm server-class Linux and not on JetPack.",
+  "meaning": "A TensorRT build option that makes an engine loadable on other GPU types. In TensorRT 11.5.0 it exists on Arm server-class Linux and not on JetPack.",
   "section": 17
  },
  {
@@ -1898,7 +1904,7 @@
  {
   "term": "IAM",
   "expansion": "Identity and Access Management",
-  "meaning": "The AWS service that defines roles and what each role may call.",
+  "meaning": "The AWS service that defines roles and what each role is allowed to call.",
   "section": 17
  },
  {
@@ -1952,19 +1958,19 @@
  {
   "term": "Inference delay",
   "expansion": null,
-  "meaning": "In the real-time chunking paper, d = floor(L / Δt): a call's length counted in whole control periods, rounded down. LeRobot passes it as inference_delay.",
+  "meaning": "In the real-time chunking paper, d = floor(L / Δt): the length of one call counted in whole control periods, rounded down. LeRobot passes it as inference_delay.",
   "section": 17
  },
  {
   "term": "inference_delay",
   "expansion": null,
-  "meaning": "LeRobot's RTC argument for the call's latency in control steps, passed with every call because it varies at run time.",
+  "meaning": "LeRobot's RTC argument for the call's latency in control steps. LeRobot passes it with every call, because the latency varies at run time.",
   "section": 17
  },
  {
   "term": "Inpainting",
   "expansion": null,
-  "meaning": "The image-editing task of filling a missing region so it matches its surroundings; real-time chunking treats the start of a new chunk the same way.",
+  "meaning": "The image-editing task of filling a missing region so that it matches its surroundings. Real-time chunking treats the start of a new chunk the same way.",
   "section": 17
  },
  {
@@ -2030,7 +2036,7 @@
  {
   "term": "IoT",
   "expansion": "Internet of Things",
-  "meaning": "Devices outside the data centre that connect to a cloud service; here, the robot computer.",
+  "meaning": "Devices outside the data centre that connect to a cloud service. Here, the device is the robot computer.",
   "section": 17
  },
  {
@@ -2090,7 +2096,7 @@
  {
   "term": "JetPack",
   "expansion": null,
-  "meaning": "NVIDIA's software bundle for Jetson devices: Linux, GPU drivers and libraries.",
+  "meaning": "NVIDIA's software bundle for Jetson devices, with Linux, GPU drivers and libraries.",
   "section": 17
  },
  {
@@ -2102,7 +2108,7 @@
  {
   "term": "Jetson Orin Nano Super",
   "expansion": null,
-  "meaning": "NVIDIA's small robot computer; the other machine of our measurements.",
+  "meaning": "NVIDIA's small robot computer. It is the other machine we measured.",
   "section": 20
  },
  {
@@ -2192,7 +2198,7 @@
  {
   "term": "Kernel (GPU)",
   "expansion": null,
-  "meaning": "One program run on the GPU.",
+  "meaning": "A program that runs on the GPU.",
   "section": 20
  },
  {
@@ -2252,7 +2258,7 @@
  {
   "term": "Latency budget",
   "expansion": null,
-  "meaning": "The time from the capture of a camera frame to the moment the action computed from it reaches the servos, split into the links that add up to it.",
+  "meaning": "The time from the capture of a camera frame to the moment the action computed from it reaches the servos, split into the waits that add up to it.",
   "section": 17
  },
  {
@@ -2384,7 +2390,7 @@
  {
   "term": "Loop stage",
   "expansion": null,
-  "meaning": "One of the six steps the arm's data passes through: collect, curate, simulate, train, evaluate, deploy.",
+  "meaning": "One of the six steps that the arm's data passes through: collect, curate, simulate, train, evaluate and deploy.",
   "section": 20
  },
  {
@@ -2394,9 +2400,9 @@
   "section": 5
  },
  {
-  "term": "Machine part",
+  "term": "Machine resource",
   "expansion": null,
-  "meaning": "One of the separate resources inside a computer (a half of a CPU core, a memory limit, a GPU engine, storage, network) that a workload can fill while the others sit partly idle.",
+  "meaning": "One of the separate resources inside a computer that a workload can run out of, such as the front end or back end of a CPU core, memory bandwidth, a GPU engine, storage or the network. When one resource is fully used, the others sit partly idle.",
   "section": 20
  },
  {
@@ -2414,7 +2420,7 @@
  {
   "term": "Mantissa",
   "expansion": null,
-  "meaning": "The bits of a floating-point number that set how finely it is stored.",
+  "meaning": "The bits of a floating-point number that set how precisely it is stored.",
   "section": 17
  },
  {
@@ -2432,7 +2438,7 @@
  {
   "term": "max_guidance_weight",
   "expansion": null,
-  "meaning": "LeRobot's RTC cap on how hard the new chunk is pulled toward the old one; 10.0 by default.",
+  "meaning": "LeRobot's RTC limit on how strongly the new chunk is pulled toward the old one. The default is 10.0.",
   "section": 17
  },
  {
@@ -2444,7 +2450,7 @@
  {
   "term": "Median",
   "expansion": null,
-  "meaning": "The middle value of a set of timed calls: the typical call, not the slowest.",
+  "meaning": "The middle value of a set of timed calls. It describes the typical call, not the slowest one.",
   "section": 17
  },
  {
@@ -2462,7 +2468,7 @@
  {
   "term": "Memory latency",
   "expansion": null,
-  "meaning": "The time one fetch from memory takes, in nanoseconds; the limit when each address depends on the value fetched before.",
+  "meaning": "The time one fetch from memory takes, measured in nanoseconds. It becomes the limit when each address depends on the value fetched before it.",
   "section": 20
  },
  {
@@ -2756,13 +2762,13 @@
  {
   "term": "Nucleus",
   "expansion": null,
-  "meaning": "The Greengrass program installed on the device, which installs, starts and watches components.",
+  "meaning": "The Greengrass program installed on the device. It installs, starts and watches components.",
   "section": 17
  },
  {
   "term": "Nucleus lite",
   "expansion": null,
-  "meaning": "The smaller Greengrass nucleus written in C, with a shorter feature list than the Java nucleus.",
+  "meaning": "The smaller Greengrass nucleus, written in C. It has fewer features than the Java nucleus.",
   "section": 17
  },
  {
@@ -2834,7 +2840,7 @@
  {
   "term": "ONNX",
   "expansion": "Open Neural Network Exchange",
-  "meaning": "A portable file format for a model graph, used as the hand-off between a trained checkpoint and the device.",
+  "meaning": "A portable file format for a model graph. It is used to hand a trained checkpoint over to the device.",
   "section": 17
  },
  {
@@ -2888,7 +2894,7 @@
  {
   "term": "Orchestrator",
   "expansion": null,
-  "meaning": "The service that queues jobs and starts machines for them: AWS Batch, AWS Parallel Computing Service, Amazon SageMaker HyperPod or Amazon EKS.",
+  "meaning": "A service that queues jobs and starts machines for them, such as AWS Batch, AWS Parallel Computing Service, Amazon SageMaker HyperPod or Amazon EKS.",
   "section": 20
  },
  {
@@ -2942,7 +2948,7 @@
  {
   "term": "Pacing headroom",
   "expansion": null,
-  "meaning": "In LeRobot's cadence report, the time left in a tick after the loop's work; near zero leaves nothing to absorb a slow tick.",
+  "meaning": "In LeRobot's cadence report, the time left in a tick after the loop's work. A value near zero leaves nothing to absorb a slow tick.",
   "section": 17
  },
  {
@@ -3140,7 +3146,7 @@
  {
   "term": "PMU",
   "expansion": "performance monitoring unit",
-  "meaning": "The event counters built into a processor.",
+  "meaning": "The set of event counters built into a processor.",
   "section": 20
  },
  {
@@ -3176,7 +3182,7 @@
  {
   "term": "Policy call",
   "expansion": null,
-  "meaning": "One complete run of the policy model, from prepared observation to a decoded chunk of actions.",
+  "meaning": "One complete run of the policy model, from the prepared observation to a decoded chunk of actions.",
   "section": 17
  },
  {
@@ -3248,7 +3254,7 @@
  {
   "term": "prefix_attention_schedule",
   "expansion": null,
-  "meaning": "LeRobot's RTC setting for the shape of the decaying guidance weight; the code defaults to LINEAR, the documentation recommends EXP.",
+  "meaning": "LeRobot's RTC setting for how the guidance weight decays. The code defaults to LINEAR, and the documentation recommends EXP.",
   "section": 17
  },
  {
@@ -3266,7 +3272,7 @@
  {
   "term": "Projection fusion",
   "expansion": null,
-  "meaning": "Running several of a model's matrix multiplications as one GPU kernel; part of NVIDIA's optimised execution profile for GR00T N1.7 on Thor.",
+  "meaning": "Running several of a model's matrix multiplications as one GPU kernel. It is part of NVIDIA's optimised execution profile for GR00T N1.7 on Thor.",
   "section": 17
  },
  {
@@ -3314,7 +3320,7 @@
  {
   "term": "Quantisation",
   "expansion": null,
-  "meaning": "Storing a model's numbers in fewer bits so each layer moves less memory and does cheaper arithmetic.",
+  "meaning": "Storing a model's numbers in fewer bits, so that each layer moves less data from memory and does cheaper arithmetic.",
   "section": 17
  },
  {
@@ -3434,7 +3440,7 @@
  {
   "term": "refill_seconds",
   "expansion": null,
-  "meaning": "LeRobot's setting for how much playback may remain in the queue when the client asks for the next chunk.",
+  "meaning": "LeRobot's setting for how much playback may remain in the action queue when the client asks for the next chunk.",
   "section": 17
  },
  {
@@ -3570,6 +3576,12 @@
   "section": 6
  },
  {
+  "term": "Robot computer",
+  "expansion": null,
+  "meaning": "The computer that runs the control loop and talks to the motors. On a finished robot it is usually a small board mounted on the robot, the onboard computer, but on a bench it can be a desktop connected to the arm.",
+  "section": 17
+ },
+ {
   "term": "Robot utilisation",
   "expansion": null,
   "meaning": "The share of research wall-clock time during which the robot is running an experiment.",
@@ -3686,7 +3698,7 @@
  {
   "term": "Saturate",
   "expansion": null,
-  "meaning": "A part saturates when what the work demands per second equals what the part can deliver, so the job goes no faster.",
+  "meaning": "A resource saturates when the work asks it for as much per second as it can deliver. After that point, the job cannot go faster on that machine.",
   "section": 20
  },
  {
@@ -3890,7 +3902,7 @@
  {
   "term": "SM",
   "expansion": "streaming multiprocessor",
-  "meaning": "The core processing unit of an NVIDIA GPU; a card has many, and SM activity is the fraction of time they had work.",
+  "meaning": "The core processing unit of an NVIDIA GPU. A card has many SMs, and SM activity is the fraction of time they had work.",
   "section": 20
  },
  {
@@ -4028,7 +4040,7 @@
  {
   "term": "Stand-in workload",
   "expansion": null,
-  "meaning": "A small program measured in place of the real one (a MuJoCo humanoid for the arm, matrix-vector products for a policy).",
+  "meaning": "A small test program that is measured in place of the real one, such as a MuJoCo humanoid in place of the arm, or matrix-vector products in place of a policy.",
   "section": 20
  },
  {
@@ -4268,7 +4280,7 @@
  {
   "term": "TES",
   "expansion": "Token exchange service",
-  "meaning": "A local Greengrass server that trades the device certificate for temporary AWS credentials, so no access key sits on the device.",
+  "meaning": "A local Greengrass server that exchanges the device certificate for temporary AWS credentials, so that no access key is stored on the device.",
   "section": 17
  },
  {
@@ -4394,7 +4406,7 @@
  {
   "term": "Trained mode",
   "expansion": null,
-  "meaning": "LeRobot's RTC mode for checkpoints trained with training-time RTC: the prefix is fed in, with no guidance at run time.",
+  "meaning": "LeRobot's RTC mode for checkpoints trained with training-time RTC. The first actions of the chunk, taken from the old chunk, are fed to the model, and no guidance runs at run time.",
   "section": 17
  },
  {
@@ -4424,7 +4436,7 @@
  {
   "term": "Training-time RTC",
   "expansion": null,
-  "meaning": "A later method that trains the model with a random delay and a clean prefix, so no guidance or backward pass is needed at run time.",
+  "meaning": "A later method that trains the model with a random delay and gives it the first actions without noise, so that no guidance and no backward pass are needed at run time.",
   "section": 17
  },
  {
@@ -4478,7 +4490,7 @@
  {
   "term": "Turnaround",
   "expansion": null,
-  "meaning": "The measured round trip of one remote policy request, from encoding through network and inference to decoding.",
+  "meaning": "The measured round trip of one remote policy request, from encoding through the network and inference to decoding.",
   "section": 17
  },
  {
@@ -4496,7 +4508,7 @@
  {
   "term": "Unified memory",
   "expansion": null,
-  "meaning": "One pool of physical memory addressed by both the CPU and the GPU, so the GPU does not get the whole of it.",
+  "meaning": "One pool of physical memory that both the CPU and the GPU use, so the GPU does not get all of it.",
   "section": 17
  },
  {
@@ -4698,12 +4710,6 @@
   "section": 1
  },
  {
-  "term": "Workload shape",
-  "expansion": null,
-  "meaning": "A job described by three properties (duration, coupling, interruptibility) that decide how its machine is bought and scheduled.",
-  "section": 20
- },
- {
   "term": "Workload type",
   "expansion": null,
   "meaning": "A group of jobs that behave the same way when they lose their machine. It is defined by three properties: duration, coupling and interruptibility. The five workload types are Independent tasks, Long single-machine runs, Multi-node training, Always-on streams and Real-time on the robot.",
@@ -4742,7 +4748,7 @@
  {
   "term": "X.509 certificate",
   "expansion": null,
-  "meaning": "The identity file issued to a device when it is registered, which it uses to prove who it is to AWS IoT.",
+  "meaning": "The identity file issued to a device when it is registered. The device uses it to prove its identity to AWS IoT.",
   "section": 17
  },
  {
@@ -4760,7 +4766,7 @@
  {
   "term": "Zenoh",
   "expansion": null,
-  "meaning": "A publish/subscribe network protocol; LeRobot uses it to carry observations to the policy server and chunks back.",
+  "meaning": "A publish/subscribe network protocol. LeRobot uses it to carry observations to the policy server and chunks back to the robot computer.",
   "section": 17
  },
  {
