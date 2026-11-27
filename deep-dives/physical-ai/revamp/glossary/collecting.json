@@ -2,47 +2,47 @@
   {
     "term": "Episode",
     "expansion": null,
-    "meaning": "One recorded attempt at the task; on disk, rows in a shared Parquet file plus frames in shared MP4 files."
+    "meaning": "One recorded attempt at the task. On disk, an episode is a range of rows in a shared Parquet file and a range of frames in shared MP4 files."
   },
   {
     "term": "Reset",
     "expansion": null,
-    "meaning": "Putting the scene back (the block and the cup) between two recorded episodes."
+    "meaning": "Putting the scene back in place between two recorded episodes. For the example task, that means putting the block and the cup back."
   },
   {
     "term": "Hand-held data collection rig",
     "expansion": null,
-    "meaning": "A gripper with a camera on it that a person holds to do the task without a robot; software reconstructs the gripper's path afterwards."
+    "meaning": "A gripper with a camera mounted on it, which a person holds to do the task without a robot. Software reconstructs the gripper's path afterwards."
   },
   {
     "term": "UMI",
     "expansion": "Universal Manipulation Interface",
-    "meaning": "The 2024 project that introduced the hand-held gripper with a camera as a way to record demonstrations without a robot."
+    "meaning": "A project from 2024 that introduced recording demonstrations with a hand-held gripper and a camera, without a robot."
   },
   {
     "term": "LeRobot dataset format v3.0",
     "expansion": null,
-    "meaning": "The on-disk layout LeRobot v0.7.0 writes: Parquet files of rows, MP4 files of camera frames, and metadata, with many episodes per file."
+    "meaning": "The file layout that LeRobot v0.7.0 writes. It stores table rows in Parquet files, camera frames in MP4 files and a set of metadata files, and each file holds many episodes."
   },
   {
     "term": "Parquet",
     "expansion": null,
-    "meaning": "A compressed, column-by-column table file format; LeRobot stores the per-tick rows in it."
+    "meaning": "A compressed table file format that stores data column by column. LeRobot stores the table rows, one for each time step, in Parquet files."
   },
   {
     "term": "Metadata",
     "expansion": null,
-    "meaning": "The files that describe a dataset's schema and say where each episode sits inside the shared data and video files."
+    "meaning": "The files that describe a dataset's schema and record where each episode sits inside the shared data and video files."
   },
   {
     "term": "Bookkeeping columns",
     "expansion": null,
-    "meaning": "The five columns the recorder fills in on every row: timestamp, frame_index, episode_index, index and task_index."
+    "meaning": "The five columns that the recorder fills in on every row: timestamp, frame_index, episode_index, index and task_index."
   },
   {
     "term": "Chunk directory",
     "expansion": null,
-    "meaning": "A numbered folder (chunk-000) that holds up to 1,000 data or video files by default."
+    "meaning": "A numbered folder, such as chunk-000, that holds up to 1,000 data or video files by default."
   },
   {
     "term": "Hugging Face hub",
@@ -52,52 +52,52 @@
   {
     "term": "Codec",
     "expansion": null,
-    "meaning": "A method for compressing video into a file (the encoder half) and turning it back into frames (the decoder half)."
+    "meaning": "A method for compressing video into a file and turning the file back into frames. The encoder does the compressing, and the decoder turns the file back into frames."
   },
   {
     "term": "Encoder (video)",
     "expansion": null,
-    "meaning": "The program or circuit that compresses video at recording time; the word's meaning from section 9 to the end of section 11, where section 3 used \"encoder\" for a joint's angle sensor."
+    "meaning": "The program or circuit that compresses video at recording time. The word has this meaning from section 9, Collecting Data, to the end of section 11, Augmentation and Synthetic Data. In section 3, The Robot as a Computer, encoder meant the angle sensor on a joint."
   },
   {
     "term": "Decoder",
     "expansion": null,
-    "meaning": "The program or circuit that turns compressed video back into frames each time the data is read."
+    "meaning": "The program or circuit that turns compressed video back into frames every time the data is read."
   },
   {
     "term": "Keyframe",
     "expansion": null,
-    "meaning": "A video frame stored whole, which can be decoded on its own; other frames are stored as differences."
+    "meaning": "A video frame that is stored whole and can be decoded on its own. The other frames are stored as differences from the frames before them."
   },
   {
     "term": "GOP",
     "expansion": "group of pictures",
-    "meaning": "The spacing of keyframes in a video; a GOP of 2 means a keyframe every second frame, which makes reading a random frame cheap."
+    "meaning": "The spacing of keyframes in a video. A GOP size of 2 means a keyframe every second frame, which makes reading a random frame cheap."
   },
   {
     "term": "CRF",
     "expansion": "constant rate factor",
-    "meaning": "The encoder's quality dial: one number for how much detail it may discard; lower means better quality and larger files."
+    "meaning": "The encoder's quality setting: a single number for how much detail the encoder may discard. A lower value gives better quality and larger files."
   },
   {
     "term": "AV1",
     "expansion": "AOMedia Video 1",
-    "meaning": "A video compression standard; the codec LeRobot v0.7.0 writes by default."
+    "meaning": "A video compression standard. LeRobot v0.7.0 writes AV1 video by default."
   },
   {
     "term": "SVT-AV1",
     "expansion": null,
-    "meaning": "A software encoder for AV1 that runs on CPU cores; libsvtav1 is its name in LeRobot's settings."
+    "meaning": "A software encoder for AV1 that runs on CPU cores. Its name in LeRobot's settings is libsvtav1."
   },
   {
     "term": "H.264",
     "expansion": null,
-    "meaning": "Another video compression standard; the alternative LeRobot offers in software and through hardware encoders."
+    "meaning": "Another video compression standard. LeRobot can write it in software or through hardware encoders."
   },
   {
     "term": "HEVC",
     "expansion": "High Efficiency Video Coding",
-    "meaning": "Another video compression standard, also called H.265, available through LeRobot's hardware encoders."
+    "meaning": "A third video compression standard, also called H.265. LeRobot can write it through hardware encoders."
   },
   {
     "term": "Hardware encoder",
@@ -107,46 +107,46 @@
   {
     "term": "Streaming encoding",
     "expansion": null,
-    "meaning": "A recorder option that encodes frames during capture, in place of writing PNG images and encoding after the episode."
+    "meaning": "A recorder option that encodes frames while they are captured. Without it, the recorder writes each frame as a PNG image and encodes the episode after it ends."
   },
   {
     "term": "from_timestamp",
     "expansion": null,
-    "meaning": "The time at which an episode begins inside a camera's shared MP4 file; added to a row's timestamp to find its frame."
+    "meaning": "The time at which an episode begins inside a camera's shared MP4 file. The reader adds it to a row's timestamp to find that row's frame."
   },
   {
     "term": "Nominal frame rate",
     "expansion": null,
-    "meaning": "The rate the recorder was asked to run at (30 fps by default); timestamps are computed from it, whatever rate the loop achieved."
+    "meaning": "The rate the recorder was asked to run at, 30 fps by default. The recorder computes every timestamp from this rate, whatever rate the recording loop actually achieved."
   },
   {
-    "term": "Correction collection",
+    "term": "Human-in-the-loop data collection",
     "expansion": null,
-    "meaning": "Recording in which a trained policy drives the arm and a person takes over before a failure, so the recovery becomes training data."
+    "meaning": "A way of recording in which a trained policy drives the arm and a person takes over before it fails, so that the person's recovery becomes training data. LeRobot describes it in its guide to human-in-the-loop data collection."
   },
   {
     "term": "End-effector action",
     "expansion": null,
-    "meaning": "An action that gives the pose of the gripper, which must pass through inverse kinematics into joint angles before an arm can follow it (built in section 3)."
+    "meaning": "An action that gives the pose of the gripper. Before an arm can follow it, inverse kinematics must convert it into joint angles (section 3, The Robot as a Computer)."
   },
   {
     "term": "vcodec=auto",
     "expansion": null,
-    "meaning": "A LeRobot encoder setting that picks the first hardware encoder the host offers and falls back to SVT-AV1 when there is none."
+    "meaning": "A LeRobot encoder setting that picks the first hardware encoder the recording computer offers. It falls back to SVT-AV1 when there is none."
   },
   {
     "term": "finalize()",
     "expansion": null,
-    "meaning": "The dataset call that closes the Parquet writers; without it the Parquet files are corrupt."
+    "meaning": "The dataset call that closes the Parquet writers. If a script does not call it, the Parquet files are corrupt."
   },
   {
     "term": "Inverse kinematics",
     "expansion": null,
-    "meaning": "The conversion of a gripper pose into joint angles, done with a kinematic model of the arm (built in section 3); leader-arm recordings skip it, hand-held rig recordings need it."
+    "meaning": "The calculation that converts a gripper pose into joint angles, using a kinematic model of the arm (built in section 3, The Robot as a Computer). Leader-arm recordings do not need it, and hand-held rig recordings do."
   },
   {
     "term": "MuJoCo",
     "expansion": null,
-    "meaning": "The physics simulator of section 12; the episode stills and clip in this section are rendered from a simulated SO-101 in it."
+    "meaning": "The physics simulator covered in section 12, Physics Simulation. The episode frames and the clip in this section are rendered from a simulated SO-101 in MuJoCo."
   }
 ]

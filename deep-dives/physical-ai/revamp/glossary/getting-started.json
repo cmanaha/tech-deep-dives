@@ -2,62 +2,67 @@
   {
     "term": "Policy",
     "expansion": null,
-    "meaning": "The trained model in control of the arm, called on every tick of the arm's clock."
+    "meaning": "The trained model that controls the arm. It is called on every tick of the arm's clock."
+  },
+  {
+    "term": "Onboard computer",
+    "expansion": null,
+    "meaning": "The small computer next to the arm that reads the cameras and joints, runs the policy and sends targets to the motors."
   },
   {
     "term": "Observation",
     "expansion": null,
-    "meaning": "The input to a policy at one instant: on the SO-101, six joint angles and one image per camera."
+    "meaning": "The input to a policy at one instant. On the SO-101, it is the six joint angles and one image from each camera."
   },
   {
     "term": "Action",
     "expansion": null,
-    "meaning": "The output of a policy at one instant: on the SO-101, six target joint angles."
+    "meaning": "The output of a policy at one instant. On the SO-101, it is six target joint angles."
   },
   {
     "term": "Tick",
     "expansion": null,
-    "meaning": "One period of the arm's clock: 33.3 ms at LeRobot's default of 30 per second."
+    "meaning": "One period of the arm's control clock. Its length is the control period, which is 33.3 ms at LeRobot's default rate of 30 ticks per second."
   },
   {
     "term": "Episode",
     "expansion": null,
-    "meaning": "One attempt at the task: a table with one row of observation and action per tick, plus one video per camera."
+    "meaning": "One attempt at the task. It is stored as a table with one row of observation and action per tick, plus one video per camera."
   },
   {
     "term": "LeRobot",
     "expansion": null,
-    "meaning": "The open-source robot-learning library the arm is recorded, trained and run with."
+    "meaning": "The open-source robot-learning library that is used to record, train and run the arm."
   },
   {
     "term": "AV1",
     "expansion": "AOMedia Video 1",
-    "meaning": "The video compression format LeRobot writes by default."
+    "meaning": "The video compression format that LeRobot writes by default."
   },
   {
     "term": "GR00T N1.7",
     "expansion": null,
-    "meaning": "NVIDIA's robot model, used here as the example of a large policy."
+    "meaning": "A large robot model from NVIDIA. This section uses it as the example of a large policy."
   },
   {
     "term": "TensorRT",
     "expansion": null,
-    "meaning": "NVIDIA's inference compiler, the runtime of its benchmark figures."
+    "meaning": "NVIDIA's inference compiler. NVIDIA's benchmark figures for GR00T N1.7 use the model compiled with it."
   },
   {
     "term": "Synchronous mode",
     "expansion": null,
-    "meaning": "LeRobot's default mode: the arm stands still each time the policy computes its next chunk."
+    "meaning": "LeRobot's default mode. The arm stands still each time the policy computes its next chunk."
   },
   {
-    "term": "Full part",
+    "term": "Bottleneck",
     "expansion": null,
-    "meaning": "The part of a machine a job fills first, which sets its speed while the others sit partly idle."
+    "meaning": "The resource of a machine that a job uses fully while the other resources are partly idle. It limits how fast the job runs."
   },
   {
     "term": "GPU utilisation (nvidia-smi)",
     "expansion": null,
-    "meaning": "The share of time in which at least one kernel was executing on the GPU; it does not say how much of the GPU was used."
+    "meaning": "The share of time during which at least one program (kernel) was running on the GPU. It does not show how much of the GPU's capacity was in use."
   },
   {
     "term": "World model",
@@ -67,36 +72,56 @@
   {
     "term": "JEPA",
     "expansion": "Joint-Embedding Predictive Architecture",
-    "meaning": "A design that predicts a compact summary of the scene in place of its pixels."
+    "meaning": "A model design that predicts a compact summary of the scene instead of its pixels."
   },
   {
     "term": "Reinforcement learning",
     "expansion": null,
-    "meaning": "Training by trial and reward."
+    "meaning": "A way of training in which the model learns by trial and reward."
   },
   {
     "term": "Quantising",
     "expansion": null,
-    "meaning": "Storing a model's numbers in fewer bits; NVIDIA's format on the Jetson AGX Thor is called mixed NVFP4."
+    "meaning": "Storing a model's numbers in fewer bits. On the Jetson AGX Thor, NVIDIA's format for this is called mixed NVFP4."
   },
   {
     "term": "Chunk",
     "expansion": null,
-    "meaning": "The next several actions returned by one policy call and played tick by tick; the next chunk has to be ready before the actions in hand run out."
+    "meaning": "The next several actions that one policy call returns. The arm plays them one per tick, and the next chunk has to be ready before the current one runs out."
   },
   {
     "term": "Asynchronous mode",
     "expansion": null,
-    "meaning": "A LeRobot mode that starts the next policy call while the arm plays the chunk it holds; it works only while the actions in hand outlast the call."
+    "meaning": "A LeRobot mode that starts the next policy call while the arm is still playing the current chunk. It works only while the remaining actions last longer than the call."
+  },
+  {
+    "term": "RTC",
+    "expansion": "real-time chunking",
+    "meaning": "A LeRobot mode that computes the next chunk while the arm plays the current one. Like LeRobot's asynchronous mode in its default configuration, it drops the actions in a new chunk whose ticks have already passed."
+  },
+  {
+    "term": "ACT",
+    "expansion": "Action Chunking with Transformers",
+    "meaning": "A small policy. The paper that introduced it also introduced action chunking for robot imitation in its current form."
   },
   {
     "term": "Backbone (frozen)",
     "expansion": null,
-    "meaning": "The large pretrained body of a model; frozen means it is left unchanged while only the smaller parts built on it are trained."
+    "meaning": "The backbone is the large pretrained body of a model. When it is frozen, its weights stay unchanged and only the smaller parts built on top of it are trained."
+  },
+  {
+    "term": "Fine-tuning",
+    "expansion": null,
+    "meaning": "Training a pretrained model further on new data, such as recorded episodes of one task."
   },
   {
     "term": "Cosine similarity",
     "expansion": null,
-    "meaning": "A comparison of two output vectors that is 1 when they point the same way; the compiled model is expected to reach 0.999 or higher against the original."
+    "meaning": "A comparison of two vectors that is 1 when they point in the same direction. The compiled model's outputs are expected to reach 0.999 or higher against the original's."
+  },
+  {
+    "term": "vCPU",
+    "expansion": "virtual CPU",
+    "meaning": "One hardware thread of an EC2 instance. On most eight-GPU instances, two vCPUs share one physical core."
   }
 ]

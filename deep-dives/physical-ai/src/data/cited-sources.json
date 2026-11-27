@@ -183,6 +183,7 @@
   "venue": null,
   "title": "Capacity Blocks list",
   "sections": [
+   1,
    13,
    15,
    24,
@@ -2111,6 +2112,17 @@
    24,
    27
   ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html",
+  "local": null,
+  "venue": null,
+  "title": "Savings Plans User Guide, What are Savings Plans?",
+  "sections": [
+   1
+  ],
+  "accessed": "2026-11-27"
  },
  {
   "tier": 1,

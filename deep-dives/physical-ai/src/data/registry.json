@@ -1041,6 +1041,7 @@
 "F09-131":{"t":1,"u":"https://docs.aws.amazon.com/batch/latest/userguide/compute-environment-template.html"},
 "F09-132":{"t":1,"u":"https://docs.aws.amazon.com/eks/latest/userguide/auto-accelerated.html"},
 "F09-133":{"t":1,"u":"https://docs.aws.amazon.com/greengrass/v2/developerguide/interact-with-aws-services.html"},
+"F09-134":{"t":1,"u":"https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html","a":"2026-11-27"},
 "F10-1":{"t":1,"u":"https://docs.aws.amazon.com/batch/latest/userguide/managed_compute_environments.html"},
 "F10-2":{"t":1,"u":"https://docs.aws.amazon.com/batch/latest/APIReference/API_ComputeResource.html"},
 "F10-3":{"t":1,"u":"https://docs.aws.amazon.com/batch/latest/APIReference/API_ComputeResource.html"},

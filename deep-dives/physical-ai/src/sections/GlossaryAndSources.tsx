@@ -49,22 +49,22 @@ export function GlossaryAndSources() {
         header={
           <Header
             variant="h1"
-            description={`Every acronym and term the dive uses, in plain words, and every source it cites, grouped by how much weight it can carry (sources read ${ACCESSED}).`}
+            description="This section explains every acronym and term the dive uses, and lists every source it cites. The sources are grouped by tier, so you can see how much weight each one can carry."
           >
             30. Glossary and Sources
           </Header>
         }
       >
         <Box variant="p">
-          The glossary gives each term the meaning it has in this dive and the section that builds it. The source list holds the{' '}
-          {SOURCES.length} sources behind the citations on the page. A citation on the page shows its tier, so a reader can tell a
-          line of code from a vendor&apos;s performance claim without opening the link.
+          The glossary gives the meaning each term has in this dive and the section that explains it. The source list holds the{' '}
+          {SOURCES.length} sources behind the citations on the page. Each citation on the page shows the tier of its source, so you
+          can tell a line of source code from a vendor&apos;s performance claim without opening the link.
         </Box>
       </Container>
 
       <Container
         header={
-          <Header variant="h2" description="Look a term up when you arrive at a section out of order; the number is the section that explains it.">
+          <Header variant="h2" description="If you start reading in the middle of the dive, look up unfamiliar terms here. The last column shows the section that explains each term.">
             Glossary
           </Header>
         }
@@ -75,7 +75,7 @@ export function GlossaryAndSources() {
               <tr>
                 <th style={{ textAlign: 'left', padding: '6px 10px', borderBottom: '2px solid #d5dbdb', minWidth: 120 }}>Term</th>
                 <th style={{ textAlign: 'left', padding: '6px 10px', borderBottom: '2px solid #d5dbdb', minWidth: 240 }}>Meaning</th>
-                <th style={{ textAlign: 'left', padding: '6px 10px', borderBottom: '2px solid #d5dbdb' }}>Built in</th>
+                <th style={{ textAlign: 'left', padding: '6px 10px', borderBottom: '2px solid #d5dbdb' }}>Explained in</th>
               </tr>
             </thead>
             <tbody>
@@ -131,7 +131,7 @@ export function GlossaryAndSources() {
                     </span>
                   )}{' '}
                   <Box variant="small" display="inline" color="text-body-secondary">
-                    (accessed {s.accessed ?? ACCESSED}; cited in {s.sections.map((n) => sectionTitle(n).split('.')[0]).join(', ')})
+                    (accessed {s.accessed ?? ACCESSED}; cited in section{s.sections.length > 1 ? 's' : ''} {s.sections.map((n) => sectionTitle(n).split('.')[0]).join(', ')})
                   </Box>
                 </li>
               ))}

@@ -2,22 +2,17 @@
   {
     "term": "Workload",
     "expansion": null,
-    "meaning": "One job behind the arm with one part of the machine that it exhausts first; the dive counts fifteen."
-  },
-  {
-    "term": "Machine part",
-    "expansion": null,
-    "meaning": "A piece of a computer that fills separately from the others, such as CPU cores, memory bandwidth or a GPU's tensor cores."
+    "meaning": "One computing job behind the arm, with one resource as its bottleneck. Teaching the arm one task involves fifteen of them."
   },
   {
     "term": "Bottleneck",
     "expansion": null,
-    "meaning": "The part of the machine a job exhausts first: the resource that is full while the rest of the machine sits partly idle."
+    "meaning": "The resource that a job runs out of first. It is fully used while the rest of the machine is partly idle, and it tells you which instance type to choose."
   },
   {
-    "term": "Shape (of a workload)",
+    "term": "Workload type",
     "expansion": null,
-    "meaning": "Three properties of a job: how long one unit runs, whether its pieces exchange data while running, and whether it can lose its machine and resume."
+    "meaning": "A group of jobs that behave the same way when they lose their machine. It is defined by three properties: duration, coupling and interruptibility. The five workload types are Independent tasks, Long single-machine runs, Multi-node training, Always-on streams and Real-time on the robot."
   },
   {
     "term": "Duration",
@@ -27,52 +22,157 @@
   {
     "term": "Coupling",
     "expansion": null,
-    "meaning": "Whether a job's pieces must exchange data while they run."
+    "meaning": "Whether the parts of a job exchange data with each other while they run."
   },
   {
     "term": "Interruptibility",
     "expansion": null,
-    "meaning": "Whether a job can lose its machine and resume having lost no more than one unit."
+    "meaning": "Whether a job can stop and restart without losing more than one unit of work."
+  },
+  {
+    "term": "Independent tasks",
+    "expansion": null,
+    "meaning": "A workload type. The work splits into many short pieces that do not depend on each other, so a lost machine costs only the piece it was running. These jobs fit a queue that retries failed pieces, on Spot Instances."
+  },
+  {
+    "term": "Long single-machine runs",
+    "expansion": null,
+    "meaning": "A workload type. One job keeps one machine busy for hours, and a lost machine costs the work done since the last checkpoint."
+  },
+  {
+    "term": "Multi-node training",
+    "expansion": null,
+    "meaning": "A workload type. One run spreads across many machines that exchange data at every training step, so losing one machine loses the current step on all of them. Spot Instances are not an option."
+  },
+  {
+    "term": "Always-on streams",
+    "expansion": null,
+    "meaning": "A workload type. The work never ends, such as video that arrives all day, and it runs on a group of machines that stays up all the time. A lost machine costs only the item it was processing."
+  },
+  {
+    "term": "Real-time on the robot",
+    "expansion": null,
+    "meaning": "A workload type. The job runs on the computer next to the arm and must never be interrupted, so no cloud scheduler is involved."
+  },
+  {
+    "term": "Purchase option",
+    "expansion": null,
+    "meaning": "The way you pay for EC2 capacity. The four that matter here are On-Demand, Spot Instances, Capacity Blocks for ML and Savings Plans."
+  },
+  {
+    "term": "On-Demand",
+    "expansion": null,
+    "meaning": "A purchase option in which you pay for the instance while it runs, with no commitment, and AWS does not take it back."
+  },
+  {
+    "term": "Spot Instances",
+    "expansion": null,
+    "meaning": "Spare EC2 capacity that AWS can take back. AWS sends a warning two minutes before it does, on a best-effort basis."
+  },
+  {
+    "term": "Capacity Blocks for ML",
+    "expansion": null,
+    "meaning": "GPU instances that you reserve in advance for a fixed period, so that a large run can start on a known date."
+  },
+  {
+    "term": "Savings Plans",
+    "expansion": null,
+    "meaning": "A lower price in exchange for a commitment to a steady amount of compute use. They lower the cost of capacity you run anyway, but they do not reserve capacity."
+  },
+  {
+    "term": "Leader arm",
+    "expansion": null,
+    "meaning": "The second arm that a person moves by hand to demonstrate a task. The robot arm copies its movements while the demonstration is recorded. It is also called the teacher arm."
   },
   {
     "term": "Policy",
     "expansion": null,
-    "meaning": "The trained model that reads the cameras and joint angles and decides what the motors do next."
+    "meaning": "The trained model that controls the arm. It reads the camera images and the joint angles and decides how the motors move next."
+  },
+  {
+    "term": "Test program",
+    "expansion": null,
+    "meaning": "A small program used in place of a real policy to show how to estimate a bottleneck by hand. It multiplies a vector by six 1024 x 1024 float32 weight matrices in turn, on one CPU core. Its numbers describe the program, not a real policy."
   },
   {
     "term": "Memory bandwidth",
     "expansion": null,
-    "meaning": "The rate at which memory delivers data to the processor."
+    "meaning": "The rate at which memory delivers data to the processor, measured in GB/s."
+  },
+  {
+    "term": "Hardware performance counters",
+    "expansion": null,
+    "meaning": "Counters built into a processor that record events such as clock cycles spent waiting for memory. They show which resource held a program back."
   },
   {
     "term": "Episode",
     "expansion": null,
-    "meaning": "One attempt at the task, recorded or simulated: a table of joint readings and motor commands over time, plus video from each camera."
+    "meaning": "One attempt at the task, recorded or simulated. A recorded episode is a table of joint readings and motor commands over time, plus one video per camera."
+  },
+  {
+    "term": "Chunk",
+    "expansion": null,
+    "meaning": "The group of future actions that one policy call returns. In NVIDIA's GR00T N1.7 benchmark, one chunk holds 40 actions. The arm plays these actions one at a time while the next call runs."
+  },
+  {
+    "term": "Latency",
+    "expansion": null,
+    "meaning": "The time one call takes. The computer next to the arm is sized by latency, because the arm has a fixed control period."
+  },
+  {
+    "term": "Throughput",
+    "expansion": null,
+    "meaning": "The amount of work a job finishes in a given time. Jobs without a deadline are sized by throughput."
   },
   {
     "term": "LeRobot",
     "expansion": null,
-    "meaning": "The open-source robot-learning library whose defaults the arm follows."
+    "meaning": "An open-source library for recording robot data and training robot models. The arm in this dive follows its default settings."
   },
   {
     "term": "AV1",
     "expansion": "AOMedia Video 1",
-    "meaning": "The video compression format LeRobot writes by default, encoded and decoded by CPU code."
+    "meaning": "A video compression format. LeRobot writes its videos in AV1 by default and both writes and reads them with CPU code."
+  },
+  {
+    "term": "Stage",
+    "expansion": null,
+    "meaning": "One of the eight steps that an episode passes through in the loop. One stage can contain several workloads."
+  },
+  {
+    "term": "Augmentation",
+    "expansion": null,
+    "meaning": "Turning one recorded episode into many varied copies, so that training has more samples to learn from."
   },
   {
     "term": "World model",
     "expansion": null,
-    "meaning": "A model that predicts what happens next, given what the robot sees and an action it might take."
+    "meaning": "A model that predicts what the scene will look like after the robot takes an action."
+  },
+  {
+    "term": "Dataloader",
+    "expansion": null,
+    "meaning": "The component of a training job that prepares samples. Here it extracts frames from the video and varies them, on the CPU cores of the training instance."
+  },
+  {
+    "term": "vCPU",
+    "expansion": "virtual CPU",
+    "meaning": "The unit in which EC2 counts an instance's CPU capacity. On the eight-GPU sizes in this section, 24 vCPUs are 12 physical cores."
+  },
+  {
+    "term": "General compute (GPU)",
+    "expansion": null,
+    "meaning": "The units that make up most of a GPU and can run any arithmetic in parallel. They are separate from the tensor cores, the ray-tracing cores and the video engines."
   },
   {
     "term": "Tensor cores",
     "expansion": null,
-    "meaning": "The GPU's units for matrix arithmetic, used by training and inference."
+    "meaning": "GPU units that only do matrix arithmetic. Training and inference use them."
   },
   {
     "term": "Ray-tracing cores",
     "expansion": "RT cores",
-    "meaning": "Separate GPU units that follow light rays to draw an image."
+    "meaning": "Separate GPU units that trace light rays to draw an image. The A100 and H100 do not have them."
   },
   {
     "term": "Video engines",
@@ -80,88 +180,28 @@
     "meaning": "Fixed circuits on a GPU that only compress and decompress video."
   },
   {
-    "term": "Checkpoint",
+    "term": "RTX renderer",
     "expansion": null,
-    "meaning": "The copy of a model saved to storage during a training run, from which a stopped run resumes."
-  },
-  {
-    "term": "Array job",
-    "expansion": null,
-    "meaning": "One AWS Batch submission that spawns many child jobs, each reading its own index."
-  },
-  {
-    "term": "Spot",
-    "expansion": null,
-    "meaning": "EC2 capacity that AWS can take back after a notice issued two minutes before, on a best-effort basis."
-  },
-  {
-    "term": "Stand-in policy",
-    "expansion": null,
-    "meaning": "A program of six 1024x1024 float32 matrices, each multiplying a vector in turn, run on one CPU core: small enough to count by hand, and not the arm's policy."
-  },
-  {
-    "term": "Stage",
-    "expansion": null,
-    "meaning": "One of the eight steps an episode passes through in the loop; one stage can hold several workloads."
+    "meaning": "NVIDIA's ray-tracing renderer, used in Isaac Sim. It needs a GPU with RT cores."
   },
   {
     "term": "TensorRT",
     "expansion": null,
-    "meaning": "NVIDIA's inference compiler; the fastest runtime in its benchmark table for the Jetson Orin."
+    "meaning": "NVIDIA's inference compiler. It was the fastest option in NVIDIA's GR00T N1.7 benchmark table for the Jetson Orin."
   },
   {
-    "term": "RTX renderer",
+    "term": "Checkpoint",
     "expansion": null,
-    "meaning": "NVIDIA's ray-tracing renderer, which needs a GPU with RT cores."
+    "meaning": "A copy of the model that a training job saves to storage while it runs. A stopped run can restart from it."
   },
   {
-    "term": "Market",
+    "term": "Array job",
     "expansion": null,
-    "meaning": "The way capacity is bought: on demand, reserved ahead, or as spare capacity that can be taken back."
-  },
-  {
-    "term": "Independent units",
-    "expansion": null,
-    "meaning": "A job shape: short pieces that need nothing from each other; a lost machine costs the unit it was running."
-  },
-  {
-    "term": "Nodes that talk",
-    "expansion": null,
-    "meaning": "A job shape: machines that exchange data at every step; losing one loses the step on all."
-  },
-  {
-    "term": "Chunk",
-    "expansion": null,
-    "meaning": "The run of future actions one policy call returns (40 in NVIDIA's GR00T N1.7 benchmark); the arm plays them while the next call computes."
-  },
-  {
-    "term": "General compute (GPU)",
-    "expansion": null,
-    "meaning": "The units of a GPU that run any arithmetic in parallel, as distinct from its tensor cores, ray-tracing cores and video engines."
-  },
-  {
-    "term": "One long run",
-    "expansion": null,
-    "meaning": "A job shape: one machine for hours; a stop costs the work since the last checkpoint."
-  },
-  {
-    "term": "Always on",
-    "expansion": null,
-    "meaning": "A job shape: a stream with no end, handled item by item on machines kept running; a taken machine costs one item."
-  },
-  {
-    "term": "On the robot's clock",
-    "expansion": null,
-    "meaning": "A job shape: work on the computer beside the arm that cannot be interrupted and has no cloud scheduler."
+    "meaning": "One AWS Batch submission that creates many child jobs. Each child reads its own index number, for example to pick its random seed."
   },
   {
     "term": "AWS IoT Greengrass",
     "expansion": null,
-    "meaning": "Software on a device that receives deployments from the cloud; it delivers the model to the computer beside the arm."
-  },
-  {
-    "term": "Augmentation",
-    "expansion": null,
-    "meaning": "Multiplying a recorded episode into variants to get more training samples."
+    "meaning": "Software that runs on a device and receives deployments from the cloud. It delivers new versions of the model to the computer next to the arm."
   }
 ]
