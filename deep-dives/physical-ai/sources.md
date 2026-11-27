@@ -296,7 +296,7 @@ Tier ladder (repository standard): Tier 0 our experiments; Tier 1 code, official
 - LeRobot wall_x config: https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/policies/wall_x/configuration_wall_x.py (accessed 2026-11-20) (sections 5)
 - LeRobot xvla config: https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/policies/xvla/configuration_xvla.py (accessed 2026-11-20) (sections 5)
 - LeRobot so_follower.py and imitation learning tutorial: https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/robots/so_follower/so_follower.py (accessed 2026-11-20) (sections 4, 5)
-- our arithmetic: https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/utils/eval_stats.py (accessed 2026-11-20) (sections 1, 16, 19)
+- LeRobot v0.7.0, eval_stats.py: https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/utils/eval_stats.py (accessed 2026-11-20) (sections 1, 16, 19)
 - LeRobot v0.7.0 release notes and PEFT guide: https://github.com/huggingface/lerobot/releases/tag/v0.7.0 (accessed 2026-11-20) (sections 5, 15)
 - LeRobot vqbet config: https://github.com/huggingface/lerobot/tree/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/policies (accessed 2026-11-20) (sections 5, 6)
 - Intel perfmon README, its reference to the 2014 ISPASS paper: https://github.com/intel/perfmon/blob/c6875bae4fe4322e88c6b265962901672bfa97c9/README.md (accessed 2026-11-20) (sections 21)

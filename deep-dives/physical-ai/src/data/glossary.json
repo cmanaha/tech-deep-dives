@@ -14,7 +14,7 @@
  {
   "term": "Ablation",
   "expansion": null,
-  "meaning": "An experiment that changes one setting and holds the rest fixed, to measure what that setting contributes.",
+  "meaning": "An experiment that changes one setting and keeps the others fixed, to measure what that setting contributes.",
   "section": 4
  },
  {
@@ -68,13 +68,13 @@
  {
   "term": "Actions predicted and actions played",
   "expansion": null,
-  "meaning": "The two numbers of a chunked policy: how many actions one call returns, and how many of them the host plays before the policy looks again (chunk_size and n_action_steps in LeRobot's ACT).",
+  "meaning": "The two numbers of a chunked policy: how many actions one call returns, and how many of them the host plays before the policy looks again. In LeRobot's ACT, they are chunk_size and n_action_steps.",
   "section": 4
  },
  {
   "term": "Activations",
   "expansion": null,
-  "meaning": "The intermediate values the forward pass computes for each sample, kept in GPU memory until the backward pass uses them; they grow with the batch.",
+  "meaning": "The intermediate values that the forward pass computes for each sample. They stay in GPU memory until the backward pass uses them, so they grow with the batch.",
   "section": 15
  },
  {
@@ -92,7 +92,7 @@
  {
   "term": "AdaRSI",
   "expansion": null,
-  "meaning": "A 2026 loop in which a coding agent first rewrites the instructions, tools and procedure around a frozen VLA, then fine-tunes only unreliable sub-steps; tested on the SO-101.",
+  "meaning": "A 2026 loop in which a coding agent first rewrites the instructions, tools and procedure around a frozen VLA, and then fine-tunes only the sub-steps that stay unreliable. It was tested on the SO-101.",
   "section": 19
  },
  {
@@ -110,19 +110,19 @@
  {
   "term": "Agent program",
   "expansion": null,
-  "meaning": "The software that drives a language model as a coding agent, such as Codex or Claude Code; the same model behaves differently under different agent programs.",
+  "meaning": "The software that runs a language model as a coding agent, such as Codex or Claude Code. The same model can behave differently under different agent programs.",
   "section": 19
  },
  {
   "term": "AgentCore Runtime",
   "expansion": null,
-  "meaning": "Amazon Bedrock AgentCore Runtime, AWS's managed host for agents; a session on its microVMs ends after at most 8 hours.",
+  "meaning": "Amazon Bedrock AgentCore Runtime, AWS's managed service for running agents. A session on its microVMs ends after at most 8 hours.",
   "section": 19
  },
  {
   "term": "AgenticRobotics",
   "expansion": null,
-  "meaning": "A 2026 single-author preview preprint in which a language-model controller owns measurement and the keep-or-discard decision, with a statistical gate on promotion.",
+  "meaning": "A 2026 preview preprint by a single author. In its loop, a language-model controller owns the measurement and the decision to keep or discard a checkpoint, and a statistical gate decides when a new checkpoint replaces the best one.",
   "section": 19
  },
  {
@@ -152,7 +152,7 @@
  {
   "term": "Amazon EKS",
   "expansion": "Elastic Kubernetes Service",
-  "meaning": "AWS's managed Kubernetes; its best-practices guide gives the checkpoint intervals cited here.",
+  "meaning": "AWS's managed Kubernetes service. Its best-practices guide gives the checkpoint intervals cited in this section.",
   "section": 15
  },
  {
@@ -194,7 +194,7 @@
  {
   "term": "ASPIRE",
   "expansion": "Agentic Skill Programming through Iterative Robot Exploration",
-  "meaning": "A 2026 loop in which coding agents write robot control programs, train no weights, and keep verified repairs as text skills.",
+  "meaning": "A 2026 loop in which coding agents write robot control programs and train no weights. The agents keep repairs that pass verification as text skills.",
   "section": 19
  },
  {
@@ -212,7 +212,7 @@
  {
   "term": "Attempt",
   "expansion": null,
-  "meaning": "One try at the task, ending when the policy succeeds, fails or runs out of time; section 16's success rate is the share of single attempts that succeed.",
+  "meaning": "One try at the task. It ends when the policy succeeds, fails or runs out of time. The success rate in section 16 is the share of single attempts that succeed.",
   "section": 19
  },
  {
@@ -224,13 +224,13 @@
  {
   "term": "attemptDurationSeconds",
   "expansion": null,
-  "meaning": "The AWS Batch job timeout; a job has none unless it is set, in the job definition or at submission.",
+  "meaning": "The AWS Batch job timeout. A job has no timeout unless you set one, either in the job definition or when you submit the job.",
   "section": 19
  },
  {
   "term": "Attention",
   "expansion": null,
-  "meaning": "The transformer operation in which one token reads from others; the action head uses it to read the backbone's results.",
+  "meaning": "The transformer operation in which one token reads information from other tokens. The action head uses it to read the backbone's results.",
   "section": 5
  },
  {
@@ -266,13 +266,13 @@
  {
   "term": "Availability Zone",
   "expansion": null,
-  "meaning": "One of the separate data-centre groups inside an AWS Region; EFA traffic cannot cross from one to another.",
+  "meaning": "One of the separate groups of data centres inside an AWS Region. EFA traffic cannot cross from one Availability Zone to another.",
   "section": 15
  },
  {
   "term": "AWS Batch",
   "expansion": null,
-  "meaning": "AWS's managed job queue: it runs each job in a container on instances it starts.",
+  "meaning": "AWS's managed job queue. It runs each job in a container on instances that it starts.",
   "section": 19
  },
  {
@@ -326,7 +326,7 @@
  {
   "term": "Backbone",
   "expansion": null,
-  "meaning": "The vision-language model inside a VLA, which turns the camera images and the instruction into tokens and understands the scene and the request.",
+  "meaning": "The vision-language model inside a VLA. It turns the camera images and the instruction into tokens and reads them once per call.",
   "section": 5
  },
  {
@@ -368,19 +368,19 @@
  {
   "term": "Batch",
   "expansion": null,
-  "meaning": "The samples one training step processes; the per-GPU batch is what one GPU holds, the global batch is that times the number of GPUs.",
+  "meaning": "The samples that one training step processes. The per-GPU batch is what one GPU holds, and the global batch is the per-GPU batch times the number of GPUs.",
   "section": 15
  },
  {
   "term": "Behaviour cloning",
   "expansion": null,
-  "meaning": "Supervised learning on (observation, action) pairs from demonstrations: the network is trained to output the action the person took for each observation.",
+  "meaning": "Supervised learning on pairs of observation and action taken from demonstrations. The network is trained to output the action that the person took for each observation.",
   "section": 4
  },
  {
   "term": "Benchmark",
   "expansion": null,
-  "meaning": "A fixed set of simulated tasks that everyone scores on, so results can be compared.",
+  "meaning": "A fixed set of simulated tasks that everyone scores on, so that results can be compared.",
   "section": 16
  },
  {
@@ -392,7 +392,7 @@
  {
   "term": "Best-of-N sampling",
   "expansion": null,
-  "meaning": "Drawing N independent attempts and counting a success if any succeeds; ENPIRE's retries are not independent because each follows a seen failure.",
+  "meaning": "Making N independent attempts and counting a success if any of them succeeds. ENPIRE's retries are not independent, because each retry is made after the previous failure has been seen.",
   "section": 19
  },
  {
@@ -428,7 +428,7 @@
  {
   "term": "BPE",
   "expansion": "byte-pair encoding",
-  "meaning": "A compressor that repeatedly merges pairs of symbols that occur often; text tokenisers use it.",
+  "meaning": "A compression method that repeatedly merges pairs of symbols that occur often. Text tokenisers use it.",
   "section": 4
  },
  {
@@ -452,7 +452,7 @@
  {
   "term": "Cached input",
   "expansion": null,
-  "meaning": "Context a language-model provider has already processed on an earlier call and reads again; about 96% of an ENPIRE agent's tokens.",
+  "meaning": "Context that the language-model provider has already processed on an earlier call and reads again. It made up about 96% of one ENPIRE agent's tokens.",
   "section": 19
  },
  {
@@ -470,7 +470,7 @@
  {
   "term": "Campaign",
   "expansion": null,
-  "meaning": "The whole run of ideas toward the goal, which can outlast one agent session.",
+  "meaning": "The whole run of ideas toward the goal. A campaign can outlast one agent session.",
   "section": 19
  },
  {
@@ -578,13 +578,13 @@
  {
   "term": "Closed-loop evaluation",
   "expansion": null,
-  "meaning": "Letting the policy drive, on the bench, in a simulator or in a world model, so that each of its actions decides what it sees next, and counting successes.",
+  "meaning": "Scoring a policy by letting it drive, on the real arm, in a simulator or in a world model, and counting the successes. Each of its actions changes what it sees next.",
   "section": 16
  },
  {
   "term": "Cluster placement group",
   "expansion": null,
-  "meaning": "An EC2 setting that packs instances close together on the network; AWS Batch requires one for EFA jobs.",
+  "meaning": "An EC2 setting that packs instances close together on the network. AWS Batch requires one for EFA jobs.",
   "section": 15
  },
  {
@@ -620,7 +620,7 @@
  {
   "term": "Coding agent",
   "expansion": null,
-  "meaning": "A language model working through an agent program that lets it read and write files and run commands, here put in charge of improving a robot's policy.",
+  "meaning": "A language model that works through an agent program, which lets it read and write files and run commands. In section 19, the coding agent's task is to improve a robot's policy.",
   "section": 19
  },
  {
@@ -656,7 +656,7 @@
  {
   "term": "Compounding error",
   "expansion": null,
-  "meaning": "A small mistake moves the robot to a situation the demonstrations never showed, where the policy errs more, so the error feeds itself.",
+  "meaning": "The way small mistakes grow over a task. A small mistake moves the robot into a situation that the demonstrations never showed, the policy makes a larger mistake there, and the error keeps growing.",
   "section": 4
  },
  {
@@ -692,7 +692,7 @@
  {
   "term": "Confidence interval",
   "expansion": null,
-  "meaning": "The range of true success rates that could plausibly have produced the count that was observed; at the 95% level it contains the true rate about nineteen times in twenty.",
+  "meaning": "The range of true success rates that could plausibly have produced an observed count. At the 95% level, the range contains the true rate about nineteen times in twenty.",
   "section": 16
  },
  {
@@ -728,7 +728,7 @@
  {
   "term": "Consumable resource",
   "expansion": null,
-  "meaning": "An AWS Batch counted resource, such as a licence token, that a job waits for; one robot station can be modelled as a count of one.",
+  "meaning": "A counted resource in AWS Batch, such as a licence token, that a job waits for until it is free. You can model one robot station as a consumable resource with a count of one.",
   "section": 19
  },
  {
@@ -878,7 +878,7 @@
  {
   "term": "CVAE",
   "expansion": "conditional variational autoencoder",
-  "meaning": "A model trained to rebuild its input through a small random vector; ACT uses it to keep different ways of doing a task apart.",
+  "meaning": "A model trained to rebuild its input through a small random vector. ACT uses one during training to keep different ways of doing a task apart.",
   "section": 4
  },
  {
@@ -890,7 +890,7 @@
  {
   "term": "DAgger",
   "expansion": "Dataset Aggregation",
-  "meaning": "A 2011 method that runs the learned policy, has the expert label the situations it reaches, adds them to the data and retrains; it needs an expert who can be queried on the learner's own situations.",
+  "meaning": "A method from 2011 that runs the learned policy, asks the expert to label the situations it reaches, adds them to the data and retrains. It needs an expert who can be asked for the right action in the situations that the policy reaches.",
   "section": 4
  },
  {
@@ -902,7 +902,7 @@
  {
   "term": "Data parallel",
   "expansion": null,
-  "meaning": "Training on several GPUs where each keeps a copy of the model, works through its own share of the batch, and the copies combine their gradients into one update per step.",
+  "meaning": "A way to train on several GPUs. Each GPU keeps a copy of the model and works through its own share of the batch, and the GPUs combine their gradients into one update per step.",
   "section": 15
  },
  {
@@ -914,7 +914,7 @@
  {
   "term": "Dataloader worker",
   "expansion": null,
-  "meaning": "A CPU process that reads, decodes and prepares samples into batches for the GPU.",
+  "meaning": "A CPU process that reads and decodes samples and prepares them into batches for the GPU.",
   "section": 15
  },
  {
@@ -926,7 +926,7 @@
  {
   "term": "DCT",
   "expansion": "discrete cosine transform",
-  "meaning": "Rewrites a signal as a sum of cosine waves, so a smooth motion needs only a few numbers.",
+  "meaning": "A transform that rewrites a signal as a sum of cosine waves, so a smooth motion needs only a few numbers.",
   "section": 4
  },
  {
@@ -986,7 +986,7 @@
  {
   "term": "Denoising iteration",
   "expansion": null,
-  "meaning": "One round in which the network predicts the noise in the current chunk and part of it is subtracted.",
+  "meaning": "One round in which the network predicts the noise in the current chunk and part of that noise is subtracted.",
   "section": 4
  },
  {
@@ -998,7 +998,7 @@
  {
   "term": "Denoising step",
   "expansion": null,
-  "meaning": "One network pass that moves a noisy chunk closer to a finished one; the name covers diffusion iterations and flow-matching steps.",
+  "meaning": "One network pass that moves a noisy chunk closer to a finished one. Configuration files use the name for both diffusion iterations and flow-matching steps.",
   "section": 4
  },
  {
@@ -1076,7 +1076,7 @@
  {
   "term": "DiT",
   "expansion": "diffusion transformer",
-  "meaning": "A transformer used as the network that refines noise into an output, here an action chunk.",
+  "meaning": "A transformer used to refine noise into an output, which in a VLA is an action chunk.",
   "section": 5
  },
  {
@@ -1136,7 +1136,7 @@
  {
   "term": "DROID",
   "expansion": null,
-  "meaning": "The robot platform RoboArena's evaluators share, so that every lab runs policies on the same model of robot.",
+  "meaning": "The robot platform that RoboArena's evaluators share, so that every lab runs the policies on the same model of robot.",
   "section": 16
  },
  {
@@ -1190,7 +1190,7 @@
  {
   "term": "EFA",
   "expansion": "Elastic Fabric Adapter",
-  "meaning": "The EC2 network device for traffic between instances that bypasses the operating system kernel so many machines can train as one; absent on small GPU sizes.",
+  "meaning": "The EC2 network device for traffic between instances. It bypasses the operating system kernel so that many machines can train as one. The small GPU instance sizes do not have it.",
   "section": 15
  },
  {
@@ -1214,7 +1214,7 @@
  {
   "term": "EKS",
   "expansion": "Elastic Kubernetes Service",
-  "meaning": "AWS's managed Kubernetes.",
+  "meaning": "AWS's managed Kubernetes service.",
   "section": 19
  },
  {
@@ -1256,7 +1256,7 @@
  {
   "term": "Embodiment",
   "expansion": null,
-  "meaning": "A robot body: its joints, sensors and action space.",
+  "meaning": "A robot body, with its joints, sensors and action space.",
   "section": 5
  },
  {
@@ -1310,7 +1310,7 @@
  {
   "term": "ENPIRE",
   "expansion": "Environment, Policy Improvement, Rollout, Evolution",
-  "meaning": "A 2026 research system from NVIDIA and two universities that gives each of eight real robot stations its own coding agent, which improves the policy against a frozen success check.",
+  "meaning": "A 2026 research system from NVIDIA and two universities. It gives each of eight real robot stations its own coding agent, and each agent improves the policy against a frozen success check.",
   "section": 19
  },
  {
@@ -1334,13 +1334,13 @@
  {
   "term": "Epsilon",
   "expansion": null,
-  "meaning": "In the compounding-error bound, the probability that the policy disagrees with the expert on one decision, measured on situations the expert visited.",
+  "meaning": "In the compounding-error bound, the probability that the policy disagrees with the expert on one decision, measured on situations that the expert visited.",
   "section": 4
  },
  {
   "term": "Euler step",
   "expansion": null,
-  "meaning": "A short straight step along the current velocity, after which the velocity is asked for again.",
+  "meaning": "A short straight step along the current velocity, after which the network is asked for the velocity again.",
   "section": 4
  },
  {
@@ -1382,7 +1382,7 @@
  {
   "term": "Fair-share scheduling",
   "expansion": null,
-  "meaning": "An AWS Batch policy that divides a shared queue among teams or agents by weight; it divides capacity in proportion and is not a GPU-hour budget.",
+  "meaning": "An AWS Batch policy that divides a shared queue among teams or agents by weight. It divides capacity in proportion and does not set a GPU-hour budget.",
   "section": 19
  },
  {
@@ -1424,7 +1424,7 @@
  {
   "term": "Fisher's exact test",
   "expansion": null,
-  "meaning": "A test of whether two success counts could come from the same true rate: it counts how often luck alone would split the pooled failures at least as unevenly as observed.",
+  "meaning": "A test of whether two success counts could come from the same true rate. It counts how often luck alone would split the pooled failures at least as unevenly as the observed split.",
   "section": 16
  },
  {
@@ -1448,13 +1448,13 @@
  {
   "term": "Flow matching",
   "expansion": null,
-  "meaning": "A way to turn noise into a sample by training a network to output the direction from noise to data and following that direction in a few steps.",
+  "meaning": "A method that turns noise into a sample. A network is trained to output the direction from noise to data, and sampling follows that direction in a few steps.",
   "section": 4
  },
  {
   "term": "Flow time",
   "expansion": null,
-  "meaning": "Progress through the sampling, from 0 (pure noise) to 1 (finished chunk); it all passes inside one policy call and is separate from the robot's clock.",
+  "meaning": "Progress through the sampling, from 0 (pure noise) to 1 (finished chunk). All of it passes inside one policy call, so it is separate from the robot's clock.",
   "section": 4
  },
  {
@@ -1532,13 +1532,13 @@
  {
   "term": "Frozen",
   "expansion": null,
-  "meaning": "Said of weights that a fine-tune does not update, so they need no gradient and no optimiser state in GPU memory.",
+  "meaning": "Describes weights that a fine-tune does not update. Frozen weights need no gradient and no optimiser state in GPU memory.",
   "section": 5
  },
  {
   "term": "Frozen backbone",
   "expansion": null,
-  "meaning": "A fine-tuning setting that leaves the vision-language model untouched and trains only the action head and the layer that feeds it.",
+  "meaning": "A fine-tuning setting that leaves the vision-language model unchanged and trains only the action head and the layer that feeds it.",
   "section": 15
  },
  {
@@ -1556,13 +1556,13 @@
  {
   "term": "FSDP",
   "expansion": "fully sharded data parallel",
-  "meaning": "Data-parallel training that splits the weights, gradients and optimiser state across the GPUs in place of a full copy on each, for models whose trainable state does not fit one GPU.",
+  "meaning": "A form of data-parallel training that splits the weights, gradients and optimiser state across the GPUs instead of keeping a full copy on each. You use it when the training state of a model does not fit on one GPU.",
   "section": 15
  },
  {
   "term": "FSx for Lustre",
   "expansion": null,
-  "meaning": "AWS's managed Lustre, a file system many processes read in parallel, used to keep data and checkpoints between training jobs.",
+  "meaning": "AWS's managed Lustre file system, which many processes can read in parallel. It is used to keep data and checkpoints between training jobs.",
   "section": 15
  },
  {
@@ -1646,7 +1646,7 @@
  {
   "term": "Generative head",
   "expansion": null,
-  "meaning": "An action head that draws one sample from the set of good answers, where a regression head returns a single averaged answer.",
+  "meaning": "An action head that draws one sample from the set of good answers. A regression head, by contrast, returns a single averaged answer.",
   "section": 4
  },
  {
@@ -1700,7 +1700,7 @@
  {
   "term": "GPU-hours",
   "expansion": null,
-  "meaning": "The number of GPUs a job holds multiplied by the hours it holds them; occupied GPU time, not work, since GPU models differ.",
+  "meaning": "The number of GPUs a job uses multiplied by the hours it uses them. It measures GPU time, not work, because GPU models differ in speed.",
   "section": 15
  },
  {
@@ -1718,13 +1718,13 @@
  {
   "term": "Gradient",
   "expansion": null,
-  "meaning": "For each weight that trains, the direction in which a step moves it; it occupies GPU memory alongside the weight.",
+  "meaning": "For each weight that trains, the direction in which a training step moves it. It takes GPU memory alongside the weight.",
   "section": 15
  },
  {
   "term": "Gradient checkpointing",
   "expansion": null,
-  "meaning": "A training switch that recomputes activations in the backward pass in place of storing them, trading compute for GPU memory.",
+  "meaning": "A training setting that recomputes the activations during the backward pass instead of storing them. It trades extra compute for less GPU memory.",
   "section": 15
  },
  {
@@ -1838,7 +1838,7 @@
  {
   "term": "Horizon (T)",
   "expansion": null,
-  "meaning": "The number of decisions a policy takes in one task.",
+  "meaning": "The number of decisions that a policy takes in one task.",
   "section": 4
  },
  {
@@ -1850,7 +1850,7 @@
  {
   "term": "HPC",
   "expansion": "high-performance computing",
-  "meaning": "Large simulation and scientific jobs run across many servers that exchange data as they compute; AWS's HPC team tested such a job on Spot.",
+  "meaning": "Large simulation and scientific jobs that run across many servers, which exchange data while they compute. AWS's HPC team tested such a job on Spot Instances.",
   "section": 15
  },
  {
@@ -1904,7 +1904,7 @@
  {
   "term": "ICRA",
   "expansion": "International Conference on Robotics and Automation",
-  "meaning": "A robotics research conference; the REAL-I robot challenge held there in 2026 published a report cited for what open-loop error misses.",
+  "meaning": "A robotics research conference. The REAL-I robot challenge was held there in 2026.",
   "section": 16
  },
  {
@@ -1916,7 +1916,7 @@
  {
   "term": "ImageNet",
   "expansion": null,
-  "meaning": "A public set of labelled photos; ACT's ResNet-18 image backbone starts from weights trained on it.",
+  "meaning": "A public set of labelled photos. ACT's ResNet-18 image backbone starts from weights trained on it.",
   "section": 5
  },
  {
@@ -1934,7 +1934,7 @@
  {
   "term": "In distribution, out of distribution",
   "expansion": null,
-  "meaning": "A test where the object starts in positions the demonstrations covered, against one where it starts somewhere new.",
+  "meaning": "Two kinds of test. In distribution, the object starts in positions that the demonstrations covered. Out of distribution, it starts somewhere new.",
   "section": 5
  },
  {
@@ -1976,7 +1976,7 @@
  {
   "term": "Instruction",
   "expansion": null,
-  "meaning": "The sentence that tells a VLA which task to do, fed to the model on every call.",
+  "meaning": "The sentence that tells a VLA which task to do. The model receives it on every call.",
   "section": 5
  },
  {
@@ -2054,7 +2054,7 @@
  {
   "term": "Isaac Lab-Arena",
   "expansion": null,
-  "meaning": "NVIDIA's evaluation tool for its Isaac Lab simulator, with perturbation sweeps over lighting, backgrounds, camera parameters and object mass.",
+  "meaning": "NVIDIA's evaluation tool for its Isaac Lab simulator. It can run perturbation sweeps over lighting, backgrounds, camera parameters and object mass.",
   "section": 16
  },
  {
@@ -2108,7 +2108,7 @@
  {
   "term": "Jetson Thor",
   "expansion": null,
-  "meaning": "An NVIDIA onboard computer for robots; the GR00T N1.7 model card names it Jetson AGX Thor.",
+  "meaning": "An NVIDIA onboard computer for robots. The GR00T N1.7 model card calls it Jetson AGX Thor.",
   "section": 5
  },
  {
@@ -2180,7 +2180,7 @@
  {
   "term": "Karpenter",
   "expansion": null,
-  "meaning": "The node autoscaler for Kubernetes on EKS; a NodePool's spec.limits can cap GPUs by name, checked eventually, so a fast burst can overrun it.",
+  "meaning": "The node autoscaler that launches a Kubernetes cluster's nodes on EKS. A NodePool's spec.limits can cap the number of GPUs directly, but Karpenter's limit check is only eventually consistent, so a fast burst of jobs can go over the limit.",
   "section": 19
  },
  {
@@ -2210,7 +2210,7 @@
  {
   "term": "KL divergence",
   "expansion": "Kullback-Leibler divergence",
-  "meaning": "A number for how far one probability distribution is from another, zero when they match.",
+  "meaning": "A number for how far one probability distribution is from another. It is zero when they match.",
   "section": 4
  },
  {
@@ -2234,7 +2234,7 @@
  {
   "term": "L1 loss",
   "expansion": null,
-  "meaning": "The absolute differences between predicted and recorded values, added up (LeRobot's code takes their mean).",
+  "meaning": "A loss that adds up the absolute differences between predicted and recorded values. LeRobot's code takes their mean instead of their sum.",
   "section": 4
  },
  {
@@ -2306,7 +2306,7 @@
  {
   "term": "lerobot-eval",
   "expansion": null,
-  "meaning": "LeRobot's evaluation tool: it runs a checkpoint closed loop in a batch of simulated environments and reports the success rate with a 95% Wilson interval.",
+  "meaning": "LeRobot's evaluation tool. It runs a checkpoint in closed loop in a batch of simulated environments and reports the success rate with a 95% Wilson interval.",
   "section": 16
  },
  {
@@ -2390,7 +2390,7 @@
  {
   "term": "LoRA",
   "expansion": "low-rank adaptation",
-  "meaning": "A fine-tune that trains small added matrices and leaves the base weights frozen.",
+  "meaning": "A fine-tune that adds small matrices to the model and trains only those, leaving the original weights frozen.",
   "section": 5
  },
  {
@@ -2402,13 +2402,13 @@
  {
   "term": "Managed Spot training",
   "expansion": null,
-  "meaning": "The SageMaker Training Jobs setting that runs a job on Spot, copies its checkpoints to S3 and back, and resumes after an interruption; it does not fall back to On-Demand.",
+  "meaning": "The SageMaker Training Jobs setting that runs a job on Spot Instances. It copies the job's checkpoints to S3 and back, and resumes the job after an interruption. It does not fall back to On-Demand.",
   "section": 15
  },
  {
   "term": "Managed tiered checkpointing",
   "expansion": null,
-  "meaning": "A HyperPod feature for PyTorch on EKS that keeps checkpoints in the nodes' CPU memory, copies them to adjacent nodes and periodically persists them to durable storage such as S3.",
+  "meaning": "A HyperPod feature for PyTorch on EKS. It keeps checkpoints in the nodes' CPU memory, copies them to adjacent nodes, and periodically saves them to durable storage such as S3.",
   "section": 15
  },
  {
@@ -2438,7 +2438,7 @@
  {
   "term": "maxvCpus",
   "expansion": null,
-  "meaning": "The most vCPUs an AWS Batch compute environment may run at once; it caps GPUs only through the instance types allowed.",
+  "meaning": "The largest number of vCPUs that an AWS Batch compute environment may run at once. It limits GPUs only through the instance types that the environment is allowed to launch.",
   "section": 19
  },
  {
@@ -2504,7 +2504,7 @@
  {
   "term": "microVM",
   "expansion": null,
-  "meaning": "A lightweight virtual machine; Nitro Sandboxes use the Firecracker microVM.",
+  "meaning": "A lightweight virtual machine. Nitro Sandboxes use the Firecracker microVM.",
   "section": 19
  },
  {
@@ -2552,7 +2552,7 @@
  {
   "term": "Mode",
   "expansion": null,
-  "meaning": "One cluster of valid answers; a task that can be done in two distinct ways has two modes.",
+  "meaning": "One separate group of valid answers. A task that can be done in two distinct ways has two modes.",
   "section": 4
  },
  {
@@ -2648,7 +2648,7 @@
  {
   "term": "Multimodal (actions)",
   "expansion": null,
-  "meaning": "Said of demonstrations whose good answers form several separate groups; unrelated to models that take images and text.",
+  "meaning": "Describes demonstrations whose good answers form several separate groups. This meaning is separate from multimodal models, which take both images and text.",
   "section": 4
  },
  {
@@ -2666,7 +2666,7 @@
  {
   "term": "NeMo",
   "expansion": null,
-  "meaning": "NVIDIA's training framework, on which checkpointless training is built.",
+  "meaning": "NVIDIA's training framework. HyperPod's checkpointless training is built on it.",
   "section": 15
  },
  {
@@ -2696,7 +2696,7 @@
  {
   "term": "Nitro Sandbox",
   "expansion": null,
-  "meaning": "An AWS feature, announced 9 November 2026, that runs a pod, task or workload in its own Firecracker microVM with its own kernel; CPU only, no GPU passthrough.",
+  "meaning": "An AWS feature, announced on 9 November 2026, that runs a pod, task or workload in its own Firecracker microVM with its own kernel. It runs CPU work only, with no GPU passthrough.",
   "section": 19
  },
  {
@@ -2732,7 +2732,7 @@
  {
   "term": "NodePool",
   "expansion": null,
-  "meaning": "A Karpenter object that describes which nodes may be launched and, through spec.limits, how many resources in total.",
+  "meaning": "A Karpenter object that describes which nodes may be launched and, through spec.limits, how many resources they may use in total.",
   "section": 19
  },
  {
@@ -2780,7 +2780,7 @@
  {
   "term": "NVFP4",
   "expansion": null,
-  "meaning": "The name NVIDIA gives the number format of its quantised GR00T N1.7 build.",
+  "meaning": "The name NVIDIA gives to the number format of its quantised GR00T N1.7 build.",
   "section": 5
  },
  {
@@ -2852,13 +2852,13 @@
  {
   "term": "Open-loop evaluation",
   "expansion": null,
-  "meaning": "Scoring a policy on recorded frames by comparing the action it predicts with the recorded action; the policy's own actions never change what it sees next.",
+  "meaning": "Scoring a policy on recorded frames by comparing the action it predicts with the recorded action. The policy's own actions never change what it sees next.",
   "section": 16
  },
  {
   "term": "openpi",
   "expansion": null,
-  "meaning": "Physical Intelligence's open repository, which holds pi0, pi0-FAST and pi0.5.",
+  "meaning": "Physical Intelligence's open repository. It holds pi0, pi0-FAST and pi0.5.",
   "section": 5
  },
  {
@@ -2870,13 +2870,13 @@
  {
   "term": "OpenVLA-OFT",
   "expansion": null,
-  "meaning": "A 7B robot model whose head was changed from one token at a time to one parallel pass that regresses the whole chunk.",
+  "meaning": "A 7B robot model whose head was changed from writing one token at a time to one parallel pass that regresses the whole chunk.",
   "section": 4
  },
  {
   "term": "Optimiser state",
   "expansion": null,
-  "meaning": "The running statistics the optimiser keeps for each weight that trains, from step to step; a frozen weight has none.",
+  "meaning": "The running statistics that the optimiser keeps from step to step for each weight that trains. A frozen weight has no optimiser state.",
   "section": 15
  },
  {
@@ -2900,7 +2900,7 @@
  {
   "term": "Out of distribution (OOD)",
   "expansion": null,
-  "meaning": "Conditions the training demonstrations did not show, such as new objects, sizes or orientations.",
+  "meaning": "Conditions that the training demonstrations did not show, such as new objects, sizes or orientations.",
   "section": 19
  },
  {
@@ -2978,13 +2978,13 @@
  {
   "term": "pass@k",
   "expansion": null,
-  "meaning": "The share of rollouts with a success within k attempts after one reset. pass@1 is the first-try rate; pass@8 counts first tries and retries together and cannot be split into the two without the first-try rate.",
+  "meaning": "The share of rollouts that contain a success within k attempts after one reset. pass@1 is the first-try rate. pass@8 counts first tries and retries together, and you cannot split it into the two without knowing the first-try rate.",
   "section": 19
  },
  {
   "term": "Patch",
   "expansion": null,
-  "meaning": "One of the small squares a camera image is cut into, each of which becomes one token.",
+  "meaning": "One of the small squares that a camera image is cut into. Each patch becomes one token.",
   "section": 5
  },
  {
@@ -3050,7 +3050,7 @@
  {
   "term": "Perturbation sweep",
   "expansion": null,
-  "meaning": "Scoring the same checkpoint across controlled changes to one scene (lighting, backgrounds, camera parameters, object mass) and keeping only checkpoints whose rate holds.",
+  "meaning": "Scoring the same checkpoint across controlled changes to one scene, such as lighting, backgrounds, camera parameters and object mass. You keep only the checkpoints whose success rate holds.",
   "section": 16
  },
  {
@@ -3086,13 +3086,13 @@
  {
   "term": "pi0",
   "expansion": null,
-  "meaning": "A robot model from Physical Intelligence that produces action chunks by flow matching; section 5 takes it apart.",
+  "meaning": "A robot model from Physical Intelligence that produces action chunks by flow matching. Section 5, Vision-Language-Action Models, explains it in detail.",
   "section": 4
  },
  {
   "term": "pi0.5",
   "expansion": null,
-  "meaning": "A later Physical Intelligence model that pretrains with FAST tokens and then adds a flow-matching action head for inference.",
+  "meaning": "A later Physical Intelligence model that is pretrained with FAST tokens and then given a flow-matching action head for inference.",
   "section": 4
  },
  {
@@ -3110,7 +3110,7 @@
  {
   "term": "Plan",
   "expansion": null,
-  "meaning": "In the two-clocks figure, one backbone pass over the scene and the instruction.",
+  "meaning": "In the figure of the two clocks, one backbone pass over the scene and the instruction.",
   "section": 5
  },
  {
@@ -3182,7 +3182,7 @@
  {
   "term": "Policy package",
   "expansion": null,
-  "meaning": "One model family in LeRobot, selected on the command line with --policy.type.",
+  "meaning": "One model family in LeRobot, which you select on the command line with --policy.type.",
   "section": 5
  },
  {
@@ -3194,13 +3194,13 @@
  {
   "term": "Post-training",
   "expansion": null,
-  "meaning": "Any training that starts from a pretrained checkpoint; its size varies from one GPU to several servers.",
+  "meaning": "Any training that starts from a pretrained checkpoint. Its size ranges from one GPU to several servers.",
   "section": 15
  },
  {
   "term": "Power",
   "expansion": null,
-  "meaning": "The chance that a comparison detects a gap that is really there; 80% power detects it four times in five.",
+  "meaning": "The chance that a comparison detects a gap that is really there. At 80% power, the comparison detects the gap four times in five.",
   "section": 16
  },
  {
@@ -3218,7 +3218,7 @@
  {
   "term": "Precision",
   "expansion": null,
-  "meaning": "Of the attempts a check passes, the share that truly succeeded; the bar that keeps false passes, which an optimising agent can chase, out of the grade. It moves with the policy's true success rate; the share of failures the check passes belongs to the check.",
+  "meaning": "Of the attempts a check passes, the share that truly succeeded. It is the requirement that keeps false passes out of the grade, because an agent that optimises the grade can learn to chase them. Precision changes with the policy's true success rate. The share of failures that the check passes describes the check itself.",
   "section": 19
  },
  {
@@ -3242,7 +3242,7 @@
  {
   "term": "Prefix",
   "expansion": null,
-  "meaning": "The row of image tokens and text tokens that enters the backbone on one call; the backbone reads it once and its results are cached for the action head.",
+  "meaning": "The sequence of image tokens and text tokens that enters the backbone on one call. The backbone reads it once, and its results are cached for the action head.",
   "section": 5
  },
  {
@@ -3254,7 +3254,7 @@
  {
   "term": "Pretraining",
   "expansion": null,
-  "meaning": "The first training of a model, on data from many robots or on video, before it has seen the reader's robot.",
+  "meaning": "The first training of a model, on data from many robots or on video, before the model has seen your robot.",
   "section": 15
  },
  {
@@ -3320,7 +3320,7 @@
  {
   "term": "Quantised",
   "expansion": null,
-  "meaning": "Said of a model whose numbers are stored at lower precision to make it smaller and faster.",
+  "meaning": "Describes a model whose numbers are stored at lower precision, which makes it smaller and faster.",
   "section": 5
  },
  {
@@ -3386,7 +3386,7 @@
  {
   "term": "REAL-I",
   "expansion": null,
-  "meaning": "A robot challenge held at ICRA 2026; its report names the closed-loop effects open-loop error misses, and one of its teams used open-loop prediction to shortlist checkpoints.",
+  "meaning": "A robot challenge held at ICRA 2026. Its report names the closed-loop effects that open-loop error misses, and one of its teams used the validation action error to shortlist checkpoints.",
   "section": 16
  },
  {
@@ -3410,7 +3410,7 @@
  {
   "term": "Recall",
   "expansion": null,
-  "meaning": "Of the attempts that truly succeeded, the share a check passes.",
+  "meaning": "Of the attempts that truly succeeded, the share that a check passes.",
   "section": 19
  },
  {
@@ -3518,7 +3518,7 @@
  {
   "term": "ResNet-18",
   "expansion": null,
-  "meaning": "A standard image network; ACT in LeRobot uses it to turn each camera image into feature vectors.",
+  "meaning": "A standard image network. ACT in LeRobot uses it to turn each camera image into feature vectors.",
   "section": 4
  },
  {
@@ -3560,7 +3560,7 @@
  {
   "term": "RoboArena",
   "expansion": null,
-  "meaning": "A real-robot ranking of policies built from blind pairwise comparisons run at seven academic institutions on the DROID platform; the reference that simulators and world models are compared with.",
+  "meaning": "A ranking of policies on real robots, built from blind pairwise comparisons run at seven academic institutions on the DROID platform. Simulators and world models are checked against it.",
   "section": 16
  },
  {
@@ -3584,7 +3584,7 @@
  {
   "term": "Rollout (in pass@8)",
   "expansion": null,
-  "meaning": "In ENPIRE's headline score, one reset followed by up to eight attempts at the task; the scene is not reset between attempts, and each retry follows the previous failure.",
+  "meaning": "In ENPIRE's headline score, one reset followed by up to eight attempts at the task. The scene is not reset between the attempts, and each retry follows the previous failure.",
   "section": 19
  },
  {
@@ -3656,7 +3656,7 @@
  {
   "term": "SageMaker HyperPod",
   "expansion": null,
-  "meaning": "AWS's persistent training cluster, deployed in one Availability Zone by default.",
+  "meaning": "AWS's persistent training cluster. By default, it deploys a cluster in one Availability Zone.",
   "section": 15
  },
  {
@@ -3668,7 +3668,7 @@
  {
   "term": "SageMaker Training Jobs",
   "expansion": null,
-  "meaning": "A SageMaker service that starts instances for one training job and shuts them down when it ends.",
+  "meaning": "A SageMaker service that starts instances for one training job and shuts them down when the job ends.",
   "section": 15
  },
  {
@@ -3680,7 +3680,7 @@
  {
   "term": "Sample",
   "expansion": null,
-  "meaning": "One moment of a recorded episode, camera images and joint angles paired with the actions that followed, as training reads it.",
+  "meaning": "One moment of a recorded episode as training reads it: the camera images and joint angles, paired with the actions that followed.",
   "section": 15
  },
  {
@@ -3734,7 +3734,7 @@
  {
   "term": "Sealed judge",
   "expansion": null,
-  "meaning": "SEAR's grading rule: a separate process that receives the frozen policy, holds the start states and grading code, and ignores any success the policy claims.",
+  "meaning": "SEAR's grading rule. A separate process receives the frozen policy, holds the start states and the grading code, and ignores any success that the policy claims.",
   "section": 19
  },
  {
@@ -3752,7 +3752,7 @@
  {
   "term": "Sequential test",
   "expansion": null,
-  "meaning": "A comparison checked after each pair of trials that stops as soon as the evidence suffices, built so that the repeated checks do not raise the false-alarm rate; STEP (2025) proposes one for robot policies.",
+  "meaning": "A comparison that is checked after each pair of trials and stops as soon as the evidence is sufficient. It is built so that the repeated checks do not raise the false-alarm rate. STEP (2025) proposes one for robot policies.",
   "section": 16
  },
  {
@@ -3800,7 +3800,7 @@
  {
   "term": "Significance level",
   "expansion": null,
-  "meaning": "The false-alarm rate a comparison accepts when there is no gap; the 5% level is one time in twenty.",
+  "meaning": "The false-alarm rate that a comparison accepts when there is no gap. The 5% level means one false alarm in twenty.",
   "section": 16
  },
  {
@@ -3878,7 +3878,7 @@
  {
   "term": "Slurm",
   "expansion": null,
-  "meaning": "An open-source job scheduler for clusters, the one AWS's HPC Spot test ran under.",
+  "meaning": "An open-source job scheduler for clusters. AWS's HPC test on Spot Instances ran under Slurm.",
   "section": 15
  },
  {
@@ -3920,13 +3920,13 @@
  {
   "term": "Soft prompt",
   "expansion": null,
-  "meaning": "A set of learned vectors fed to the model for one robot type, X-VLA's way of serving many robot bodies.",
+  "meaning": "A set of learned vectors that is fed to the model for one robot type. X-VLA uses soft prompts to serve many robot bodies.",
   "section": 5
  },
  {
   "term": "Spearman correlation",
   "expansion": null,
-  "meaning": "The Pearson calculation applied to rank positions; it measures whether two ways of scoring put a set of policies in the same order.",
+  "meaning": "The Pearson calculation applied to rank positions. It measures whether two ways of scoring put a set of policies in the same order.",
   "section": 16
  },
  {
@@ -4058,19 +4058,19 @@
  {
   "term": "State-only environment",
   "expansion": null,
-  "meaning": "A simulated environment that steps physics and hands the policy joint and object states, with no simulated camera; the cheapest kind to run.",
+  "meaning": "A simulated environment that steps the physics and gives the policy the joint and object states directly, with no simulated camera. It is the cheapest kind of environment to run.",
   "section": 16
  },
  {
   "term": "Station",
   "expansion": null,
-  "meaning": "In ENPIRE, two robot arms, three cameras, one workstation with one GPU and one coding agent; the fleet has eight.",
+  "meaning": "In ENPIRE, one robot with its own workstation and coding agent. ENPIRE scales its fleet by adding whole stations. Each station has two robot arms, three cameras, one workstation with one GPU, and one coding agent. The fleet has eight stations.",
   "section": 19
  },
  {
   "term": "Step",
   "expansion": null,
-  "meaning": "One update of a model's weights during training, computed from one batch.",
+  "meaning": "One update of a model's weights during training. Each step is computed from one batch.",
   "section": 15
  },
  {
@@ -4124,13 +4124,13 @@
  {
   "term": "Success check (verifier)",
   "expansion": null,
-  "meaning": "Code that returns pass or fail for one attempt (the ENPIRE paper calls it the verifier); its verdict is the grade the agent works to raise. In ENPIRE the agent writes it once with a person and it is then frozen.",
+  "meaning": "Code that returns pass or fail for one attempt. The ENPIRE paper calls it the verifier. Its verdict is the grade that the agent works to raise. In ENPIRE, the agent writes the check once together with a person, and the check is then frozen.",
   "section": 19
  },
  {
   "term": "Success rate",
   "expansion": null,
-  "meaning": "The number of rollouts that ended with the task done, divided by the number of rollouts.",
+  "meaning": "The number of rollouts that ended with the task done, divided by the total number of rollouts.",
   "section": 16
  },
  {
@@ -4154,13 +4154,13 @@
  {
   "term": "System 1",
   "expansion": null,
-  "meaning": "NVIDIA's name for the fast side of a robot model, the action head that turns the slow side's output and the robot state into actions.",
+  "meaning": "NVIDIA's name for the fast side of a robot model: the action head, which turns the slow side's output and the robot's state into actions.",
   "section": 5
  },
  {
   "term": "System 2",
   "expansion": null,
-  "meaning": "NVIDIA's name for the slow side of a robot model, the vision-language model that reads the scene and the instruction.",
+  "meaning": "NVIDIA's name for the slow side of a robot model: the vision-language model that reads the scene and the instruction.",
   "section": 5
  },
  {
@@ -4220,13 +4220,13 @@
  {
   "term": "Temporal ensembling",
   "expansion": null,
-  "meaning": "Asking the policy on every tick so chunks overlap, then averaging the overlapping predictions for smoother motion, at one forward pass per tick.",
+  "meaning": "ACT's method of calling the policy on every tick, so that chunks overlap, and sending the arm a weighted average of the overlapping predictions. It gives smoother motion but costs one forward pass per tick.",
   "section": 4
  },
  {
   "term": "Tenant",
   "expansion": null,
-  "meaning": "One more user submitting jobs to shared hardware; an agent is one that asks for a GPU in bursts and consumes tokens steadily.",
+  "meaning": "One more user that submits jobs to shared hardware. A coding agent is a tenant that asks for a GPU in bursts and consumes tokens steadily.",
   "section": 19
  },
  {
@@ -4340,7 +4340,7 @@
  {
   "term": "Token",
   "expansion": null,
-  "meaning": "One vector a transformer processes; an image patch or a piece of a word becomes one token.",
+  "meaning": "One vector that a transformer processes. An image patch or a piece of a word becomes one token.",
   "section": 5
  },
  {
@@ -4358,7 +4358,7 @@
  {
   "term": "Tokenised actions",
   "expansion": null,
-  "meaning": "Writing an action chunk as discrete tokens so a language model can predict them one at a time.",
+  "meaning": "An action chunk written as discrete tokens, so that a language model can predict them one at a time.",
   "section": 4
  },
  {
@@ -4406,13 +4406,13 @@
  {
   "term": "Training plan",
   "expansion": null,
-  "meaning": "A SageMaker reservation of P or Trainium capacity for 1 to 182 days, bookable up to 8 weeks ahead.",
+  "meaning": "A SageMaker reservation of P or Trainium capacity for 1 to 182 days, which you can book up to 8 weeks ahead.",
   "section": 15
  },
  {
   "term": "Training recipe",
   "expansion": null,
-  "meaning": "The published configuration of a training run: the model, the batch, the number of steps and which weights train.",
+  "meaning": "The published configuration of a training run. It sets the model, the batch size, the number of steps and which weights train.",
   "section": 15
  },
  {
@@ -4556,13 +4556,13 @@
  {
   "term": "Validation action error",
   "expansion": null,
-  "meaning": "The policy run as on the arm on each held-out frame, its action compared with the recorded one, usually as an MSE; meaningful only at a fixed number of denoising steps.",
+  "meaning": "An open-loop score that runs the policy as it runs on the arm on each held-out frame and compares its action with the recorded action, usually as an MSE. It is meaningful only when the number of diffusion steps is held fixed.",
   "section": 16
  },
  {
   "term": "Validation loss",
   "expansion": null,
-  "meaning": "The training objective computed on held-out demonstrations; for a diffusion policy, the error in predicting the added noise. It is open-loop.",
+  "meaning": "The training objective computed on demonstrations that were held out of training. For a diffusion policy, it is the error in predicting the added noise. It is an open-loop score.",
   "section": 16
  },
  {
@@ -4598,7 +4598,7 @@
  {
   "term": "Velocity field",
   "expansion": null,
-  "meaning": "The network's answer, for every possible noisy chunk, to which way each number should move and how fast.",
+  "meaning": "The network's output for every possible noisy chunk: which way each number should move, and how fast.",
   "section": 4
  },
  {
@@ -4622,7 +4622,7 @@
  {
   "term": "Vision-language model",
   "expansion": null,
-  "meaning": "A model that takes images and text as input; used here as the judge of a generated rollout.",
+  "meaning": "A model that takes both images and text as input. In world-model evaluation, it judges whether the generated rollout completed the task.",
   "section": 16
  },
  {
@@ -4646,7 +4646,7 @@
  {
   "term": "VLM",
   "expansion": "vision-language model",
-  "meaning": "A network pretrained on images and text from the web that takes pictures and a prompt and writes text.",
+  "meaning": "A network pretrained on images and text from the web. It takes pictures and a prompt as input and writes text.",
   "section": 5
  },
  {
@@ -4658,7 +4658,7 @@
  {
   "term": "Wald interval",
   "expansion": null,
-  "meaning": "The textbook interval p plus or minus z times sqrt(p(1-p)/n); it can run past 100% and collapses to zero width at a perfect score.",
+  "meaning": "The textbook interval, p plus or minus z times sqrt(p(1-p)/n). It can run past 100%, and it shrinks to zero width at a perfect score.",
   "section": 16
  },
  {
@@ -4682,7 +4682,7 @@
  {
   "term": "Wilson interval",
   "expansion": null,
-  "meaning": "A recipe for a confidence interval on a success rate that pulls the centre toward one half and keeps the width open at 0% and 100%; LeRobot's evaluation tool reports it.",
+  "meaning": "A method for computing a confidence interval on a success rate. It pulls the centre toward one half and keeps the width above zero at 0% and 100%. LeRobot's evaluation tool reports it.",
   "section": 16
  },
  {
@@ -4718,7 +4718,7 @@
  {
   "term": "World action model",
   "expansion": null,
-  "meaning": "A model that predicts future video and the action chunk together, so it forecasts what the camera will see as well as what the robot should do.",
+  "meaning": "A model that predicts future video and the action chunk together. It forecasts what the camera will see as well as what the robot should do.",
   "section": 5
  },
  {
@@ -4736,7 +4736,7 @@
  {
   "term": "World-model evaluation",
   "expansion": null,
-  "meaning": "Closed-loop scoring in which a video world model generates what the cameras would show after each action and a vision-language model judges the generated video.",
+  "meaning": "Closed-loop scoring in which a video world model generates what the cameras would show after each action, and a vision-language model judges the generated video.",
   "section": 16
  },
  {
@@ -4766,7 +4766,7 @@
  {
   "term": "Zero-padding",
   "expansion": null,
-  "meaning": "Filling the unused slots of a fixed-width state or action vector with zeros so one model can serve robots with different numbers of joints.",
+  "meaning": "Filling the unused slots of a fixed-width state or action vector with zeros, so that one model can serve robots with different numbers of joints.",
   "section": 5
  },
  {

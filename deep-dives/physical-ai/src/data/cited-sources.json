@@ -3071,7 +3071,7 @@
   "url": "https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/utils/eval_stats.py",
   "local": null,
   "venue": null,
-  "title": "our arithmetic",
+  "title": "LeRobot v0.7.0, eval_stats.py",
   "sections": [
    1,
    16,

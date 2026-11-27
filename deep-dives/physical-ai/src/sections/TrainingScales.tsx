@@ -89,10 +89,11 @@ function GpuHoursChart() {
       <svg viewBox="0 0 400 724" role="img" aria-labelledby="training-scales-gpuhours-title" style={{ width: '100%', height: 'auto' }}>
         <title id="training-scales-gpuhours-title">Published robot-model training runs on one logarithmic axis of GPU-hours, in three bands</title>
         <desc>
-          Ten runs placed by GPU-hours on a logarithmic axis from a tenth of a GPU-hour to one hundred thousand. Five
-          one-GPU runs sit between half a GPU-hour and 10.9, among them 3.4 hours for 20,000 steps of GR00T
-          N1.7 as AWS measured it. Two eight-GPU runs sit in the hundreds. Three multi-node pretraining runs sit
-          between a few thousand and roughly 50,000.
+          Ten training runs placed by their GPU-hours on a logarithmic axis, from a tenth of a GPU-hour to one
+          hundred thousand. Five runs on one GPU take between half a GPU-hour and 10.9 GPU-hours. One of them is
+          AWS&apos;s measured fine-tune of GR00T N1.7, which took 3.4 hours for 20,000 steps. Two runs on eight GPUs
+          take a few hundred GPU-hours each. Three multi-node pretraining runs take between a few thousand and
+          roughly 50,000 GPU-hours.
         </desc>
         <rect x="0" y="0" width="400" height={height} fill="#fbfbfd" />
         {[-1, 0, 1, 2, 3, 4, 5].map((e) => (
@@ -166,7 +167,7 @@ export function TrainingScales() {
         header={
           <Header
             variant="h1"
-            description="Tell before launch whether a robot-model training job needs one GPU, one eight-GPU server or many servers: memory sets the floor, your deadline sets the width, and the width decides network, checkpoints and capacity (papers, model cards, LeRobot v0.7.0 and AWS posts, read 2026-11-20)"
+            description="A robot-model training job can need one GPU, one server with eight GPUs, or many servers, and you can tell which before you launch it. Start from the GPU memory the job needs and from your deadline. From those you get the number of GPUs, which tells you which network, checkpoint plan and purchase option the job needs."
           >
             15. Training at Three Scales: One GPU, One Node, Many Nodes
           </Header>
@@ -174,36 +175,65 @@ export function TrainingScales() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The size of a robot-model training job, more than the model it trains, sets what the job asks of a
-            cluster: the GPU memory, whether the servers need a fast network between them, and what a lost machine
-            costs. That last cost decides whether Spot is open to the job. Spot is the EC2 market where AWS can take
-            an instance back after a two-minute warning, sent on a best-effort basis.{' '}
-            <Cite id="F09-95">EC2 User Guide, Spot interruptions and best practices</Cite> Jobs come in three sizes:
-            one GPU for hours, one server of eight GPUs for a day or more, or many servers for days. Someone with one
-            arm and a few dozen recorded episodes is in the smallest.
+            What a robot-model training job needs from its hardware depends more on the size of the job than on the
+            model it trains. The size of the job tells you how much GPU memory it needs, whether its servers need a
+            fast network between them, and how much work is lost when a machine fails. A checkpoint is a saved copy
+            of the model&apos;s weights. A training run saves checkpoints as it goes, so that after a failure it can
+            resume from the last one. The work lost is the work done since that checkpoint, and that amount tells
+            you whether the job can run on Spot Instances. Spot Instances are spare EC2 capacity that AWS can take
+            back after a two-minute warning, and AWS sends that warning on a best-effort basis.{' '}
+            <Cite id="F09-95">EC2 User Guide, Spot interruptions and best practices</Cite>
           </Box>
           <Box variant="p">
-            GR00T N1.7 shows the spread inside one model. It is NVIDIA&apos;s VLA, a vision-language-action model:
-            a vision-language model reads the camera images and the instruction, and an action head attached to it
-            outputs the arm&apos;s motions (section 5, Vision-Language-Action Models). AWS fine-tuned it, training it
-            further on new data, for 20,000 steps (a step is one update of the weights) on 75 recorded episodes of
-            the {ARM} arm. The run took 3.4 hours on one ml.g7e.2xlarge, an instance with a single 96 GB GPU (a
-            single run, not a speed benchmark).{' '}
+            Training jobs come in three sizes: one GPU for hours, one server with eight GPUs for a day or more, or
+            many servers for days. If you have one arm and a few dozen recorded episodes, your job is a one-GPU
+            job.
+          </Box>
+          <Box variant="p">
+            The same model can need very different job sizes, as GR00T N1.7 shows. GR00T N1.7 is a VLA
+            (vision-language-action model) from NVIDIA. In a VLA, a vision-language model reads the camera images
+            and the instruction, and an action head attached to it outputs the arm&apos;s motions. Section 5, Vision-Language-Action Models, explains how
+            these models are built.
+          </Box>
+          <Box variant="p">
+            Fine-tuning a model means training it further on new data. Training runs in steps, and one step is one
+            update of the model&apos;s weights. AWS fine-tuned GR00T N1.7 for 20,000 steps on 75 recorded episodes of
+            the {ARM} arm. The fine-tune took 3.4 hours on one ml.g7e.2xlarge, an instance with a single 96 GB GPU.
+            AWS measured this time in a single run and notes that the run was not a speed benchmark.{' '}
             <Cite id="F09-82">AWS post on training VLA models with LeRobot on SageMaker, timing table</Cite>
           </Box>
           <Box variant="p">
-            Pretraining, the first training that produced the model, took 64 nodes (servers) of 4 GB200 GPUs for 120
-            hours: 256 x 120 = <Derived>30,720</Derived> GPU-hours, about <Derived>9,000</Derived> times the
-            fine-tune&apos;s 3.4 (from the model card&apos;s energy estimate, which may sum several runs). <Cite id="F02-39">GR00T N1.7 model card, computational load</Cite> The architecture is the same in
-            both jobs; the work is not. The fine-tune updated only the action head and the small layer that feeds it,
-            with the vision-language part frozen.{' '}
-            <Cite id="F09-82">AWS post, GPU memory table and timing table</Cite>
+            Pretraining is the first training of a model, the run that produced the model in the first place. A node
+            is one server in a training job. The pretraining of GR00T N1.7 ran on 64 nodes, each with 4 GB200 GPUs,
+            for 120 hours. That is 256 GPUs x 120 hours = <Derived>30,720</Derived> GPU-hours, about{' '}
+            <Derived>9,000</Derived> times the 3.4 GPU-hours of the fine-tune.{' '}
+            <Cite id="F09-82">AWS post, GPU memory table and timing table</Cite> These figures come from the energy
+            estimate in the model card, which does not say whether they cover one run or several.{' '}
+            <Cite id="F02-39">GR00T N1.7 model card, computational load</Cite>
           </Box>
           <Box variant="p">
-            Three numbers place any job. What trains sets the memory floor: whether one GPU can hold the job at all.
-            How many samples it processes sets the GPU-hours. The wall-clock you can wait divides the GPU-hours into
-            a width, and the width decides the network, the checkpoints and the market.
+            Both jobs train the same architecture, but they do very different amounts of work. The fine-tune updated
+            only the action head and the small layer that feeds it. The vision-language part stayed frozen, which
+            means that training read those weights but did not change them.{' '}
+            <Cite id="F09-82">AWS post, GPU memory table and timing table</Cite>
           </Box>
+          <Box variant="p">To estimate the size of any training job, you need three pieces of information:</Box>
+          <ul style={{ margin: 0, paddingLeft: 22 }}>
+            <li>
+              <strong>Which weights train.</strong> This tells you the minimum GPU memory the job needs, and so
+              whether one GPU can hold the job at all.
+            </li>
+            <li>
+              <strong>How many samples the job processes.</strong> A sample is one moment of a recorded episode:
+              the camera images and the joint angles, paired with the actions the person took next. Divide the
+              number of samples by the number that one GPU processes per second, and you get the GPU-hours.
+            </li>
+            <li>
+              <strong>How long you can wait.</strong> The GPU-hours divided by the hours you can wait give the
+              number of GPUs. That number tells you which network, checkpoint plan and purchase option the job
+              needs.
+            </li>
+          </ul>
         </SpaceBetween>
       </Container>
 
@@ -211,90 +241,137 @@ export function TrainingScales() {
         header={
           <Header
             variant="h2"
-            description="Estimate from which weights a job trains whether one GPU holds it, and from its samples how many GPU-hours it needs"
+            description="The weights a job trains tell you whether one GPU can hold it. The number of samples it processes tells you how many GPU-hours it needs, and your deadline then tells you how many GPUs to use."
           >
-            Memory sets the floor, and the hours you accept set the width
+            Estimating GPU memory, GPU-hours and the number of GPUs
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Training repeats one step. The GPU takes a batch of samples (a sample is one moment of an episode: camera
-            images and joint angles, paired with the actions the person took next), runs the model forward, measures
-            how far its actions are from the recorded ones, and works backward to adjust the weights that train. A
-            weight that trains costs memory beyond its own value: a gradient, the direction in which to move it, and
-            running state kept from step to step by the optimiser, the algorithm that turns gradients into updates.
-            The backward pass also needs the activations, the intermediate results of the forward pass, for every
-            sample in the batch. A frozen weight is only read.
+            Training repeats the same step many times. In each step, the GPU takes a batch of samples and runs the
+            model forward on them. It then measures how far the model&apos;s actions are from the recorded ones, and
+            works backward through the model to adjust the weights that train.
           </Box>
           <Box variant="p">
-            What trains therefore sets how large a batch fits. In NVIDIA&apos;s test on one A6000 GPU, its first GR00T
-            release, N1, fit batches of up to 200 when only its action layers trained, and 16 once the vision encoder,
-            the part that turns images into vectors, trained as well: a batch <Derived>12.5</Derived> times smaller
-            (200 / 16). <Cite id="F02-34">GR00T N1 paper, training infrastructure</Cite> Holding the weights is the
-            cheap part: N1.7&apos;s 3,144,016,000 parameters at 2 bytes each in bf16 (a 16-bit number format) are{' '}
+            Training a weight takes more GPU memory than storing it. First, the weight needs a gradient, which is the
+            direction in which the step moves the weight. Second, it needs optimiser state. The optimiser is the
+            algorithm that turns gradients into weight updates, and it keeps running statistics for each weight
+            from step to step. The backward pass also needs the activations of every sample in the batch.
+            Activations are the intermediate results that the forward pass computes. A frozen weight needs no
+            gradient and no optimiser state, because training only reads it.
+          </Box>
+          <Box variant="p">
+            The memory that frozen weights do not use is left for the activations, which grow with the batch. So
+            when you choose which weights train, you also choose how large a batch fits in GPU memory. NVIDIA tested
+            this on one A6000 GPU with N1, its first GR00T release. The vision encoder is the part of the model that
+            turns camera images into vectors. When only the action layers trained, batches of up to 200 fit. When the
+            vision encoder trained as well, the largest batch was 16, which is <Derived>12.5</Derived> times smaller
+            (200 / 16). <Cite id="F02-34">GR00T N1 paper, training infrastructure</Cite>
+          </Box>
+          <Box variant="p">
+            Storing the weights themselves takes comparatively little memory. GR00T N1.7 has 3,144,016,000
+            parameters. In bf16, a 16-bit number format, each parameter takes 2 bytes, so the weights take{' '}
             <Derived>6.3</Derived> GB. <Cite id="F02-37">GR00T N1.7 model record</Cite>{' '}
             <Cite id="F02-42">Isaac-GR00T hardware recommendation</Cite>
           </Box>
           <Box variant="p">
-            A training recipe is the published configuration of a run: the model, the batch, the number of steps
-            and which weights train. For the weights it picks one of three settings. Full fine-tuning trains every weight. LoRA (low-rank adaptation)
-            freezes the base weights and trains small matrices added beside them. A frozen backbone leaves the
-            vision-language model untouched and trains the action head and its feeding layer. openpi, Physical
-            Intelligence&apos;s code for its pi0 models, asks for more than 22.5 GB of GPU memory for a LoRA
-            fine-tune and more than 70 GB for a full one. <Cite id="F02-54">openpi README, requirements</Cite>
+            A training recipe is the published configuration of a training run. It sets the model, the batch size,
+            the number of steps and which weights train. The backbone of a VLA is the vision-language model it is
+            built on. For the weights, a recipe uses one of three settings:
+          </Box>
+          <ul style={{ margin: 0, paddingLeft: 22 }}>
+            <li>
+              <strong>Full fine-tuning</strong> trains every weight of the model.
+            </li>
+            <li>
+              <strong>LoRA (low-rank adaptation)</strong> freezes the original weights and trains small extra
+              matrices that are added next to them.
+            </li>
+            <li>
+              <strong>Frozen backbone</strong> leaves the vision-language model unchanged and trains only the action
+              head and the layer that feeds it.
+            </li>
+          </ul>
+          <Box variant="p">
+            The memory difference between these settings is large. openpi is Physical Intelligence&apos;s code for
+            its pi0 models. It asks for more than 22.5 GB of GPU memory for a LoRA fine-tune and more than 70 GB for
+            a full fine-tune. <Cite id="F02-54">openpi README, requirements</Cite>
           </Box>
           <Box variant="p">
-            Read as the price of making weights trainable, the gap between those two figures is about{' '}
-            <Derived>(70 - 22.5) / 3 = 16</Derived> bytes for each of pi0&apos;s 3 billion parameters, on top of the
-            2 that store it. <Cite id="F09-83">AWS post on fine-tuning pi0 on SageMaker HyperPod</Cite> At that rate,
-            training every weight of N1.7 needs about <Derived>3.14 x 18 = 57</Derived> GB before the batch&apos;s
-            activations, in line with NVIDIA&apos;s advice of 80 GB or more per GPU once its language model or vision
-            encoder trains. <Cite id="F02-42">Isaac-GR00T hardware recommendation</Cite>
+            You can turn those two figures into a rough memory cost per parameter. Treat the gap between them as the
+            extra memory needed to make every weight trainable. pi0 has 3 billion parameters, so the gap comes to
+            about <Derived>(70 - 22.5) / 3 = 16</Derived> bytes per parameter, on top of the 2 bytes that store each
+            one. <Cite id="F09-83">AWS post on fine-tuning pi0 on SageMaker HyperPod</Cite> At that rate, each
+            parameter that trains costs about <Derived>16 + 2 = 18</Derived> bytes in all. GR00T N1.7 has <Derived>3.14</Derived>
+            billion parameters, so training every weight needs about <Derived>3.14 x 18 = 57</Derived> GB before the
+            activations of the batch are counted. That estimate is in line with NVIDIA&apos;s advice to use 80 GB
+            or more per GPU when the language model or the vision encoder of N1.7 trains.{' '}
+            <Cite id="F02-42">Isaac-GR00T hardware recommendation</Cite>
           </Box>
           <Box variant="p">
-            A memory figure belongs to a code base and a batch as much as to a model. NVIDIA keeps its default N1.7
-            recipe, backbone frozen, under about 35 GB per GPU and sets a minimum of one 40 GB GPU.{' '}
-            <Cite id="F02-42">Isaac-GR00T hardware recommendation</Cite> AWS&apos;s LeRobot run of the same setting
-            peaked at 41.5 GB at batch 32, so that batch does not fit a 40 GB card.{' '}
-            <Cite id="F09-82">AWS post, GPU memory table</Cite> Gradient checkpointing, which recomputes activations in
-            the backward pass in place of storing them and so trades compute for memory, is the switch LeRobot&apos;s pi0 example turns on to fit a
-            full fine-tune on one GPU, because it &quot;reduces memory usage significantly&quot;.{' '}
-            <Cite id="F02-80">LeRobot pi0 documentation</Cite>
+            A memory figure depends on the code and the batch size as much as on the model. NVIDIA&apos;s default
+            recipe for GR00T N1.7 keeps the backbone frozen and stays under about 35 GB per GPU, and NVIDIA sets a
+            minimum of one 40 GB GPU. <Cite id="F02-42">Isaac-GR00T hardware recommendation</Cite> AWS ran the same
+            setting with LeRobot, and its memory use peaked at 41.5 GB at a batch size of 32. So at that batch size,
+            the LeRobot run does not fit on a 40 GB GPU. <Cite id="F09-82">AWS post, GPU memory table</Cite>
           </Box>
           <Box variant="p">
-            Which of the three settings a run uses is a command-line flag, and that flag has failed without warning. Before LeRobot v0.7.0,{' '}
-            <code>--policy.use_peft=true</code> on its own ran a full fine-tune; v0.7.0 has one LoRA switch for every
-            policy, <code>--peft.method_type=LORA</code>.{' '}
-            <Cite id="F02-83">LeRobot v0.7.0 PEFT documentation and release</Cite> Confirm which weights a run trains
-            before trusting a memory figure for it.
+            When a job does not fit, gradient checkpointing is one way to reduce its memory. Gradient checkpointing
+            recomputes the activations during the backward pass instead of storing them, so it trades extra compute
+            for less memory. LeRobot&apos;s pi0 example turns it on to fit a full fine-tune on one GPU, because it
+            &quot;reduces memory usage significantly&quot;. <Cite id="F02-80">LeRobot pi0 documentation</Cite>
           </Box>
           <Box variant="p">
-            Hours follow from samples: steps x batch, divided by the samples per second one GPU sustains, gives the
-            GPU-hours. Compare runs in samples, not steps. AWS&apos;s two N1.7 runs both took 20,000 steps: batch 32
-            on ml.g7e.2xlarge was 640,000 samples in 3.4 hours, about <Derived>52</Derived> a second, and batch 16 on
-            ml.g6e.2xlarge was 320,000 samples in 4.0 hours, about <Derived>22</Derived> a second.{' '}
-            <Cite id="F09-82">AWS post, timing table</Cite> By steps the g6e run looks{' '}
-            <Derived>4.0 / 3.4 = 1.2</Derived> times slower; by samples it is <Derived>52 / 22 = 2.4</Derived> times
-            slower.
+            In LeRobot, you choose between the three settings with command-line flags, and in the past a flag has
+            failed without warning. Before LeRobot v0.7.0, setting <code>--policy.use_peft=true</code> on its own still ran a
+            full fine-tune. Version 0.7.0 has one LoRA switch that works for every policy,{' '}
+            <code>--peft.method_type=LORA</code>.{' '}
+            <Cite id="F02-83">LeRobot v0.7.0 PEFT documentation and release</Cite> So before you trust a memory
+            figure for a run, confirm which weights the run actually trains.
           </Box>
           <Box variant="p">
-            Take the rate from your own code. NVIDIA lists 131.33 samples a second for N1.7 on an RTX Pro 6000
-            Blackwell, <Derived>2.5</Derived> times the 52 of AWS&apos;s LeRobot run on the g7e&apos;s RTX PRO 6000
-            Blackwell Server Edition, and the two come from different code.{' '}
+            To estimate the GPU-hours, start from the number of samples. Multiply the steps by the batch size to get
+            the samples, then divide by the number of samples per second that one GPU sustains. When you compare two
+            runs, compare them by samples, not by steps, because their batch sizes can differ. AWS ran GR00T N1.7
+            twice, both times for 20,000 steps:
+          </Box>
+          <ul style={{ margin: 0, paddingLeft: 22 }}>
+            <li>
+              <strong>ml.g7e.2xlarge, batch size 32.</strong> The run processed 640,000 samples in 3.4 hours, about{' '}
+              <Derived>52</Derived> samples per second.
+            </li>
+            <li>
+              <strong>ml.g6e.2xlarge, batch size 16.</strong> The run processed 320,000 samples in 4.0 hours, about{' '}
+              <Derived>22</Derived> samples per second.{' '}
+              <Cite id="F09-82">AWS post, timing table</Cite>
+            </li>
+          </ul>
+          <Box variant="p">
+            Counted by steps, the g6e run looks <Derived>4.0 / 3.4 = 1.2</Derived> times slower. Counted by samples,
+            it is <Derived>52 / 22 = 2.4</Derived> times slower.
+          </Box>
+          <Box variant="p">
+            Measure the samples per second with your own code, because a published rate can be far from what your
+            run achieves. NVIDIA lists 131.33 samples per second for GR00T N1.7 on an RTX Pro 6000 Blackwell. That
+            is <Derived>2.5</Derived> times the 52 samples per second of AWS&apos;s LeRobot run on the g7e, whose GPU
+            is the RTX PRO 6000 Blackwell Server Edition. The two figures come from different training code.{' '}
             <Cite id="F02-42">Isaac-GR00T README, training throughput</Cite>{' '}
             <Cite id="F08-53">AWS announcement of G7e instances</Cite>{' '}
-            <Cite id="F09-82">AWS post, timing table</Cite> A plan built on the vendor&apos;s rate would
-            have been off by that factor.
+            <Cite id="F09-82">AWS post, timing table</Cite> A plan based on NVIDIA&apos;s rate would have been off
+            by that factor of <Derived>2.5</Derived>.
           </Box>
           <Box variant="p">
-            The width is the GPU-hours divided by the wall-clock you accept. Data-parallel training spreads the work:
-            each GPU keeps a copy of the model, works through its own share of every batch, and the copies combine
-            their gradients into one update per step. Each update therefore sees the per-GPU batch times the number of
-            GPUs, and widening a run changes that batch unless the per-GPU batch shrinks to match. SmolVLA&apos;s
-            authors pretrained their small VLA on 4 GPUs to fit a batch of 256 and say the model trains easily on
-            one: the width was a choice about the run, not a property of the model.{' '}
-            <Cite id="F02-59">SmolVLA paper, section 4</Cite>
+            To find how many GPUs a job needs, divide its GPU-hours by the wall-clock hours you can wait.
+            Data-parallel training spreads the work over several GPUs. Each GPU keeps a full copy of the model and
+            works through its own share of every batch. At the end of each step, the GPUs combine their gradients
+            into one update. So the batch of one update, called the global batch, is the per-GPU batch times the
+            number of GPUs. If you add GPUs, the global batch grows, unless you shrink the per-GPU batch to match.
+          </Box>
+          <Box variant="p">
+            The number of GPUs is a choice you make for the run, not a property of the model. SmolVLA&apos;s authors
+            pretrained their small VLA on 4 GPUs so that a batch of 256 would fit, and they say that the model trains
+            easily on one GPU. <Cite id="F02-59">SmolVLA paper, section 4</Cite>
           </Box>
         </SpaceBetween>
       </Container>
@@ -303,43 +380,50 @@ export function TrainingScales() {
         header={
           <Header
             variant="h2"
-            description="Place your job among published runs from half a GPU-hour to roughly 50,000, and read its width from its hours and memory rather than from the name of its stage"
+            description="Published robot-model training runs range from half a GPU-hour to roughly 50,000 GPU-hours. You can use them to place your own job, and to judge its number of GPUs from its hours and its memory rather than from the name of its training stage."
           >
-            Published runs span five powers of ten in GPU-hours
+            Published training runs compared in GPU-hours
           </Header>
         }
       >
         <SpaceBetween size="m">
-          <Box variant="p">One axis holds every run, from a 30-minute LoRA to a lab&apos;s pretraining:</Box>
+          <Box variant="p">
+            To compare a 30-minute LoRA fine-tune with a lab&apos;s pretraining run, you can put both on one
+            measure, the GPU-hour:
+          </Box>
           <Formula
             name="GPU-hours"
             tex={String.raw`\begin{aligned} &\text{GPU-hours} = \text{number of GPUs} \\ &\quad \times\ \text{hours of wall-clock time} \end{aligned}`}
           />
           <Box variant="p">
-            The first factor decides whether the job needs a network between servers; the second, how many saves it
-            needs to survive a lost machine.
+            The number of GPUs tells you whether the job needs a network between servers. The number of hours tells
+            you how many checkpoints the job needs to save so that it survives the loss of a machine.
           </Box>
           <Figure
             cites="F02-46 F01-90 F09-82 F02-63 F04-70 F02-28 F02-71 F02-39 F02-34"
             caption={
               <>
-                Each row is one published run, placed by GPU-hours on a log scale, with GPUs x hours and the
-                figure&apos;s owner under its name; the blue point is AWS&apos;s GR00T N1.7 fine-tune. A GPU-hour on an
-                RTX 4090 and one on a GB200 are different amounts of work, so read positions to the nearest power of
-                ten.
+                Each row is one published training run, placed by its GPU-hours on a logarithmic scale. Under the
+                name of each run, the row shows its GPUs x hours and who published the figure. The blue point is
+                AWS&apos;s fine-tune of GR00T N1.7. A GPU-hour on an RTX 4090 and a GPU-hour on a GB200 are different
+                amounts of work, so compare positions only to the nearest power of ten.
               </>
             }
           >
             <GpuHoursChart />
           </Figure>
           <Box variant="p">
-            The name of the stage does not predict the width. Post-training, any training that starts from a
-            pretrained checkpoint (a saved copy of a model&apos;s weights), ran on one GPU in AWS&apos;s N1.7 run.{' '}
-            <Cite id="F09-82">AWS post, timing table</Cite> Meta&apos;s post-training of V-JEPA 2-AC, a model that
-            predicts how a scene changes when the arm acts, built on Meta&apos;s V-JEPA 2 video encoder (section 7,
-            JEPA), used under 62 hours of robot video with the encoder frozen.{' '}
-            <Cite id="F03-1">V-JEPA 2 paper, abstract</Cite> Its released config still asks for 4 nodes of 8 GPUs at
-            8 clips each, a batch of 4 x 8 x 8 = 256.{' '}
+            The name of a training stage does not tell you how many GPUs the stage needs. Post-training is any
+            training that starts from a pretrained checkpoint.
+            AWS&apos;s fine-tune of GR00T N1.7 is post-training, and it ran on one GPU.{' '}
+            <Cite id="F09-82">AWS post, timing table</Cite>
+          </Box>
+          <Box variant="p">
+            Meta&apos;s V-JEPA 2-AC is also post-training, but it is a multi-node job. V-JEPA 2-AC is a model that
+            predicts how a scene changes when the arm acts. Meta built it on its V-JEPA 2 video encoder, which
+            section 7, JEPA, describes. Its post-training used under 62 hours of robot video, with the encoder
+            frozen. <Cite id="F03-1">V-JEPA 2 paper, abstract</Cite> Even so, its released configuration asks for 4
+            nodes of 8 GPUs with 8 clips per GPU, a batch of 4 x 8 x 8 = 256.{' '}
             <Cite id="F03-21">V-JEPA 2 paper and released config, action-conditioned training</Cite>
           </Box>
         </SpaceBetween>
@@ -349,59 +433,78 @@ export function TrainingScales() {
         header={
           <Header
             variant="h2"
-            description="Ask for one GPU whose memory clears the trainable part at your batch, expect hours, and save often enough that a lost Spot instance costs minutes"
+            description="Choose one GPU with enough memory to train your chosen weights at your batch size, and expect the run to take hours. If the job saves a checkpoint often enough, losing a Spot Instance costs only minutes of work."
           >
-            One GPU: hours of work, minutes at risk
+            One GPU: hours of training that can run on Spot Instances
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The fine-tune after a recording session is this size: a pretrained checkpoint, or a small policy from
-            random weights, learns one task from tens of episodes. ACT, the chunking policy of section 4, Learning
-            From Demonstrations, trains all of its roughly 80M parameters from scratch; its authors trained it in
-            about 5 hours on one 11 GB RTX 2080 Ti. <Cite id="F02-9">ACT paper, section IV-C</Cite>
+            The fine-tune that follows a recording session is a one-GPU job. In that job, a model learns one task
+            from tens of episodes. The model either starts from a pretrained checkpoint, or it is a small policy
+            that starts from random weights. ACT (Action Chunking with Transformers) is a policy of the second
+            kind. It predicts a chunk of actions at a time, and
+            section 4, Learning From Demonstrations, explains how it works. ACT trains all of its roughly 80M
+            parameters from scratch. Its authors trained it in about 5 hours on one RTX 2080 Ti with 11 GB of
+            memory. <Cite id="F02-9">ACT paper, section IV-C</Cite>
           </Box>
           <Box variant="p">
-            LeRobot&apos;s hardware guide, for about 50 episodes of 30 s trained for 5 epochs (an epoch is one pass
-            over every frame) at batch 8 for ACT and 4 for pi0, puts ACT at 30 to 60 minutes on one RTX 4090 or 3090
-            and pi0 or pi0.5 at 4 to 8 hours on one A100 with 40 GB. These are indicative figures that real runs miss
-            by up to 50% either way, and at the recorder&apos;s default of 60 s per episode the same 50 episodes are
-            90,000 frames, and by our arithmetic each training time doubles.{' '}
+            LeRobot&apos;s hardware guide gives typical training times for about 50 episodes of 30 seconds each. An
+            epoch is one pass of training over every frame of the dataset. For 5 epochs, at a batch size of 8 for
+            ACT and 4 for pi0, the guide puts ACT at 30 to 60 minutes on one RTX 4090 or RTX 3090. It puts pi0 or
+            pi0.5 at 4 to 8 hours on one A100 with 40 GB. These figures are indicative, and real runs can differ
+            from them by up to 50% in either direction. LeRobot&apos;s recorder defaults to 60 seconds per episode,
+            and at that length the same 50 episodes are 90,000 frames, so each training time doubles.{' '}
             <Cite id="F01-90">LeRobot hardware guide, memory by policy group and common scenarios</Cite>
           </Box>
           <Box variant="p">
-            The GPU reaches those times only if the CPU keeps it fed. LeRobot decodes the episodes&apos; video and
-            augments the images on CPU cores, in dataloader workers (the processes that prepare each batch), so the
-            cores beside the GPU cap the frames per second it trains on.{' '}
-            <Cite id="F05-107">LeRobot decode path and the EC2 CPU table</Cite> One-GPU instance sizes carry from 4
-            vCPUs (EC2&apos;s virtual CPUs) on g6e.xlarge to 64 on g6e.16xlarge, so at this size the core count is
-            chosen with the instance (section 10, Processing and Curating, works out how many workers a batch needs).{' '}
-            <Cite id="F08-57">EC2 accelerated instance table, vCPUs per GPU</Cite>
+            The GPU reaches those times only if the CPU prepares the data fast enough to keep it busy. LeRobot
+            decodes the episodes&apos; video and augments the images on CPU cores. This work runs in dataloader
+            workers, which are the CPU processes that prepare each batch for the GPU. So the CPU cores on the
+            instance limit how many frames per second the GPU can train on.{' '}
+            <Cite id="F05-107">LeRobot decode path and the EC2 CPU table</Cite>
           </Box>
           <Box variant="p">
-            During a run, a checkpoint also means the saved state the run resumes from: for the whole of N1.7, its{' '}
-            <Derived>6.3</Derived> GB of weights plus the optimiser state of what trains. The interval between saves
-            is what a lost machine costs. AWS&apos;s walkthrough of GR00T on AWS Batch saves every 2000 of its 6000
-            steps, on a run that &quot;usually takes up to 2 hours on a g6e.4xlarge instance&quot;, so a machine lost
-            just before a save costs up to a third of the run, at most <Derived>40</Derived> minutes.{' '}
+            EC2 counts processor capacity in vCPUs (virtual CPUs). Instance sizes with one GPU come with between 4
+            vCPUs, on a g6e.xlarge, and 64 vCPUs, on a g6e.16xlarge.{' '}
+            <Cite id="F08-57">EC2 accelerated instance table, vCPUs per GPU</Cite> So when you choose a one-GPU
+            instance size, you also choose its number of CPU cores. Section 10, Processing and Curating, works out
+            how many workers a batch needs.
+          </Box>
+          <Box variant="p">
+            The checkpoint that a run resumes from holds more than the weights. For GR00T N1.7, it holds all{' '}
+            <Derived>6.3</Derived> GB of the model&apos;s weights, plus the optimiser state of the weights that
+            train. If a machine is lost, you lose the work done since the last checkpoint, so the most you can lose
+            is the work of one checkpoint interval.
+          </Box>
+          <Box variant="p">
+            AWS&apos;s walkthrough of GR00T on AWS Batch saves a checkpoint every 2,000 of its 6,000 steps. The run
+            &quot;usually takes up to 2 hours on a g6e.4xlarge instance&quot;. So a machine lost just before a save
+            costs up to a third of the run, which is at most <Derived>40</Derived> minutes.{' '}
             <Cite id="F09-114">AWS embodied AI series, part 1</Cite>
           </Box>
           <Box variant="p">
-            Minutes at risk make Spot usable. AWS Batch&apos;s guidance for Spot is to split or checkpoint work into
-            parts of 30 minutes or less, <Cite id="F09-11">AWS Batch User Guide, Spot best practices</Cite> and at the
-            walkthrough&apos;s 2-hour ceiling a save every <Derived>6000 x 30 / 120 = 1,500</Derived> steps meets it.
+            When only minutes of work are at risk, the job can run on Spot Instances. The AWS Batch guide advises
+            splitting or checkpointing Spot work into parts of 30 minutes or less.{' '}
+            <Cite id="F09-11">AWS Batch User Guide, Spot best practices</Cite> With the walkthrough&apos;s run time
+            of up to 2 hours, a checkpoint every <Derived>6000 x 30 / 120 = 1,500</Derived> steps meets that
+            advice.
           </Box>
           <Box variant="p">
-            AWS&apos;s LeRobot post puts its Training Jobs (SageMaker instances started for one job and shut down when
-            it ends) on Spot with <code>--spot</code>, and passes a priority list of instance types so that the job
-            starts on the first with capacity.{' '}
-            <Cite id="F09-81">AWS post on training VLA models with LeRobot on SageMaker</Cite>{' '}
-            <Cite id="F09-82">AWS post, instance selection</Cite> Underneath, managed Spot training needs{' '}
+            SageMaker Training Jobs start instances for one training job and shut them down when the job ends.
+            AWS&apos;s LeRobot post runs its Training Jobs on Spot Instances with the <code>--spot</code> option. It
+            also passes a priority list of instance types, so that the job starts on the first type that has
+            capacity. <Cite id="F09-81">AWS post on training VLA models with LeRobot on SageMaker</Cite>{' '}
+            <Cite id="F09-82">AWS post, instance selection</Cite>
+          </Box>
+          <Box variant="p">
+            Underneath, this option uses SageMaker&apos;s managed Spot training. Managed Spot training needs{' '}
             <code>EnableManagedSpotTraining</code> and a <code>MaxWaitTimeInSeconds</code> larger than{' '}
-            <code>MaxRuntimeInSeconds</code>. SageMaker copies checkpoints from a local path to S3 and back after an
-            interruption, and the job resumes from the last one. It does not fall back to On-Demand, the regular
-            market, so with no Spot capacity it waits out the maximum, then stops.{' '}
+            <code>MaxRuntimeInSeconds</code>. SageMaker copies checkpoints from a local path to S3, and after an
+            interruption it copies them back, so the job resumes from the last checkpoint. Managed Spot training does
+            not fall back to On-Demand, the purchase option in which AWS does not take the instance back. If no Spot
+            capacity is available, the job waits until the maximum wait time runs out, and then it stops.{' '}
             <Cite id="F10-536">SageMaker Developer Guide, managed Spot training</Cite>
           </Box>
         </SpaceBetween>
@@ -411,71 +514,92 @@ export function TrainingScales() {
         header={
           <Header
             variant="h2"
-            description="Move to eight GPUs when one would take weeks or cannot hold the trainable state, save off the machine, and plan for capacity that may not be there"
+            description="Move to eight GPUs when one GPU would take weeks, or when one GPU cannot hold the weights, gradients and optimiser state. Save checkpoints to storage outside the machine, and plan for times when no eight-GPU instance is available."
           >
-            One node: every lost hour costs eight GPU-hours
+            One node: training on eight GPUs in one server
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            A node is one server, such as an EC2 instance with eight GPUs, and eight in one server is the widest job
-            whose exchange of gradients never leaves the machine. Time sends a job here: pi0-FAST, a 3-billion-parameter
-            VLA, trained for about 4 days on 8 H100 GPUs by its authors&apos; account, 8 x 96 = <Derived>768</Derived> GPU-hours, which on one GPU
-            would be <Derived>768 / 24 = 32</Derived> days.{' '}
-            <Cite id="F02-28">pi0-FAST paper, appendix on DROID training</Cite> The CPU budget is fixed at this size:
-            most eight-GPU sizes carry 24 vCPUs per GPU, 12 physical cores, and the dataloader workers have to keep up
-            within them. <Cite id="F08-57">EC2 accelerated instance table, vCPUs per GPU</Cite>
+            Here, a node means one EC2 instance with eight GPUs. On one node, the exchange of gradients between the
+            eight GPUs never leaves the machine, and eight GPUs is the largest job size for which that is true.
           </Box>
           <Box variant="p">
-            Memory sends a job here too: a trainable state too large for one GPU, as when a VLA&apos;s backbone
-            trains. FSDP (fully sharded data parallel) then splits the weights, gradients and optimiser state across
-            the GPUs in place of a full copy on each; AWS&apos;s example fine-tunes pi0 that way across the eight
-            H100 GPUs of one ml.p5.48xlarge.{' '}
-            <Cite id="F09-83">AWS post on fine-tuning pi0 on SageMaker HyperPod</Cite> openpi&apos;s PyTorch port
-            lacks FSDP and LoRA, which need its JAX code. <Cite id="F02-55">openpi README, PyTorch support</Cite>
+            One reason to move a job to a node is time. The authors of pi0-FAST, a VLA with 3 billion parameters,
+            report that they trained it for about 4 days on 8 H100 GPUs. That is 8 x 96 = <Derived>768</Derived>{' '}
+            GPU-hours, which would take <Derived>768 / 24 = 32</Derived> days on one GPU.{' '}
+            <Cite id="F02-28">pi0-FAST paper, appendix on DROID training</Cite>
           </Box>
           <Box variant="p">
-            A lost node costs the work of all eight GPUs since the last save that survives it. An AWS sample
-            post-trains OpenVLA-OFT, a 7B-parameter VLA, with RL (reinforcement learning: the policy improves from
-            scored attempts in a simulator; section 8, Reinforcement Learning for Robots) on one p5en.48xlarge with 8
-            H200 GPUs, and its measured run trained for 31.6 hours.{' '}
+            At this size, you cannot choose the number of CPU cores separately from the GPUs. Most eight-GPU instance
+            sizes come with 24 vCPUs per GPU, which is 12 physical cores per GPU, and the dataloader workers have to
+            keep the GPUs busy with those cores.{' '}
+            <Cite id="F08-57">EC2 accelerated instance table, vCPUs per GPU</Cite>
+          </Box>
+          <Box variant="p">
+            Another reason is memory. When a VLA&apos;s backbone trains, its weights, gradients and optimiser state
+            can be too large for one GPU. In that case you use FSDP (fully sharded data parallel). FSDP is a form of
+            data-parallel training that splits the weights, gradients and optimiser state across the GPUs, instead
+            of keeping a full copy on each one. AWS&apos;s example fine-tunes pi0 with FSDP across the eight H100
+            GPUs of one ml.p5.48xlarge. <Cite id="F09-83">AWS post on fine-tuning pi0 on SageMaker HyperPod</Cite>{' '}
+            openpi&apos;s PyTorch port does not support FSDP or LoRA, so for those you need its JAX code.{' '}
+            <Cite id="F02-55">openpi README, PyTorch support</Cite>
+          </Box>
+          <Box variant="p">
+            If a node is lost, you lose the work of all eight GPUs since the last checkpoint that survived the loss.
+            So every lost hour on a node costs eight GPU-hours. An AWS sample post-trains OpenVLA-OFT, a VLA with 7
+            billion parameters, with RL (reinforcement learning). In RL, the policy improves from scored attempts,
+            here in a simulator. Section 8, Reinforcement Learning for Robots, covers RL. The sample runs on one
+            p5en.48xlarge with 8 H200 GPUs, and its measured run trained for 31.6 hours.{' '}
             <Cite id="F04-70">AWS sample for robot foundation model simulation, results</Cite>
           </Box>
           <Box variant="p">
-            An earlier run of that sample, on 8 H100 GPUs at about 27 minutes a step, saved at steps 25, 50 and 75,
-            about <Derived>11</Derived> hours apart (<Derived>25 x 27 = 675</Derived> minutes). It hit its 40-hour
-            wall-clock cap at step 83 of 100, and the timeout ended the script before the latest checkpoint was
-            uploaded: the instance terminated with the checkpoints of steps 25, 50 and 75 still on its own disk.{' '}
-            <Cite id="F04-71">AWS sample, earlier run</Cite> None of the three saves had left the machine, so the
-            run kept nothing: about 38 hours of training on eight GPUs, <Derived>8 x 38 = 304</Derived> GPU-hours
-            (<Derived>8 x 40 = 320</Derived> over the 40 hours the instance ran). A save on the machine&apos;s own
-            disk dies with the machine.
+            An earlier run of the same sample shows why checkpoints have to leave the machine. That run used 8 H100
+            GPUs and took about 27 minutes per step. It saved checkpoints at steps 25, 50 and 75, about{' '}
+            <Derived>11</Derived> hours apart (<Derived>25 x 27 = 675</Derived> minutes). The run hit its 40-hour
+            wall-clock limit at step 83 of 100. The timeout ended the script before the latest checkpoint was
+            uploaded, and the instance terminated with the checkpoints of steps 25, 50 and 75 still on its local
+            disk. <Cite id="F04-71">AWS sample, earlier run</Cite>
           </Box>
           <Box variant="p">
-            For large models the best-practices guide for Amazon EKS (Elastic Kubernetes Service, AWS&apos;s managed
-            Kubernetes) suggests two tiers: fast local saves every 5 to 30 minutes for transient faults, and durable
-            saves hourly for major failures.{' '}
-            <Cite id="F10-535">EKS Best Practices Guide, checkpointing long training jobs</Cite> On SageMaker
-            HyperPod, AWS&apos;s persistent training cluster, the pi0 example keeps data and checkpoints on FSx for
-            Lustre (AWS&apos;s managed Lustre, read by many processes in parallel) with the container image cached,
-            so the next job starts at once, where a SageMaker Training Job has a &quot;~5 min cold start&quot;.{' '}
+            None of the three checkpoints had been copied off the machine, so the run kept nothing. It lost about 38
+            hours of training on eight GPUs, which is <Derived>8 x 38 = 304</Derived> GPU-hours. Counted over all 40
+            hours that the instance ran, the loss was <Derived>8 x 40 = 320</Derived> GPU-hours. A checkpoint on the
+            machine&apos;s local disk is lost together with the machine.
+          </Box>
+          <Box variant="p">
+            Amazon EKS (Elastic Kubernetes Service) is AWS&apos;s managed Kubernetes service. For large models, its
+            best-practices guide suggests two levels of checkpoints. Fast local checkpoints every 5 to 30 minutes
+            recover from transient faults, and durable checkpoints every hour recover from major failures.{' '}
+            <Cite id="F10-535">EKS Best Practices Guide, checkpointing long training jobs</Cite>
+          </Box>
+          <Box variant="p">
+            SageMaker HyperPod is AWS&apos;s persistent training cluster. FSx for Lustre is AWS&apos;s managed Lustre
+            file system, which many processes can read in parallel. AWS&apos;s pi0 example on HyperPod keeps its data
+            and checkpoints on FSx for Lustre and caches the container image, so the next job starts at once. A
+            SageMaker Training Job, by comparison, has a &quot;~5 min cold start&quot;.{' '}
             <Cite id="F09-83">AWS post on fine-tuning pi0 on SageMaker HyperPod</Cite>
           </Box>
           <Box variant="p">
-            Capacity for this size can run out. On one evening, 31 October 2026, no On-Demand 8 x 80 GB instance on
-            the sample&apos;s list was free in three Regions, and the run fell back to Spot, where an interruption
-            costs what a lost node costs. <Cite id="F04-71">AWS sample, capacity and the Spot fallback</Cite>{' '}
-            Capacity Blocks for ML reserve EC2&apos;s P instances (data-centre GPUs such as the H100, H200 and B200)
-            and Trainium for a set window, but none of the G family (GPUs such as the L40S).{' '}
-            <Cite id="F09-91">EC2 User Guide, Capacity Blocks</Cite>
+            Instances of this size are not always available. On the evening of 31 October 2026, none of the
+            On-Demand instances with 8 x 80 GB GPUs on the sample&apos;s list was available in three Regions. The
+            run fell back to Spot Instances, where an interruption costs as much as losing the node.{' '}
+            <Cite id="F04-71">AWS sample, capacity and the Spot fallback</Cite>
           </Box>
           <Box variant="p">
-            Training plans leave out the G family too, so neither a Capacity Block nor a training plan reserves the
-            G instances of the one-GPU size, while both reserve an eight-GPU P node.{' '}
+            To make sure a node is available when you need it, you can reserve it. Capacity Blocks for ML reserve
+            EC2 P instances and Trainium instances for a set period. P instances carry data-centre GPUs such as the
+            H100, H200 and B200. Capacity Blocks do not offer any instance of the G family, which carries GPUs such
+            as the L40S. <Cite id="F09-91">EC2 User Guide, Capacity Blocks</Cite>
+          </Box>
+          <Box variant="p">
+            SageMaker training plans are another way to reserve training capacity, and they leave out the G family
+            too. So neither a Capacity Block nor a training plan can reserve the G instances that one-GPU jobs use,
+            but both can reserve an eight-GPU P node.{' '}
             <Cite id="F09-35">SageMaker training plans, eligible instance types</Cite> Telexistence booked one
-            p6-b200.48xlarge with Capacity Blocks and fine-tuned DreamZero, a 14-billion-parameter model that
-            predicts video and actions, on that single node.{' '}
+            p6-b200.48xlarge with Capacity Blocks and fine-tuned DreamZero on that single node. DreamZero is a model
+            with 14 billion parameters that predicts video and actions.{' '}
             <Cite id="F09-88">AWS post on Telexistence&apos;s DreamZero experiment</Cite>
           </Box>
         </SpaceBetween>
@@ -485,77 +609,100 @@ export function TrainingScales() {
         header={
           <Header
             variant="h2"
-            description="Spread pretraining over hundreds of GPUs to finish in days, and accept what that asks for: a fabric between servers, one zone, recovery that spans nodes, and reserved capacity"
+            description="Pretraining is spread over hundreds of GPUs so that it finishes in days instead of months. That requires a fast network between the servers, all nodes in one Availability Zone, a way to recover when one node fails, and reserved capacity."
           >
-            Many nodes: buying back months with a network
+            Many nodes: pretraining across hundreds of GPUs
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Pretraining leaves the server for time. GR00T N1.7&apos;s 30,720 GPU-hours on one node of eight would be{' '}
-            <Derived>3,840</Derived> hours, about <Derived>160</Derived> days, against the model card&apos;s 120 hours on 256 GB200 GPUs. <Cite id="F02-39">GR00T N1.7 model card, computational load</Cite> The configs show the width
-            multiplying into the batch: Meta&apos;s released pretraining config for one V-JEPA 2 video encoder runs 16
-            nodes of 8 GPUs at 24 clips each, the paper&apos;s batch of 3,072.{' '}
+            Pretraining runs on many servers because one server would take far too long. The pretraining of GR00T
+            N1.7 took 30,720 GPU-hours. On one node of eight GPUs, that would be <Derived>3,840</Derived> hours, about{' '}
+            <Derived>160</Derived> days. The model card reports 120 hours on 256 GB200 GPUs instead.{' '}
+            <Cite id="F02-39">GR00T N1.7 model card, computational load</Cite>
+          </Box>
+          <Box variant="p">
+            As with data-parallel training on one node, more GPUs mean a larger global batch. Meta&apos;s released
+            pretraining configuration for one V-JEPA 2 video encoder runs on 16 nodes of 8 GPUs with 24 clips per
+            GPU. That gives the batch of 3,072 clips reported in the paper.{' '}
             <Cite id="F03-13">V-JEPA 2 released pretraining config</Cite>
           </Box>
           <Box variant="p">
-            From here every step&apos;s exchange of gradients crosses the network between servers, and its size
-            follows what trains. A step that trains all of N1.7&apos;s weights makes a bf16 gradient the size of the
-            weights, <Derived>6.3</Derived> GB. At the 50 Gbps of a g7e.2xlarge, <Derived>6.25</Derived> GB a second,
-            moving it once takes about a second; at the 3,200 Gbps of a p5.48xlarge, about <Derived>16</Derived>{' '}
-            milliseconds. Both are floors: an exchange moves at least one copy, and the eight GPUs of a p5.48xlarge
-            share its 3,200 Gbps. <Cite id="F08-49">EC2 accelerated instance table, network</Cite> The faster link
-            moves the same gradient <Derived>3,200 / 50 = 64</Derived> times sooner; set against the compute time of
-            one step, timed on your own run, that gap says whether a second server pays.
+            With more than one server, every step&apos;s exchange of gradients crosses the network between the
+            servers. The amount of data depends on which weights train. If a step trains all of GR00T N1.7&apos;s
+            weights, the gradient in bf16 is the same size as the weights, <Derived>6.3</Derived> GB. A g7e.2xlarge
+            has 50 Gbps of network bandwidth, which is <Derived>6.25</Derived> GB per second, so moving the gradient
+            once takes about one second. A p5.48xlarge has 3,200 Gbps, so moving it once takes about{' '}
+            <Derived>16</Derived> milliseconds. Both times are minimums, because an exchange moves at least one copy
+            of the gradient, and the eight GPUs of a p5.48xlarge share its 3,200 Gbps.{' '}
+            <Cite id="F08-49">EC2 accelerated instance table, network</Cite>
           </Box>
           <Box variant="p">
-            That traffic runs over EFA (Elastic Fabric Adapter), the EC2 network device for traffic between
-            instances, which bypasses the operating system kernel and uses AWS&apos;s own reliable transport so that
-            many machines can train as one. <Cite id="F08-48">EC2 docs on ENA and EFA</Cite> The small one-GPU sizes
-            do not have it: g6e.4xlarge (20 Gbps) and g7e.2xlarge go without EFA, and p5.48xlarge carries it.{' '}
-            <Cite id="F08-49">EC2 accelerated instance table, network</Cite> The fabric has its own dive (
-            <Link href="../efa/">EFA</Link>), and so does the way a step is split across nodes and what each trained
-            weight costs in bytes (<Link href="../llm-training-systems/">Training at Scale</Link>).
+            The faster network moves the same gradient <Derived>3,200 / 50 = 64</Derived> times sooner. To decide
+            whether a second server pays off, compare that transfer time with the compute time of one step, measured
+            on your own run.
           </Box>
           <Box variant="p">
-            The nodes have to sit close together. EFA traffic cannot cross Availability Zones (separate data-centre
-            groups within an AWS Region), and HyperPod deploys a cluster in one zone by default.{' '}
-            <Cite id="F09-36">SageMaker HyperPod prerequisites</Cite> AWS Batch, which runs such a job as one
-            multi-node parallel job, wants every node of an EFA job in one cluster placement group, which packs
-            instances close together on the network. <Cite id="F09-9">AWS Batch User Guide, EFA</Cite>
+            On AWS, this traffic runs over EFA (Elastic Fabric Adapter). EFA is the EC2 network device for traffic
+            between instances. It bypasses the operating system kernel and uses AWS&apos;s own reliable transport, so
+            that many machines can train as one. <Cite id="F08-48">EC2 docs on ENA and EFA</Cite> The small one-GPU
+            instance sizes do not have EFA: the g6e.4xlarge (20 Gbps) and the g7e.2xlarge have none. The
+            p5.48xlarge has EFA. <Cite id="F08-49">EC2 accelerated instance table, network</Cite> EFA has its own deep dive,{' '}
+            <Link href="../efa/">EFA</Link>. Another deep dive,{' '}
+            <Link href="../llm-training-systems/">Training at Scale</Link>, covers how a step is split across nodes
+            and how many bytes each trained weight costs.
           </Box>
           <Box variant="p">
-            Every step waits on every node, so one lost node stops the step everywhere, and a restart from a
-            checkpoint repeats every node&apos;s work since it. <Cite id="F08-78">workload shape definitions</Cite>{' '}
-            HyperPod&apos;s checkpointless training rebuilds a failed node&apos;s state from its healthy peers instead;
-            AWS reports over 80% less downtime in internal studies on 16 to over 2,000 GPUs, on documented recipes
-            that are language models built on NVIDIA NeMo, NVIDIA&apos;s training framework.{' '}
+            The nodes also have to be close together on the network. An Availability Zone is one of the separate
+            groups of data centres inside an AWS Region. EFA traffic cannot cross from one Availability Zone to
+            another, and HyperPod deploys a cluster in one zone by default.{' '}
+            <Cite id="F09-36">SageMaker HyperPod prerequisites</Cite> AWS Batch runs such a job as one multi-node
+            parallel job. It requires every node of an EFA job to be in one cluster placement group, which is an EC2
+            setting that packs instances close together on the network.{' '}
+            <Cite id="F09-9">AWS Batch User Guide, EFA</Cite>
+          </Box>
+          <Box variant="p">
+            In multi-node training, every step waits for every node. So if one node is lost, the step stops on all
+            nodes, and a restart from a checkpoint repeats the work of every node since that checkpoint.{' '}
+            <Cite id="F08-78">workload type definitions</Cite>
+          </Box>
+          <Box variant="p">
+            HyperPod&apos;s checkpointless training rebuilds the failed node&apos;s training state from its healthy
+            peers instead of restarting from a checkpoint. AWS reports over 80% less downtime in internal studies on
+            16 to over 2,000 GPUs. The documented recipes for this feature are language models built on NVIDIA NeMo,
+            NVIDIA&apos;s training framework.{' '}
             <Cite id="F09-30">AWS News Blog, checkpointless and elastic training on SageMaker HyperPod</Cite>
           </Box>
           <Box variant="p">
-            For PyTorch on HyperPod clusters run by EKS, managed tiered checkpointing keeps checkpoints in the
-            nodes&apos; CPU memory, copies them to adjacent nodes and periodically persists them to durable storage
-            such as S3. <Cite id="F09-31">SageMaker Developer Guide, managed tiered checkpointing</Cite>
+            HyperPod also offers managed tiered checkpointing for PyTorch on clusters that EKS orchestrates. It keeps
+            checkpoints in the nodes&apos; CPU memory, copies them to adjacent nodes, and periodically saves them to
+            durable storage such as S3.{' '}
+            <Cite id="F09-31">SageMaker Developer Guide, managed tiered checkpointing</Cite>
           </Box>
           <Box variant="p">
-            The market narrows. EC2&apos;s guide calls Spot unsuitable for workloads &quot;tightly coupled between
-            instance nodes&quot;, <Cite id="F09-95">EC2 User Guide, Spot best practices</Cite> and Batch multi-node
-            jobs do not run on Spot at all. <Cite id="F09-8">AWS Batch User Guide, multi-node parallel jobs</Cite>{' '}
-            AWS&apos;s high-performance computing (HPC) team did run a tightly coupled simulation on Spot, under the
-            Slurm job scheduler: with checkpoints and three
-            injected interruptions, a job of 3 hours 25 minutes took 14% longer and cost 55% less than On-Demand.{' '}
+            At this size, fewer purchase options fit the job. The EC2 guide lists workloads that are &quot;tightly
+            coupled between instance nodes&quot; as not suitable for Spot.{' '}
+            <Cite id="F09-95">EC2 User Guide, Spot best practices</Cite> AWS Batch does not run multi-node jobs on
+            Spot at all. <Cite id="F09-8">AWS Batch User Guide, multi-node parallel jobs</Cite>
+          </Box>
+          <Box variant="p">
+            AWS&apos;s high-performance computing (HPC) team did run a tightly coupled simulation on Spot Instances,
+            under the Slurm job scheduler. With On-Demand Instances, the simulation took 3 hours 25 minutes. The team
+            then ran it on Spot Instances, saving checkpoints and injecting three interruptions. It reports that the
+            Spot run took 14% longer and cost 55% less than the On-Demand run.{' '}
             <Cite id="F10-58">AWS HPC blog, tightly coupled workloads on Spot</Cite>
           </Box>
           <Box variant="p">
-            Reservations fit the shape: SageMaker training plans reserve P and Trainium instances for 1 to 182 days, up to 64 instances at a time,
-            bookable up to 8 weeks ahead. <Cite id="F09-34">SageMaker training plans guide</Cite>
+            Reserved capacity fits multi-node training. SageMaker training plans reserve P and Trainium instances for
+            1 to 182 days, up to 64 instances at a time, and you can book them up to 8 weeks ahead.{' '}
+            <Cite id="F09-34">SageMaker training plans guide</Cite>
           </Box>
           <Box variant="p">
-            At the top of the scale, NVIDIA reports roughly 50,000 H100 GPU-hours for GR00T N1, on up to 1,024
-            GPUs.{' '}
-            <Cite id="F02-34">GR00T N1 paper, training infrastructure</Cite> A fine-tune on one GPU starts from a
-            checkpoint that carries that compute.
+            At the top of the scale, NVIDIA reports roughly 50,000 H100 GPU-hours for the pretraining of GR00T N1, on
+            up to 1,024 GPUs. <Cite id="F02-34">GR00T N1 paper, training infrastructure</Cite> When you fine-tune a
+            model like this on one GPU, you start from a checkpoint that already carries the result of all that
+            compute.
           </Box>
         </SpaceBetween>
       </Container>
@@ -564,36 +711,58 @@ export function TrainingScales() {
         header={
           <Header
             variant="h2"
-            description="Measure peak memory and samples per second in a short run, set them against the GPU and your deadline, and the size and its market follow"
+            description="Run the job briefly to measure its peak memory and its samples per second. Compare them with the memory of the GPU and with your deadline to find the size of the job and the purchase option that fits it."
           >
-            Size a job before it starts
+            Sizing a job before it starts
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            A short run on the GPU you would rent gives the two numbers a recipe cannot: peak memory at your batch,
-            and samples per second on your code and data. If the peak fits the card, one GPU holds the job. If it
-            does not, the cheaper levers come first: a smaller batch, gradient checkpointing, LoRA or a frozen
-            backbone. Only when no setting fits is the job a node of eight with FSDP.
+            A short test run on the GPU you plan to rent gives you two numbers that a recipe cannot: the peak memory
+            at your batch size, and the samples per second with your code and data. If the peak memory fits on the
+            GPU, one GPU can hold the job. If it does not fit, try the cheaper options first: a smaller batch,
+            gradient checkpointing, LoRA or a frozen backbone. Only when none of these settings fits does the job
+            need a node of eight GPUs with FSDP.
           </Box>
           <Box variant="p">
-            The rate turns a recipe into GPU-hours. LeRobot&apos;s N1.7 example, 20,000 steps at batch 64, is{' '}
-            <Derived>1,280,000</Derived> samples: about <Derived>1.8</Derived> GPU-hours at NVIDIA&apos;s H100 rate of
-            192.57 a second, and about <Derived>6.8</Derived> at the 52 a second AWS measured on the g7e.{' '}
+            The measured rate turns a recipe into GPU-hours. LeRobot&apos;s example for GR00T N1.7 runs 20,000 steps
+            at a batch size of 64, which is <Derived>1,280,000</Derived> samples. At NVIDIA&apos;s H100 rate of
+            192.57 samples per second, that takes about <Derived>1.8</Derived> GPU-hours. At the 52 samples per
+            second that AWS measured on the g7e, it takes about <Derived>6.8</Derived> GPU-hours.{' '}
             <Cite id="F02-81">LeRobot GR00T N1.7 example</Cite>{' '}
             <Cite id="F02-42">Isaac-GR00T README, training throughput</Cite>{' '}
-            <Cite id="F09-82">AWS post, timing table</Cite> Divide by the hours you can wait. A quotient of one is
-            one GPU, up to eight is one node, and anything wider is the size of the labs&apos; pretraining.
+            <Cite id="F09-82">AWS post, timing table</Cite>
           </Box>
           <Box variant="p">
-            The width then sets the job&apos;s shape (section 20, The Fifteen Workloads: how long it runs,
-            whether its parts exchange data, whether it survives an interruption), and with it the save interval and
-            the market: saves every 30 minutes or less and Spot for one GPU, durable saves and
-            a reservation or accepted hours of loss for a node, and as a rule a reservation for many nodes. Section 24,
-            Orchestrating Physical AI on AWS, picks the scheduler for one GPU and for many nodes, and quotes AWS&apos;s one-sentence rule for
-            training jobs. Run the short job first: its samples per
-            second turn a recipe into hours, and the hours into a size.
+            Then divide the GPU-hours by the hours you can wait. The result is the number of GPUs the job needs. If
+            the result is one or less, one GPU can finish the job in time. If the result is up to eight, the job
+            needs one node. If it is more than eight, the job needs many nodes, which is the scale at which labs
+            pretrain their models.
+          </Box>
+          <Box variant="p">
+            Once you know the number of GPUs, you know the job&apos;s workload type: how long it runs, whether its
+            parts exchange data, and whether it survives an interruption. Section 20, The Fifteen Workloads, defines
+            the workload types. The workload type in turn tells you the checkpoint interval and the purchase option:
+          </Box>
+          <ul style={{ margin: 0, paddingLeft: 22 }}>
+            <li>
+              <strong>One GPU.</strong> Save a checkpoint every 30 minutes or less, and run the job on Spot
+              Instances.
+            </li>
+            <li>
+              <strong>One node.</strong> Save durable checkpoints off the machine. Either reserve the capacity or
+              accept that an interruption can cost hours of work.
+            </li>
+            <li>
+              <strong>Many nodes.</strong> As a rule, reserve the capacity.
+            </li>
+          </ul>
+          <Box variant="p">
+            Section 24, Orchestrating Physical AI on AWS, explains which scheduler to use for one-GPU jobs and for
+            many-node jobs, and quotes AWS&apos;s rule for which service runs a training job. Start with the short
+            test run. With its samples per second, you turn a recipe into GPU-hours, and from the GPU-hours and your
+            deadline you get the size of the job.
           </Box>
         </SpaceBetween>
       </Container>
