@@ -20,7 +20,7 @@
  {
   "term": "Abort criteria",
   "expansion": null,
-  "meaning": "A job rule that cancels the queued part of a rollout once a set percentage of executions has failed, counted only after a minimum number of devices has been notified.",
+  "meaning": "A job rule that cancels the queued part of a rollout once a set percentage of executions has failed. The rule counts failures only after a minimum number of devices has been notified.",
   "section": 18
  },
  {
@@ -290,7 +290,7 @@
  {
   "term": "AWS IoT Core",
   "expansion": null,
-  "meaning": "The AWS service that holds the registry of devices and the message broker they connect to.",
+  "meaning": "The AWS service that holds the registry of devices and the message broker that the devices connect to.",
   "section": 18
  },
  {
@@ -368,7 +368,7 @@
  {
   "term": "Basic Ingest",
   "expansion": null,
-  "meaning": "Publishing to a reserved $aws/rules/ topic so that an AWS IoT rule's actions run on the message without the message broker.",
+  "meaning": "A way to publish to a reserved $aws/rules/ topic, so that the actions of an AWS IoT rule run on the message without going through the message broker.",
   "section": 18
  },
  {
@@ -482,7 +482,7 @@
  {
   "term": "Canary",
   "expansion": null,
-  "meaning": "A small set of devices that takes an update before the rest of the fleet.",
+  "meaning": "A small set of devices that receives an update before the rest of the fleet.",
   "section": 18
  },
  {
@@ -608,7 +608,7 @@
  {
   "term": "CNI",
   "expansion": "Container Network Interface",
-  "meaning": "The plugin standard a Kubernetes pod network is built on; the Amazon VPC CNI used in the cloud does not work on hybrid nodes.",
+  "meaning": "The plugin standard that Kubernetes pod networks are built on. The Amazon VPC CNI used in the cloud is not compatible with hybrid nodes.",
   "section": 18
  },
  {
@@ -656,7 +656,7 @@
  {
   "term": "Component store",
   "expansion": null,
-  "meaning": "The disk area where the nucleus keeps component artifacts, 10 GB by default.",
+  "meaning": "The disk area where the nucleus keeps component artifacts. Its limit is 10 GB by default.",
   "section": 18
  },
  {
@@ -806,7 +806,7 @@
  {
   "term": "Core device",
   "expansion": null,
-  "meaning": "A thing that runs the Greengrass software.",
+  "meaning": "A device that runs the Greengrass software.",
   "section": 18
  },
  {
@@ -938,7 +938,7 @@
  {
   "term": "DDIL",
   "expansion": "disconnected, disrupted, intermittent or limited",
-  "meaning": "AWS's label for environments whose network link is unreliable.",
+  "meaning": "AWS's term for environments whose network link is unreliable.",
   "section": 18
  },
  {
@@ -1016,7 +1016,7 @@
  {
   "term": "Deployment",
   "expansion": null,
-  "meaning": "The full list of components a thing or thing group should run; it stands, so a device that reconnects later still receives it.",
+  "meaning": "The full list of components that a thing or a thing group should run. A deployment stays in place, so a device that reconnects later still receives it.",
   "section": 18
  },
  {
@@ -1046,7 +1046,7 @@
  {
   "term": "Digest",
   "expansion": null,
-  "meaning": "A hash of a file's or image's content fixed in advance; a reference by digest names exactly one set of bytes, and a mismatch fails the deployment.",
+  "meaning": "A hash of a file's or an image's content, computed in advance. A reference by digest names exactly one set of bytes, and a mismatch makes the deployment fail.",
   "section": 18
  },
  {
@@ -1064,7 +1064,7 @@
  {
   "term": "Direct Connect",
   "expansion": null,
-  "meaning": "AWS Direct Connect, a private network link to AWS; one of the ways an EKS hybrid node reaches its cluster's VPC.",
+  "meaning": "AWS Direct Connect, a private network link to AWS. It is one of the ways an EKS hybrid node can reach its cluster's VPC.",
   "section": 18
  },
  {
@@ -1232,7 +1232,7 @@
  {
   "term": "EKS Hybrid Nodes",
   "expansion": "Amazon Elastic Kubernetes Service Hybrid Nodes",
-  "meaning": "A feature that joins a machine on your premises to a cloud Kubernetes cluster as a worker node.",
+  "meaning": "A feature that joins a machine on your own premises to a Kubernetes cluster in the cloud as a worker node.",
   "section": 18
  },
  {
@@ -1436,13 +1436,13 @@
  {
   "term": "Fleet indexing",
   "expansion": null,
-  "meaning": "An AWS IoT feature that makes the device registry and the shadows searchable, so one query can find, for example, the arms on a new policy whose reported success rate fell.",
+  "meaning": "An AWS IoT feature that makes the device registry and the shadows searchable. With it, one query can find, for example, the arms on a new policy whose reported success rate fell.",
   "section": 18
  },
  {
   "term": "Fleet provisioning",
   "expansion": null,
-  "meaning": "Onboarding many devices by shipping each with a shared claim certificate that it exchanges for its own on first connection.",
+  "meaning": "A way to onboard many devices. Each device ships with the same shared claim certificate, and it exchanges that certificate for its own on its first connection.",
   "section": 18
  },
  {
@@ -2042,7 +2042,7 @@
  {
   "term": "IPC",
   "expansion": "interprocess communication",
-  "meaning": "The local socket through which a component talks to the nucleus, for example to defer an update; each operation must be granted in an accessControl policy.",
+  "meaning": "The local socket through which a component talks to the nucleus, for example to defer an update. Each operation must be granted in an accessControl policy.",
   "section": 18
  },
  {
@@ -2120,7 +2120,7 @@
  {
   "term": "Job",
   "expansion": null,
-  "meaning": "An AWS IoT remote operation sent to devices; it carries a group deployment and controls its rate, abort rule and timeout.",
+  "meaning": "An AWS IoT remote operation that is sent to many devices. Greengrass sends a group deployment as a job, and the job sets the rollout rate, the abort rule and the timeout.",
   "section": 18
  },
  {
@@ -2138,7 +2138,7 @@
  {
   "term": "Job execution",
   "expansion": null,
-  "meaning": "An AWS IoT job's instance on one device; an abort cancels only executions still QUEUED, never those IN_PROGRESS.",
+  "meaning": "The run of an AWS IoT job on one device. An abort cancels only the executions that are still QUEUED, never those that are IN_PROGRESS.",
   "section": 18
  },
  {
@@ -2342,7 +2342,7 @@
  {
   "term": "LiDAR",
   "expansion": "light detection and ranging",
-  "meaning": "A laser range scanner that measures distance to surrounding surfaces.",
+  "meaning": "A laser scanner that measures the distance to surrounding surfaces.",
   "section": 18
  },
  {
@@ -2600,7 +2600,7 @@
  {
   "term": "MQTT",
   "expansion": "Message Queuing Telemetry Transport",
-  "meaning": "A lightweight protocol in which a device publishes small messages to named topics and subscribers receive them.",
+  "meaning": "A lightweight protocol in which a device publishes small messages to named topics, and subscribers receive them.",
   "section": 18
  },
  {
@@ -2660,7 +2660,7 @@
  {
   "term": "Multipart upload",
   "expansion": null,
-  "meaning": "Sending one S3 object as many parts, so a dropped connection costs one part.",
+  "meaning": "A way to send one S3 object as many parts, so that a dropped connection costs only one part.",
   "section": 18
  },
  {
@@ -3158,7 +3158,7 @@
  {
   "term": "Pod network",
   "expansion": null,
-  "meaning": "The Kubernetes plugin that gives each pod an address; on an EKS hybrid node you install and run it yourself (Cilium or Calico).",
+  "meaning": "The Kubernetes plugin that gives each pod an address. On an EKS hybrid node, you install and run it yourself, using Cilium or Calico.",
   "section": 18
  },
  {
@@ -3644,7 +3644,7 @@
  {
   "term": "Rule",
   "expansion": null,
-  "meaning": "In AWS IoT Core, a query over incoming messages whose actions send the matches to other services, such as an S3 bucket.",
+  "meaning": "In AWS IoT Core, a query over incoming messages. Its actions send the matching messages to other services, such as an S3 bucket.",
   "section": 18
  },
  {
@@ -3788,7 +3788,7 @@
  {
   "term": "Shadow",
   "expansion": null,
-  "meaning": "A small JSON document per thing kept in the cloud, holding desired state, reported state and their difference.",
+  "meaning": "A small JSON document for each thing, kept in the cloud. It holds the desired state, the reported state and the difference between them.",
   "section": 18
  },
  {
@@ -4010,7 +4010,7 @@
  {
   "term": "Staged rollout",
   "expansion": null,
-  "meaning": "In a fleet, the spread of a new policy version across the arms a few at a time, at a rate that grows as arms are notified or succeed, with a rule that cancels the arms still queued once too many fail. Earlier sections use rollout for one run of a policy.",
+  "meaning": "In a fleet, the spread of a new policy version across the arms a few at a time. The rate grows as arms are notified or succeed, and a rule cancels the arms that are still queued once too many fail. Earlier sections use rollout for one run of a policy on one arm.",
   "section": 18
  },
  {
@@ -4124,7 +4124,7 @@
  {
   "term": "Subdeployment",
   "expansion": null,
-  "meaning": "A Greengrass deployment that targets a smaller group of devices inside a parent deployment's group.",
+  "meaning": "A Greengrass deployment that targets a smaller group of devices inside the group of a parent deployment.",
   "section": 18
  },
  {
@@ -4298,13 +4298,13 @@
  {
   "term": "Thing",
   "expansion": null,
-  "meaning": "AWS IoT's record of one device.",
+  "meaning": "The record of one device in AWS IoT.",
   "section": 18
  },
  {
   "term": "Thing group",
   "expansion": null,
-  "meaning": "A named set of things, the target of a fleet deployment.",
+  "meaning": "A named set of things. A deployment to a whole fleet targets a thing group.",
   "section": 18
  },
  {
@@ -4364,7 +4364,7 @@
  {
   "term": "Token exchange service",
   "expansion": null,
-  "meaning": "The Greengrass component that trades the device certificate for short-lived AWS credentials that other components use.",
+  "meaning": "The Greengrass component that exchanges the device certificate for short-lived AWS credentials, which other components then use.",
   "section": 18
  },
  {
