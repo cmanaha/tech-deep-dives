@@ -189,7 +189,7 @@ export function SimToReal() {
             variant="h1"
             description={`Tell which simulator settings a policy has to be trained across and which ones you can measure on the arm, and fit the ${ARM}'s 24 servo parameters from one teleoperated episode (MuJoCo Playground v1.0.1 and MuJoCo 4.0, sources read 2026-11-20)`}
           >
-            14. Sim-to-Real and Real-to-Sim: Widen the Simulator or Measure the Arm
+            14. Sim-to-Real and Real-to-Sim: Making a Policy Trained in Simulation Work on the Real Arm
           </Header>
         }
       >

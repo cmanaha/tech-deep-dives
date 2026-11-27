@@ -22,7 +22,7 @@ export function Augmentation() {
             variant="h1"
             description="Match the method to how the policy fails, and the method sets the GPU: of the instances AWS lists for NVIDIA's simulator, only G7e also holds NVIDIA's video model at 16-bit precision (LeRobot v0.7.0, Isaac Lab v3.0.0 and NVIDIA's Cosmos 3 pages, read 2026-11-20)"
           >
-            11. Augmentation and Synthetic Data: Match the Method to the Failure and the GPU to the Method
+            11. Augmentation and Synthetic Data: Three Ways to Get More Training Data
           </Header>
         }
       >

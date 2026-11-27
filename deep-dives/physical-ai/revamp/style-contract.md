@@ -1,3 +1,7 @@
+> **Retired 2026-11-27.** This contract produced prose built from maxims and coined terms. It is kept for the
+> record only. Write to `docs/standards/plain-technical-english.md`, with `revamp/style/section-1-reference.md`
+> as the model.
+
 # Style contract: Physical AI prose rewrite (2026-11-24)
 
 Every author and reviewer of the rewrite works to this file. It adds to `revamp/authoring-brief.md` (mechanics:

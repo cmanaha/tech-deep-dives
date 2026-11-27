@@ -168,8 +168,9 @@ A section does not have to open with a question and its answer. An analogy is
 allowed when it is the clearest way in, but it is not the default. The default
 is the intuition: what the thing does, and why it is needed here.
 
-The No AI Tells rules in `CLAUDE.md` still apply to every sentence these rules
-add.
+The No AI Tells rules in `CLAUDE.md` and `docs/standards/plain-technical-english.md`
+still apply to every sentence these rules add. Define a term in a sentence of its
+own, not as a chain of glosses after a name.
 
 ## The model of depth: KL divergence
 

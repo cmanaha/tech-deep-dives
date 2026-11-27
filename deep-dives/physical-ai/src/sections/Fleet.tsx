@@ -629,7 +629,7 @@ export function Fleet() {
             variant="h1"
             description="A 6 GB policy will not fit the 2 GB package AWS's device software may carry, and a rollout can be stopped but is not automatically undone: choose the route, the settings and the way back before the first arm updates (read from Greengrass nucleus v2.18.4 and AWS documentation on 2026-11-20, not run on a device)"
           >
-            18. The Fleet: A 6 GB Policy, a 2 GB Package and No Reverse Gear
+            18. The Fleet: Deploying Policies to Many Robots and Collecting Their Data
           </Header>
         }
       >

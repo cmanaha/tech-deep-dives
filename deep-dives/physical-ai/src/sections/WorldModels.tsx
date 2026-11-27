@@ -131,7 +131,7 @@ export function WorldModels() {
             variant="h1"
             description="Tell which kind of world model a job needs from what the job must get back, frames or a decision, and price one imagined future in each kind (sources read 2026-11-20)."
           >
-            6. World Models: Predict Pixels or Predict a Summary
+            6. World Models: Predicting Video Frames or a Compact Summary
           </Header>
         }
       >

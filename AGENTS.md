@@ -220,7 +220,7 @@ Reader-facing prose must read like a careful human wrote it, not like an LLM. Th
 - **Straight quotes only.** Use ' and " in reader text, not curly/smart quotes.
 - **No LLM vocabulary:** delve, tapestry, seamless, robust, leverage (as a verb), boasts, underscores, pivotal, harness, unlock, supercharge, realm, landscape, testament, game-changer, cutting-edge, best-in-class. Say the plain thing.
 - **No rhetorical tics:** "it's worth noting", "in conclusion", "needless to say", the "not just X, but Y" flourish, the three-item triad used only for cadence, or emoji.
-- Write declaratively: short, concrete sentences over hedged or flowery ones.
+- Write plain technical English: complete sentences that each carry their full meaning, the industry's standard terms, and the connecting words that show the reasoning (because, so, based on that). Keep the technical depth and keep the language simple. Banned as AI tells too: maxims and aphorisms, coined vocabulary for things that have a standard name, chains of glosses after a name, fragment labels in place of sentences, headings that are compressed claims. Full rules and examples: `docs/standards/plain-technical-english.md`.
 
 Exempt: code, config, and real CLI output are left verbatim. This applies to every deep dive, and every section gets a final pass to strip these tells before it ships.
 

@@ -433,7 +433,7 @@ export function AwsPcs() {
             variant="h1"
             description="Managed Slurm taken apart object by object, so you can submit one script for a multi-node training job and know what happens between sbatch and the checkpoint on disk (AWS PCS documentation, read 2026-11-20)."
           >
-            26. AWS Parallel Computing Service
+            26. AWS Parallel Computing Service: Managed Slurm for Multi-Node Jobs
           </Header>
         }
       >

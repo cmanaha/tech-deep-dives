@@ -208,7 +208,7 @@ export function Measurements() {
             variant="h1"
             description="Find a program's bottleneck before you trust a speed-up: the large core of a desktop machine beats a robot computer's core 6.5 times on scalar arithmetic, 3.8 times on streaming memory and 2.4 times on a single memory read (our single runs, results read 2026-11-20)"
           >
-            22. Our Measurements: The Speed-Up Depends on the Part That Runs Out First
+            22. Our Measurements: Three Test Programs on Two Edge Computers
           </Header>
         }
       >

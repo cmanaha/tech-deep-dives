@@ -501,13 +501,13 @@ export function Choosing() {
             variant="h1"
             description={`Walk from your workload to a machine, a scheduler and a capacity market, with the source behind each step (AWS documentation, posts and data files read ${READ_ON}; the choices are our reading)`}
           >
-            29. Choosing
+            29. Choosing: From a Workload to an Instance, a Scheduler and a Purchase Option
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            You have a workload in hand and a machine to pick. Section 20, Fifteen Workloads, Five Shapes, named the
+            You have a workload in hand and a machine to pick. Section 20, The Fifteen Workloads, named the
             part of the machine each workload fills first and the properties that give a job its shape. Section 24,
             Orchestrating Physical AI on AWS, introduced the four orchestrators and the ways an instance is bought, and
             sections 25 to 28 took the orchestrators apart one at a time. This section joins them into one map and

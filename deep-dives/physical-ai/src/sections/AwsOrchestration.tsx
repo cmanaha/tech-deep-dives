@@ -534,14 +534,13 @@ export function AwsOrchestration() {
             variant="h1"
             description="See each of the loop's fifteen workloads placed on an AWS scheduler and a capacity market, so you know which of the next four sections is yours (AWS documentation and first-party posts, read 2026-11-20)."
           >
-            24. Orchestrating Physical AI on AWS
+            24. Orchestrating Physical AI on AWS: Which Service Runs Each Workload
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            This section is the map from the robot&apos;s loop to AWS. It builds on section 20, Fifteen Workloads, Five
-            Shapes, which named the jobs the loop is made of and sorted them by how long they run, how tightly their
+            This section is the map from the robot&apos;s loop to AWS. It builds on section 20, The Fifteen Workloads, which named the jobs the loop is made of and sorted them by how long they run, how tightly their
             parts depend on each other and whether they survive an interruption. Here each of those jobs gets a place
             to run.
           </Box>

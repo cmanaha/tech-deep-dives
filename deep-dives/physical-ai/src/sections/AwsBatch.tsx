@@ -464,7 +464,7 @@ export function AwsBatch() {
             variant="h1"
             description="Take one managed queue apart: every object you create, every state a job passes through, and a Spot setup in which a reclaimed machine costs minutes of work (AWS Batch User Guide and API Reference, read 2026-11-20)."
           >
-            25. AWS Batch
+            25. AWS Batch: A Managed Queue for Independent Jobs
           </Header>
         }
       >

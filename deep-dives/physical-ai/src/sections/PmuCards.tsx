@@ -424,7 +424,7 @@ export function PmuCards() {
             variant="h1"
             description="Find the part of a machine a job is waiting on, from four percentages a core's counters give and from the GPU's unit counters, before you pay for more of the wrong part (sources read 2026-11-20)"
           >
-            21. Reading a Machine: Count Where the Cycles Go Before Buying a Faster Part
+            21. Reading a Machine: Using Hardware Counters to Find the Bottleneck
           </Header>
         }
       >

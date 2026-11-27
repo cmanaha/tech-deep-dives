@@ -68,9 +68,7 @@ robotics background**: no control theory, no kinematics, no reinforcement learni
 **Practical sections (9 to 11, 15, 17 to 25)** open by naming the concept section they depend on and do not
 re-teach it. They end on what the reader does next.
 
-Every section: an h1 `Header` whose text is exactly `N. Title` from `revamp/tools/sections.json` with a description
-that states the payoff and ends with the provenance, for example "(sources read 2026-11-20)" or "(LeRobot v0.7.0
-and MuJoCo 4.0.1, read 2026-11-20)". Every h2 `Header` has a description that states the payoff (the reader's
+Every section: an h1 `Header` whose text is exactly `N. Title` from `revamp/tools/sections.json` with a description that states, in one to three plain sentences, what the reader will be able to do. No provenance or access dates in the description; they live in the citations. Every h2 `Header` has a description that states the payoff (the reader's
 moment or result), not the topic. Open with two or three sentences on what the thing is and why it matters. Land
 the section's strongest number at least twice. Demote supporting evidence, catalogues and long derivations into
 `ExpandableSection`. No key-takeaways box, no summary box. Length: 1,200 to 2,500 words of reader text; sections 6
@@ -91,8 +89,8 @@ dive's extension.
 | --- | --- |
 | `(F03-61)` register ID | `<Cite id="F03-61">short source title</Cite>`. Never print a register ID in reader text. |
 | `[vendor claim]`, `[author reported]` | Say whose figure it is in the sentence ("NVIDIA reports", "the authors report"). The `Cite` adds the badge by itself. Never flatten such a figure into plain declarative prose. |
-| `[derived]` | Plain words: "our arithmetic from ...", with the arithmetic visible. If the register has a `[derived]` entry, cite it. |
-| `[our reading]` | Plain words: "our reading of ...", never brackets. |
+| `[derived]` | Show the arithmetic in the sentence; the `Cite` badge ("derived") marks it. If the register has a `[derived]` entry, cite it. |
+| `[our reading]` | Say once, in a plain sentence, that the claim is our own inference; the `Cite` badge ("analysis") marks it. Never "our reading" in the prose. |
 | Tier 0 (our measurement) | Name the machine and software version and say "single run" (or "one run per pass, two passes") every time. |
 | Hedges | Keep their scope. "Not located in this research" never becomes "does not exist". "The lists read on 2026-11-20 name no G-family type" never becomes "cannot be reserved". |
 | UNKNOWN in the register | Does not ship as a fact. |
@@ -153,7 +151,7 @@ text; no curly characters, no `&ldquo;` `&rdquo;` `&lsquo;` `&rsquo;`), and none
 robust, leverage, boasts, underscores, pivotal, harness, unlock, supercharge, realm, landscape, testament,
 game-changer, cutting-edge, best-in-class (any inflection; write "test setup" for "test harness", "sturdy" or
 "holds up" for "robust"). Also avoid: "it's worth noting", "in conclusion", "not just X, but Y", triads for
-cadence, emoji. Short declarative sentences.
+cadence, emoji. Write plain technical English as `docs/standards/plain-technical-english.md` sets out; the section 1 text in `revamp/style/section-1-reference.md` is the model.
 
 Acronyms: at first use in your section give the full form and then say in plain words what the thing is or does
 (for a technique: the challenge it meets and when it is used), even if an earlier section did; one clause is enough

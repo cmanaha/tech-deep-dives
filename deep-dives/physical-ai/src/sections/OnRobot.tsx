@@ -634,7 +634,7 @@ export function OnRobot() {
             variant="h1"
             description="Tell from one measured call whether a policy can drive your arm, and what chunked actions, asynchronous calls and a compiled, quantised engine each buy back (NVIDIA's Isaac-GR00T and TensorRT documentation, LeRobot v0.7.0 and the AWS IoT Greengrass guide, read 2026-11-20)"
           >
-            17. Running on the Robot: Driving the Arm With a Policy Slower Than Its Clock
+            17. Running on the Robot: Controlling the Arm With a Model Slower Than Its Control Loop
           </Header>
         }
       >

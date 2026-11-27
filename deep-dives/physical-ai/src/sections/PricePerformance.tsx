@@ -240,7 +240,7 @@ export function PricePerformance() {
             variant="h1"
             description="Decide whether a faster machine is the better buy for a workload: count a unit of work both machines produce, divide each rate by price or by watts, and hold the slowest policy calls against the robot's deadline (our measurements: single runs on two edge machines; vendor documentation read 2026-11-20)"
           >
-            23. Price-Performance and Latency: When the Faster Machine Is the Better Buy
+            23. Price-Performance and Latency: Comparing Machines on the Same Unit of Work
           </Header>
         }
       >
@@ -317,7 +317,7 @@ export function PricePerformance() {
             <Cite id="F08-30">nvidia-smi documentation, &quot;Utilization&quot;</Cite>
           </Box>
           <Box variant="p">
-            Every workload of section 20, Fifteen Workloads, Five Shapes, has such a unit. For a batch job the faster
+            Every workload of section 20, The Fifteen Workloads, has such a unit. For a batch job the faster
             machine finishes sooner, and the rate is the whole comparison. Three workloads answer to a clock,
             and for them a rate is half the answer. The encoder must keep real time, 1.0 camera-second per second per
             camera, or it falls behind the cameras while the arm moves. The dataloader must keep pace with the GPU,

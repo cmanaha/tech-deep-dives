@@ -27,7 +27,7 @@ export function RobotRl() {
             variant="h1"
             description="Tell what a robot RL run will wait on by asking where its attempts come from: one GPU's simulator throughput, a large model's forward passes, or an arm and a person (MuJoCo Playground 1.0.1, Isaac Lab 3.0 and LeRobot v0.7.0, sources read 2026-11-20)."
           >
-            8. Reinforcement Learning for Robots: Where the Attempts Come From
+            8. Reinforcement Learning for Robots: Training in Simulation and on the Real Arm
           </Header>
         }
       >
@@ -550,8 +550,7 @@ export function RobotRl() {
         <SpaceBetween size="m">
           <Box variant="p">
             The three lanes buy three different machines, because each exhausts a different part first (the
-            parts and shapes in the table are our reading of the cited sources). Section 20, Fifteen Workloads,
-            Five Shapes, sets them beside the other jobs around the arm.{' '}
+            parts and shapes in the table are our reading of the cited sources). Section 20, The Fifteen Workloads, sets them beside the other jobs around the arm.{' '}
             <Cite id="F08-76">the workload table, rows 6 and 7</Cite>{' '}
             <Cite id="F04-81">synthesis of the Playground and LeRobot entries</Cite>
           </Box>

@@ -58,8 +58,8 @@ const kindLabel: Record<CiteKind, string> = {
   'vendor-claim': 'vendor claim',
   'author-reported': 'author reported',
   'our-run': 'single run',
-  derived: 'our arithmetic',
-  'our-reading': 'our reading',
+  derived: 'derived',
+  'our-reading': 'analysis',
   code: 'read from source',
 };
 

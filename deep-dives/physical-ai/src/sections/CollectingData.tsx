@@ -317,7 +317,7 @@ export function CollectingData() {
             variant="h1"
             description="See why an episode's weight is its video, and set the compression at the bench knowing that every later reader of the data pays for it (LeRobot v0.7.0 and one public dataset, read 2026-11-20)"
           >
-            9. Collecting Data: What an Episode Weighs and What It Costs to Record
+            9. Collecting Data: Episode Size and Video Compression
           </Header>
         }
       >

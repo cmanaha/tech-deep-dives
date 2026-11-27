@@ -286,7 +286,7 @@ export function AgentsLoop() {
             variant="h1"
             description="Know what must sit beyond a coding agent's reach before it runs a robot's improvement loop unattended, and why the 99% within eight attempts one agent-run loop reports cannot stand for a first-try rate (ENPIRE paper v2 and repository, AWS documentation, read 2026-11-20)"
           >
-            19. Agents Running the Loop: What the Agent May Touch and Who Grades It
+            19. Agents Running the Loop: What a Coding Agent Can Control and How Its Work Is Checked
           </Header>
         }
       >

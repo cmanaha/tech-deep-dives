@@ -290,7 +290,7 @@ export function HyperPod() {
             variant="h1"
             description="Know every object in a HyperPod cluster, watch one post-training run survive a Spot notice and a failed node, and leave with a configuration to adapt (AWS documentation read 2026-11-20)."
           >
-            27. Amazon SageMaker HyperPod
+            27. Amazon SageMaker HyperPod: A Long-Running Cluster That Recovers From Node Failures
           </Header>
         }
       >

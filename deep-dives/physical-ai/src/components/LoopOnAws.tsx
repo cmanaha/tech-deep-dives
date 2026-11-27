@@ -6,7 +6,7 @@ import { AnimatedFigure } from './Figure';
  * The robot's loop running on real infrastructure: six stages, each drawn as what happens to the
  * arm's data, the part of the machine that stage loads, and the AWS service it runs on.
  *
- * Shared by section 20 (Fifteen Workloads, Five Shapes), which reads the "Loads" row, and section
+ * Shared by section 20 (The Fifteen Workloads), which reads the "Loads" row, and section
  * 24 (Orchestrating Physical AI on AWS), which reads the "Runs on" row. The drawing prints no
  * numbers. The placements are the dive's reading of the registers (register 08 for the machine
  * part, register 09 for the service); the section passes the entries in `cites`.

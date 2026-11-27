@@ -181,7 +181,7 @@ export function PhysicsSimulation() {
             variant="h1"
             description="Count the physics steps in a simulated second, and choose between CPU cores and a GPU batch from the number of scenes a job runs at once (MuJoCo 4.0.1, MuJoCo Playground 1.0 and our own single-run measurements, read 2026-11-20)"
           >
-            12. Physics Simulation: One Scene on a Core, Thousands on a GPU
+            12. Physics Simulation: When to Use CPU Cores and When to Use a GPU
           </Header>
         }
       >

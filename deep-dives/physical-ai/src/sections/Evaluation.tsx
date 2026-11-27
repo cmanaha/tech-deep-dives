@@ -98,7 +98,7 @@ export function Evaluation() {
             variant="h1"
             description="Rank checkpoints by counting successes, put an interval on every count, and work out how many trials a gap needs before the first one runs (LeRobot v0.7.0, sources read 2026-11-20)"
           >
-            16. Evaluation: Counting Successes, and How Many Trials It Takes
+            16. Evaluation: Measuring Success Rates and How Many Trials You Need
           </Header>
         }
       >

@@ -98,7 +98,7 @@ export function LearningFromDemonstrations() {
             variant="h1"
             description="Work out how often a policy runs and what each run costs from two of its settings, and see why copying one action at a time drifts off the task (the ACT, Diffusion Policy, pi0 and FAST papers, LeRobot v0.7.0 and the openpi code, read 2026-11-20)"
           >
-            4. Learning From Demonstrations: Why Copying Drifts and What Fixed It
+            4. Learning From Demonstrations: Why Simple Copying Fails and How Current Policies Fix It
           </Header>
         }
       >
@@ -993,7 +993,7 @@ export function LearningFromDemonstrations() {
           </div>
           <Box variant="p">
             A policy gives the machine two jobs of different shape, training and the call on the arm (section 20,
-            Fifteen Workloads, Five Shapes), and both are matrix arithmetic on a GPU&apos;s tensor cores. Training
+            The Fifteen Workloads), and both are matrix arithmetic on a GPU&apos;s tensor cores. Training
             from scratch is small: ACT&apos;s authors report about 5 hours on one 11 GB RTX 2080 Ti for about 80M
             parameters. That is a single-node job, and the cores that decode the episode video can fill before
             the GPU does (section 10, Processing and Curating). With the same heads inside a large pretrained

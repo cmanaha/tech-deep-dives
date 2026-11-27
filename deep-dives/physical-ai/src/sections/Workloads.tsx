@@ -420,7 +420,7 @@ export function Workloads() {
             variant="h1"
             description="See what each of the loop's fifteen workloads does for the arm, which part of the machine it fills first, and the three properties that decide how it is scheduled (EC2 specifications and vendor documentation read 2026-11-20; our own measurements are single runs)"
           >
-            20. Fifteen Workloads, Five Shapes
+            20. The Fifteen Workloads: Bottlenecks and Workload Types
           </Header>
         }
       >

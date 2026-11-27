@@ -78,6 +78,9 @@ State the thing, then the reason.
 The same test applies inside a sentence. Every clause earns its place or comes
 out. "Why more nodes make the fabric better, not worse" says everything in "Why
 more nodes make the fabric better"; the trailing clause is there for rhythm.
+This applies to clauses that exist only for rhythm. A clause that gives the
+reason (because, so, based on that) stays: see
+`docs/standards/plain-technical-english.md`.
 
 Where something genuinely does have a limit or an absence, say what the limit is
 and why it exists, rather than listing what the thing is not.
@@ -104,7 +107,9 @@ them. Nothing is lost, and the eye processes less.
 Name the reader's moment or the result, rather than restating the topic.
 "Device generations" becomes "Which generation you are on, and what branches on
 it". "The reason SRD scales, expressed as arithmetic" tells a reader what they
-get by reading on.
+get by reading on. Write the description in plain words, as one to three full
+sentences, and a heading as the topic named the way a reader would look for it,
+not as a compressed claim.
 
 **9. Repeat the section's strongest number.**
 Good technical writing hammers a single figure. "p99 down a factor of ten" and

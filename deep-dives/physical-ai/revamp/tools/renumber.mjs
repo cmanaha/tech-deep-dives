@@ -23,7 +23,7 @@ export const NEW_SECTIONS = [
   { n: 27, id: 'hyperpod', comp: 'HyperPod', title: 'Amazon SageMaker HyperPod' },
   { n: 28, id: 'eks', comp: 'Eks', title: 'Amazon EKS' },
 ];
-export const RETITLED = { 'aws-orchestration': 'Orchestrating Physical AI on AWS' };
+export const RETITLED = { 'aws-orchestration': 'Orchestrating Physical AI on AWS: Which Service Runs Each Workload' };
 export const REF = /\b([Ss]ections?)\s+(\d+(?:(?:\s*,\s*and\s+|\s*,\s*|\s+to\s+|\s+and\s+)\d+)*)/g;
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

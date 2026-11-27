@@ -230,7 +230,7 @@ export function GettingStarted() {
             variant="h1"
             description="Size the robot's computer by its slowest call, the data pipeline by its video, and the training instance by the part that fills first (LeRobot v0.7.0 and Isaac-GR00T, read 2026-11-20)"
           >
-            2. Getting Started: What Changes When the Model Drives a Robot
+            2. Getting Started: The Key Ideas and Where to Begin
           </Header>
         }
       >

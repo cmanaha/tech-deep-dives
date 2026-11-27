@@ -180,7 +180,7 @@ export function Rendering() {
             variant="h1"
             description="Tell from the renderer a simulator uses whether its cameras can run on a training GPU, and work out how many camera-equipped copies of a scene fit in a card's memory (Isaac Sim 6.2.0, Isaac Lab 3.0 and MuJoCo 4.0.1, sources read 2026-11-20)"
           >
-            13. Rendering and Ray Tracing: Why Simulated Cameras Pick the GPU
+            13. Rendering and Ray Tracing: Why Simulated Cameras Need GPUs With RT Cores
           </Header>
         }
       >
@@ -745,7 +745,7 @@ export function Rendering() {
           </Box>
           <Box variant="p">
             Inside a family, GPU memory picks the size, because memory is the part a simulated camera fills
-            first, ahead of the unit that draws it (section 20, Fifteen Workloads, Five Shapes).{' '}
+            first, ahead of the unit that draws it (section 20, The Fifteen Workloads).{' '}
             <Cite id="F08-76">the workload table</Cite> The Cartpole recipe at 8,192 environments, 57.3 GB, fits the
             96 GB GPU of G7e, the benchmark&apos;s own card, and not the 32 GB GPU of G7. Scaled down by division,
             G7&apos;s GPU, sold as 32 GB, holds about <Derived>32 GB / 7.0 MB = 4,600</Derived> Cartpole

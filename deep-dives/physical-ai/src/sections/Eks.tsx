@@ -508,7 +508,7 @@ export function Eks() {
             variant="h1"
             description="Kubernetes taken apart for GPU batch work, so you know what turns a pending pod into a GPU instance, what makes jobs wait their turn, and what happens in the two minutes after a Spot notice (Karpenter v1.15.3, Kueue v0.20.7 and AWS documentation, read 2026-11-20)."
           >
-            28. Amazon EKS
+            28. Amazon EKS: Running GPU Jobs on Kubernetes
           </Header>
         }
       >

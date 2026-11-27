@@ -544,7 +544,7 @@ export function OneLoop() {
             variant="h1"
             description="Place any job in a robot's learning loop with two questions: which part of the machine it exhausts first, and what work is lost if its machine is taken away (sources read 2026-11-20)."
           >
-            1. One Arm, Fifteen Workloads: What Each One Runs On
+            1. Fifteen Computing Jobs Behind One Robot Arm: Where Each One Should Run
           </Header>
         }
       >
@@ -842,8 +842,7 @@ export function OneLoop() {
             For a job that is none of the fifteen, make the count. Write down what one unit of work reads or
             computes, multiply by units per second, and set the result against what the part supplies. Two numbers,
             25.2 MB per pass and 11.71 GB/s from the core, gave the six-matrix program its ceiling before it ran,
-            and the run reached <Derived>84</Derived>% of it (section <span data-num="nav">20</span>, Fifteen
-            Workloads, Five Shapes, names the part for every row with the figure behind it, and section{' '}
+            and the run reached <Derived>84</Derived>% of it (section <span data-num="nav">20</span>, The Fifteen Workloads, names the part for every row with the figure behind it, and section{' '}
             <span data-num="nav">21</span>, Reading a Machine, shows how to confirm a part on the processor&apos;s
             counters). <Cite id="F08-63">the stand-in&apos;s weights against the core&apos;s memory limits</Cite>{' '}
             <Cite id="F08-66">our profiling report, memory streaming row</Cite>
