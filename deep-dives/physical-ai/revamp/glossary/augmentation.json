@@ -2,52 +2,52 @@
  {
   "term": "Augmentation",
   "expansion": null,
-  "meaning": "Making more training examples out of the ones that were recorded."
+  "meaning": "Making more training examples from the examples that were recorded."
  },
  {
   "term": "Image transform",
   "expansion": null,
-  "meaning": "A small random change to a camera frame at training time, such as brightness or a slight rotation, with the recorded actions left alone."
+  "meaning": "A small random change to a camera frame at training time, such as a change in brightness or a slight rotation. The recorded actions stay unchanged."
  },
  {
   "term": "Dataloader",
   "expansion": null,
-  "meaning": "The part of a training program that fetches samples and assembles them into batches for the GPU."
+  "meaning": "The code in a training program that loads samples and assembles them into batches for the GPU."
  },
  {
   "term": "Tensor cores",
   "expansion": null,
-  "meaning": "The part of a GPU that does the matrix arithmetic of neural networks."
+  "meaning": "The units of a GPU that do the matrix arithmetic of neural networks."
  },
  {
   "term": "Rendering",
   "expansion": null,
-  "meaning": "Drawing the image a simulated camera would see."
+  "meaning": "Drawing the image that a simulated camera would see."
  },
  {
   "term": "Parallel environments",
   "expansion": null,
-  "meaning": "Independent copies of one simulated scene that a single GPU steps at the same time."
+  "meaning": "Independent copies of one simulated scene that a single GPU simulates at the same time."
  },
  {
   "term": "Isaac Lab",
   "expansion": null,
-  "meaning": "NVIDIA's robot-learning framework built on its simulator."
+  "meaning": "NVIDIA's framework for robot learning. It runs on Isaac Sim, and since version 3.0 it can also run without it."
  },
  {
   "term": "Isaac Lab Mimic",
   "expansion": null,
-  "meaning": "The Isaac Lab tool that cuts demonstrations into subtasks, fits them to a new scene, replays them and keeps the successes."
+  "meaning": "The replay tool in Isaac Lab. It cuts demonstrations into subtasks, fits them to a new scene, replays them and keeps the ones that succeed."
  },
  {
   "term": "MimicGen",
   "expansion": null,
-  "meaning": "The 2023 system that introduced replaying a few human demonstrations in simulation from new object positions."
+  "meaning": "The system, published in 2023, that introduced replaying a few human demonstrations in simulation from new object positions."
  },
  {
   "term": "SkillGen",
   "expansion": null,
-  "meaning": "The Isaac Lab variant that plans a collision-free motion between skill segments with a GPU motion planner."
+  "meaning": "A variant of the replay tool in Isaac Lab. It uses a GPU motion planner to plan a collision-free motion between skill segments."
  },
  {
   "term": "Yield",
@@ -57,17 +57,17 @@
  {
   "term": "Transfer",
   "expansion": null,
-  "meaning": "A generative workflow that takes a prompt and a control video and writes a new video with the same geometry and a different appearance."
+  "meaning": "A way of using a video model that takes a text prompt and a control video and writes a new video with the same geometry and a different appearance."
  },
  {
   "term": "Control video",
   "expansion": null,
-  "meaning": "A version of an episode reduced to its shapes (edges, depth or a segmentation map) that steers a video generator."
+  "meaning": "A version of an episode reduced to its geometry, such as edges, depth or a segmentation map. A video generator uses it to keep the new video's geometry the same."
  },
  {
   "term": "Cosmos 3",
   "expansion": null,
-  "meaning": "NVIDIA's current family of world models that generate video, in Edge, Nano and Super sizes."
+  "meaning": "NVIDIA's current family of world models that generate video. It comes in three sizes: Edge, Nano and Super."
  },
  {
   "term": "DreamGen",
@@ -87,22 +87,22 @@
  {
   "term": "NIM",
   "expansion": "NVIDIA Inference Microservice",
-  "meaning": "NVIDIA's packaged container that serves a model."
+  "meaning": "A container from NVIDIA that packages a model and serves it."
  },
  {
   "term": "GiB",
   "expansion": "gibibyte",
-  "meaning": "The binary unit of memory, slightly larger than a GB."
+  "meaning": "A binary unit of memory that is slightly larger than a GB."
  },
  {
   "term": "fps",
   "expansion": "frames per second",
-  "meaning": "How many video frames cover one second."
+  "meaning": "The number of video frames in one second of video."
  },
  {
   "term": "Simulated replay",
   "expansion": null,
-  "meaning": "Replaying a few demonstrations recorded in a simulator from new object positions, and keeping the candidates that physics says succeed."
+  "meaning": "Replaying a few demonstrations recorded in a simulator from new object positions, and keeping the candidates that succeed in the physics simulation."
  },
  {
   "term": "Policy",
@@ -112,12 +112,12 @@
  {
   "term": "World model",
   "expansion": null,
-  "meaning": "A network that predicts the next state of the scene; the kind used here generates video."
+  "meaning": "A network that predicts the next state of a scene. The kind used in this section generates video."
  },
  {
   "term": "Pseudo-actions",
   "expansion": null,
-  "meaning": "Action labels inferred from a generated video by a second model, the DreamGen paper's term."
+  "meaning": "Action labels that a second model infers from a generated video. The term comes from the DreamGen paper."
  },
  {
   "term": "TensorRT-LLM",
@@ -132,12 +132,12 @@
  {
   "term": "RT cores",
   "expansion": "ray-tracing cores",
-  "meaning": "A unit some NVIDIA GPUs carry that speeds up the costliest step of ray tracing, finding which triangle a ray hits; the H100 and A100 lack it."
+  "meaning": "Units in some NVIDIA GPUs that speed up the costliest step of ray tracing, which is finding which triangle a ray hits. The H100 and A100 do not have them."
  },
  {
   "term": "Isaac Sim",
   "expansion": null,
-  "meaning": "NVIDIA's simulator application; it draws simulated cameras with a ray tracer that needs RT cores."
+  "meaning": "NVIDIA's simulator application. It draws simulated cameras with a ray tracer that needs RT cores."
  },
  {
   "term": "Ray tracer",
@@ -147,17 +147,17 @@
  {
   "term": "Denoising pass",
   "expansion": null,
-  "meaning": "One run of a generator's network over the whole compressed clip, removing part of the noise; a clip takes many."
+  "meaning": "One run of a generator's network over the whole compressed clip, which removes part of the noise. Generating one clip takes many passes."
  },
  {
   "term": "FP8",
   "expansion": "8-bit floating point",
-  "meaning": "A number format that stores each weight in 8 bits, halving the memory of 16-bit weights."
+  "meaning": "A number format that stores each weight in 8 bits, which halves the memory of 16-bit weights."
  },
  {
   "term": "Latent-action model",
   "expansion": null,
-  "meaning": "The second kind of model the DreamGen paper names for recovering actions from generated video."
+  "meaning": "The second kind of model that the DreamGen paper names for recovering actions from generated video."
  },
  {
   "term": "Episode",
@@ -167,12 +167,12 @@
  {
   "term": "MuJoCo",
   "expansion": null,
-  "meaning": "An open-source physics simulator; the figure's stills come from it."
+  "meaning": "An open-source physics simulator. The still images in this section's figure come from it."
  },
  {
   "term": "Diffusers",
   "expansion": null,
-  "meaning": "A second inference library for generative models, benchmarked by NVIDIA beside its PyTorch path."
+  "meaning": "A second inference library for generative models. NVIDIA benchmarks it alongside its PyTorch scripts."
  },
  {
   "term": "Visual domain gap",
@@ -182,16 +182,16 @@
  {
   "term": "Full attention",
   "expansion": null,
-  "meaning": "A transformer layer in which every position on the grid is compared with every other, so its work grows faster than the number of positions."
+  "meaning": "A transformer layer in which every position on the grid is compared with every other position, so its work grows faster than the number of positions."
  },
  {
   "term": "GPU utilisation",
   "expansion": null,
-  "meaning": "The nvidia-smi figure for the share of time in which at least one kernel was running on the GPU."
+  "meaning": "The figure in nvidia-smi for the share of time in which at least one kernel was running on the GPU."
  },
  {
   "term": "Newton Warp",
   "expansion": null,
-  "meaning": "The lightweight ray tracer in Isaac Lab 3.0's base install, which draws direct lighting only and runs without Isaac Sim."
+  "meaning": "The lightweight ray tracer in the base install of Isaac Lab 3.0. It draws direct lighting only and runs without Isaac Sim."
  }
 ]

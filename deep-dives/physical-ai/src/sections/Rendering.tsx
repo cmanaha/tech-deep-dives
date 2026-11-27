@@ -92,7 +92,7 @@ function CameraCostChart() {
           GPU memory used
         </text>
         <text x="388" y="192" textAnchor="end" {...label} fill={NEUTRAL_INK}>
-          dashed line: the card, 96 GB
+          dashed line: the card&apos;s 96 GB
         </text>
         <text x="12" y="214" {...label}>
           no camera: <tspan fontWeight="bold">0.93 GB</tspan>
@@ -126,6 +126,7 @@ function CameraCostChart() {
   );
 }
 
+
 /* ------------------------------------------------------------------------ */
 /* Diagram 13.2: the shared GPU engines card with a workload selector       */
 /* ------------------------------------------------------------------------ */
@@ -136,20 +137,21 @@ function EnginePicker() {
   const options = GPU_WORKLOADS.map((w) => ({ value: w, label: ENGINES_BY_WORKLOAD[w].label }));
   return (
     <SpaceBetween size="s">
-      <FormField label="Workload to light on the card">
+      <FormField label="Workload to highlight on the card">
         <Select
           selectedOption={options.find((o) => o.value === workload) ?? options[0]}
           onChange={({ detail }) => setWorkload(detail.selectedOption.value as GpuWorkload)}
           options={options}
-          ariaLabel="Workload to light on the card"
+          ariaLabel="Workload to highlight on the card"
         />
       </FormField>
       <Figure
         cites={`F08-36 F08-42 F08-43 ${picked.cites}`}
         caption={
           <>
-            Each row is a separate unit of the same card, and the rows outlined in blue are the ones the selected
-            workload uses. A card can lack a row altogether. Schematic, with no sizes drawn.
+            Each row is a separate unit on the same GPU card. The rows outlined in blue are the units that the
+            selected workload uses. Some cards do not have every unit shown here. The drawing is a schematic and
+            does not show the sizes of the units.
           </>
         }
       >
@@ -158,7 +160,7 @@ function EnginePicker() {
       <Box variant="p">
         <span aria-live="polite">
           <Box variant="strong" display="inline">
-            Why, for {picked.label}:
+            Why these units are used for {picked.label}:
           </Box>{' '}
           {picked.reason}
         </span>
@@ -178,7 +180,7 @@ export function Rendering() {
         header={
           <Header
             variant="h1"
-            description="Tell from the renderer a simulator uses whether its cameras can run on a training GPU, and work out how many camera-equipped copies of a scene fit in a card's memory (Isaac Sim 6.2.0, Isaac Lab 3.0 and MuJoCo 4.0.1, sources read 2026-11-20)"
+            description="To choose a GPU for a simulation job that renders camera images, first find out which renderer draws the images, because some renderers need RT cores that data-centre training GPUs such as the H100 do not have. Then estimate how many copies of the scene, each with its own camera, fit in the GPU's memory. The requirements and benchmark figures are those of Isaac Sim 6.2.0, Isaac Lab 3.0 and MuJoCo 4.0.1."
           >
             13. Rendering and Ray Tracing: Why Simulated Cameras Need GPUs With RT Cores
           </Header>
@@ -186,39 +188,49 @@ export function Rendering() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Training a policy, the model that steers a robot arm, on camera images means the simulator has to draw
-            every image the policy sees. That makes the simulator a renderer as well as a physics engine, and the
-            renderer can rule out the GPU the training job wants. Isaac Sim, NVIDIA&apos;s simulator application, draws
-            its cameras with an RTX renderer. That is a ray tracer: it follows a ray from each pixel into the scene,
-            and it hands the costliest step of that work to RT cores (ray-tracing cores), a unit some GPUs carry
-            and others leave out. <Cite id="F06-60">AWS Machine Learning Blog, Isaac Lab on SageMaker AI</Cite>{' '}
-            <Cite id="F06-57">NVIDIA Developer, ray tracing explainer</Cite> Isaac Sim&apos;s requirements page
-            for version 6.2.0 says: &quot;GPUs without RT Cores (A100, H100) are not supported.&quot;{' '}
+            The model that controls a robot arm is called a policy. When a policy learns from camera images in
+            simulation, the simulator has to draw every image that the policy sees. So the simulator is a renderer
+            as well as a physics engine, and the renderer&apos;s hardware requirements can rule out the GPU that you
+            planned to use for training.
+          </Box>
+          <Box variant="p">
+            Isaac Sim is NVIDIA&apos;s simulator application. It draws its camera images with an RTX renderer, which
+            is a type of ray tracer. A ray tracer follows a ray from each pixel into the scene to find what that
+            pixel shows. An RTX renderer hands the most expensive step of that work to the GPU&apos;s RT cores
+            (ray-tracing cores). RT cores are a hardware unit that some GPUs have and others do not.{' '}
+            <Cite id="F06-60">AWS Machine Learning Blog, Isaac Lab on SageMaker AI</Cite>{' '}
+            <Cite id="F06-57">NVIDIA Developer, ray tracing explainer</Cite> The requirements page for Isaac Sim
+            6.2.0 says: &quot;GPUs without RT Cores (A100, H100) are not supported.&quot;{' '}
             <Cite id="F06-52">Isaac Sim 6.2.0 requirements</Cite>
           </Box>
           <Box variant="p">
-            The A100 and the H100 are data-centre training GPUs, the kind EC2 sells in its P instance families,
-            while GPUs with RT cores sit in its G families. AWS&apos;s compatibility list for Isaac Sim&apos;s
-            renderer, posted on 9 June 2026, marks every P family it names, from P4d to P6e-GB200, as incompatible
-            and four G families as compatible. A job that draws its cameras with Isaac Sim simulates on a G
-            family, whichever family trains the policy.{' '}
-            <Cite id="F06-60">AWS Machine Learning Blog, Isaac Lab on SageMaker AI</Cite> The
-            documented rule reaches as far as Isaac Sim and RTX rendering, so the first question to ask of a
-            simulation job is which renderer draws its cameras.{' '}
+            The A100 and the H100 are data-centre GPUs built for training. EC2 offers GPUs of this kind in its P
+            instance families, and GPUs with RT cores in its G instance families. On 9 June 2026, AWS posted a
+            compatibility list for Isaac Sim&apos;s renderer. The list marks every P family it
+            names, from P4d to P6e-GB200, as incompatible, and four G families as compatible. So if a job draws its
+            cameras with Isaac Sim, its simulation has to run on a G-family instance, whichever family you use to
+            train the policy. <Cite id="F06-60">AWS Machine Learning Blog, Isaac Lab on SageMaker AI</Cite>
+          </Box>
+          <Box variant="p">
+            The documented requirement for RT cores reaches as far as Isaac Sim and RTX renderers. So the first
+            question to ask about a simulation job is which renderer draws its cameras.{' '}
             <Cite id="F06-101">synthesis of the renderer entries</Cite>
           </Box>
           <Box variant="p">
-            The second question is how many cameras, because they size the card. Isaac Lab 3.0, NVIDIA&apos;s
-            robot-learning framework, ships a release benchmark that trains 8,192 copies of Cartpole, a cart
-            balancing a pole, on one GPU. With no camera NVIDIA reports
-            1,023,698 training frames per second, a rate that includes the policy&apos;s updates, in 0.93 GB of GPU
-            memory, about 0.11 MB per copy.{' '}
-            <Cite id="F06-47">Isaac Lab v3.0.0 benchmark file, Cartpole rows</Cite> With one small camera per copy it
-            reports 152,124 frames per second in 57.3 GB, 7.0 MB per copy: throughput falls by a factor of
-            1,023,698 / 152,124 = 6.7 and memory grows by a factor of 57.3 / 0.93 = 62.{' '}
-            <Cite id="F06-48">Isaac Lab v3.0.0 benchmark file, Cartpole-Camera rows</Cite>{' '}
-            <Cite id="F06-102">arithmetic over the Isaac Lab figures</Cite> The camera, more than the physics,
-            decides how many copies a card holds.
+            The second question is how many cameras the job renders, because the memory that the cameras use is
+            what you size the GPU by. Isaac Lab 3.0 is NVIDIA&apos;s robot-learning framework. Its release includes a
+            benchmark that trains 8,192 copies of Cartpole on one GPU. Cartpole is a small standard control task in
+            which a cart balances a pole. Without cameras, NVIDIA reports 1,023,698 training frames per second in
+            0.93 GB of GPU memory, about 0.11 MB per copy.{' '}
+            <Cite id="F06-102">arithmetic over the Isaac Lab figures</Cite> This rate counts simulated frames, and it includes the
+            time spent updating the policy. <Cite id="F06-47">Isaac Lab v3.0.0 benchmark file, Cartpole rows</Cite>
+          </Box>
+          <Box variant="p">
+            With one small camera per copy, NVIDIA reports 152,124 frames per second in 57.3 GB, or 7.0 MB per
+            copy. <Cite id="F06-48">Isaac Lab v3.0.0 benchmark file, Cartpole-Camera rows</Cite> So the camera
+            lowers throughput by a factor of 1,023,698 / 152,124 = 6.7 and raises memory use by a factor of 57.3 /
+            0.93 = 62. <Cite id="F06-102">arithmetic over the Isaac Lab figures</Cite> On this task, the number of
+            copies that fit on one GPU depends more on the cameras than on the physics.
           </Box>
         </SpaceBetween>
       </Container>
@@ -227,33 +239,36 @@ export function Rendering() {
         header={
           <Header
             variant="h2"
-            description="See why a simulator that already knows where the block is must still draw it, at every decision and in every copy of the scene"
+            description="A simulator already holds the position of every object as numbers. A policy that will use cameras on the real arm still has to train on images, so the simulator draws an image for every camera, at every policy step, in every copy of the scene."
           >
-            A policy that will run on cameras has to train on images
+            Why the simulator has to render camera images
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            At the bench the {ARM} is asked to {TASK_STORY}, and its policy finds the block through two cameras
-            (section 3, The Robot as a Computer). In a simulator the physics of section 12, Physics Simulation,
-            already holds the block&apos;s position as numbers. A policy trained on those numbers expects to be
-            handed them at the bench, where the arm has only its cameras to find the block with. So the simulated
-            arm gets a simulated camera, and at every decision the simulator computes the image that camera would
-            see. Computing that image is rendering.
+            On the real arm, the {ARM}&apos;s task is to {TASK_STORY}, and its policy finds the block through the
+            arm&apos;s two cameras (section 3, The Robot as a Computer). In a simulator, the physics engine already
+            holds the block&apos;s position as numbers (section 12, Physics Simulation). A policy trained on those
+            numbers would expect to receive them on the real arm as well. The real arm has no such numbers, only its
+            cameras. So the simulated arm gets a simulated camera, and every time the policy chooses its next
+            action, the simulator computes the image that camera would see. Computing that image is called
+            rendering.
           </Box>
           <Box variant="p">
-            The simulated task that ships for this arm is <code>{SIM_TASK}</code> in MuJoCo Playground,
-            DeepMind&apos;s suite of ready-made robot tasks for MuJoCo, its open-source physics simulator. It runs its policy ten times per simulated second and
-            renders one 64x64 wrist-camera image at each of those steps while the policy learns to {SIM_TASK_PLAIN} ({SIM_TASK_GAP} is not part of the shipped task).{' '}
+            MuJoCo is DeepMind&apos;s open-source physics simulator. MuJoCo Playground is DeepMind&apos;s set of
+            ready-made robot tasks for MuJoCo. The simulated task that ships for this arm is <code>{SIM_TASK}</code> in
+            MuJoCo Playground. In this task, the policy learns to {SIM_TASK_PLAIN}. The shipped task does not
+            include {SIM_TASK_GAP}. The policy runs ten times per simulated second, and at each of those steps the
+            simulator renders one 64x64 image from the wrist camera.{' '}
             <Cite id="F06-27">MuJoCo Playground v1.0.1, SO-101 pick-cube task.py</Cite>{' '}
             <Cite id="F06-61">MuJoCo 4.0.1 docs, rendering</Cite>
           </Box>
           <Box variant="p">
-            One small image per step is light until training multiplies it. Reinforcement learning, which improves a policy from its own
-            attempts (section 8, Reinforcement Learning for Robots), runs thousands of environments side by side on
-            one GPU. An environment is one copy of the scene plus its task (section 12), and every one of them
-            needs its own image at every step.{' '}
+            One small image per step is cheap to render, but training multiplies the number of images.
+            Reinforcement learning improves a policy from its own attempts (section 8, Reinforcement Learning for
+            Robots). To do that, it runs thousands of environments side by side on one GPU. An environment is one
+            copy of the scene together with its task, and every environment needs its own image at every step.{' '}
             <Cite id="F06-47">Isaac Lab v3.0.0 benchmark README</Cite>
           </Box>
         </SpaceBetween>
@@ -263,26 +278,26 @@ export function Rendering() {
         header={
           <Header
             variant="h2"
-            description="Know what each method computes for one pixel, and find the one step of ray tracing, a tree search, whose hardware decides the GPU"
+            description="Rasterisation and ray tracing compute the same image in two different ways. Once you know what each method computes for a pixel, you can see which step of ray tracing decides the hardware that a renderer needs: the search through a tree of boxes for the triangle that each ray hits."
           >
-            Rasterisation starts from the triangles, ray tracing from the pixels
+            How rasterisation and ray tracing form an image
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            A simulator stores every surface as a mesh of triangles, and a renderer turns triangles into pixels.
-            Rasterisation works triangle by triangle. It projects the three corners of a triangle onto the image
-            and fills the pixels between them, and where two triangles land on the same pixel the one nearer the
-            camera wins. That settles what is visible, quickly.{' '}
+            A simulator stores every surface as a mesh, which is a set of triangles. A renderer turns those
+            triangles into pixels. Rasterisation works one triangle at a time. It projects the three corners of a
+            triangle onto the image and fills the pixels between them. Where two triangles land on the same pixel,
+            the renderer keeps the one nearer the camera. This is a fast way to work out what is visible.{' '}
             <Cite id="F06-56">NVIDIA Developer, ray tracing explainer</Cite>
           </Box>
           <Box variant="p">
-            Ray tracing works pixel by pixel. It sends a ray from the camera through the pixel and finds the first
-            surface the ray lands on. From that point it sends more rays. A shadow ray goes toward the light, and
-            if anything blocks it the point is dark. Reflections and light bounced off other surfaces are further
-            rays of the same kind. Shadows and reflections come out physically accurate, and the price is counted
-            in rays: at least one per pixel, and more for every effect.{' '}
+            Ray tracing works one pixel at a time. It sends a ray from the camera through the pixel and finds the
+            first surface that the ray hits. From that point, it sends more rays. A shadow ray goes toward the light,
+            and if something blocks it, the point is in shadow. Reflections, and light that bounces off other
+            surfaces, are computed with more rays of the same kind. The result is physically accurate shadows and
+            reflections. The cost is counted in rays: at least one per pixel, and more for each extra effect.{' '}
             <Cite id="F06-56">NVIDIA Developer, ray tracing explainer</Cite>
           </Box>
           <AnimatedFigure
@@ -292,25 +307,27 @@ export function Rendering() {
             cites="F06-27"
             caption={
               <>
-                Left, the scene the renderer holds. Right, the camera&apos;s image, formed twice from the same
-                triangles. The rasteriser drawn here stops at projecting and filling, so the blue outline, the
-                pixels where a shadow ray was blocked, marks the only pixels where the two images differ.
-                Illustrative, not measured: the geometry is invented.
+                The left side shows the scene that the renderer holds. The right side shows the camera&apos;s image,
+                formed twice from the same triangles: once by rasterising and once by ray tracing. The rasteriser in
+                this drawing only projects and fills triangles. So the only pixels where the two images differ are
+                the ones outlined in blue, where a shadow ray was blocked. The drawing is an illustration with
+                invented geometry, not a measurement.
               </>
             }
           >
             {(step, reduced) => <RenderForm step={step} reduced={reduced} />}
           </AnimatedFigure>
           <Box variant="p">
-            Every ray poses the same question: which triangle does it land on first? A ray tracer avoids testing
-            every triangle by sorting them into a tree of nested boxes, a BVH (bounding-volume hierarchy). A ray
-            that misses a box skips everything inside it, so the tracer walks down only the boxes the ray enters.
-            NVIDIA calls that walk &quot;the most time consuming part of the ray tracing calculations&quot;.{' '}
+            For every ray, the ray tracer has to find the first triangle that the ray hits. To avoid testing every
+            triangle in the scene, it sorts the triangles into a tree of nested boxes called a BVH (bounding-volume
+            hierarchy). If a ray misses a box, it cannot hit anything inside that box, so the tracer walks down only
+            into the boxes that the ray enters. NVIDIA calls this walk &quot;the most time consuming part of the ray
+            tracing calculations&quot;.{' '}
             <Cite id="F06-57">NVIDIA Developer, ray tracing explainer, hardware section</Cite> A rasteriser never
-            performs it. A ray tracer performs it for every ray, and the unit of the GPU it runs on is what
-            separates one renderer&apos;s hardware requirement from another&apos;s.
+            does this walk, and a ray tracer does it for every ray. So the hardware requirements of different
+            renderers differ in which unit of the GPU runs this walk.
           </Box>
-          <ExpandableSection headerText="The arm's scene as a rasteriser draws it: colour, depth and segmentation">
+          <ExpandableSection headerText="The arm's scene drawn by a rasteriser in colour, depth and segmentation">
             <SpaceBetween size="m">
               <Capture
                 file="so101-render-passes.jpg"
@@ -320,9 +337,11 @@ export function Rendering() {
                 alt="One overhead frame of the arm, block and cup shown three ways: in colour, as a depth image and with each body filled in one flat colour."
                 caption={
                   <>
-                    One frame from the overhead camera, drawn three ways by the same renderer: colour, depth (brightness is
-                    distance from the camera) and segmentation (one flat colour per body). A policy trained on camera images
-                    receives the first; the other two come from the same pass over the scene.
+                    This is one frame from the overhead camera, drawn in three ways by the same renderer. The first
+                    image is the colour image. The second is a depth image, in which brightness shows the distance
+                    from the camera. The third is a segmentation image, in which each body is filled with one flat
+                    colour. A policy trained on camera images receives the colour image. The renderer produces the
+                    other two in the same pass over the scene.
                   </>
                 }
                 provenance={MUJOCO_SO101}
@@ -337,28 +356,42 @@ export function Rendering() {
         header={
           <Header
             variant="h2"
-            description="See which unit of a GPU each job loads, so that 'a GPU' stops being one resource when you size a simulation"
+            description="A GPU contains several kinds of processing units, and each job uses only some of them. When you size a simulation, treat each unit as a separate resource, because a GPU can lack a unit that your job needs."
           >
-            One card, several units, and a card can lack one
+            The units inside a GPU and the jobs that use them
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            A GPU is several units on one card, and a job fills the ones it uses while the rest sit idle. Tensor
-            cores multiply matrices, the arithmetic of training and running a neural network. RT cores are hardware
-            built to speed up the BVH walk, and they are the unit an RTX renderer hands the walk to. The general
-            compute cores run every other kind of GPU code: the batched physics of section 12, a network&apos;s code
-            other than its matrix multiplies, and the lighting and shading of a ray tracer. All of them work out of one
-            pool of GPU memory. <Cite id="F08-42">NVIDIA Tensor Cores page and Nsight Compute pipelines</Cite>{' '}
-            <Cite id="F06-100">GPU physics on general compute</Cite>{' '}
+            A GPU card holds several kinds of units. All of them work out of the same pool of GPU memory, but a job
+            keeps busy only the units it uses, while the others sit idle. Three kinds of unit matter for simulation
+            and training.{' '}
             <Cite id="F08-36">Nsight Compute, multiprocessor units</Cite>
           </Box>
+          <ul style={LIST}>
+            <li>
+              <strong>Tensor cores</strong> multiply matrices. Matrix multiplication is the arithmetic that
+              training and running a neural network rely on.{' '}
+              <Cite id="F08-42">NVIDIA Tensor Cores page and Nsight Compute pipelines</Cite>
+            </li>
+            <li>
+              <strong>RT cores</strong> are hardware built to speed up the BVH walk. An RTX renderer hands the walk
+              to them.
+            </li>
+            <li>
+              <strong>General compute cores</strong> run every other kind of GPU code. This includes the batched
+              physics of section 12, Physics Simulation, the parts of a neural network other than its matrix
+              multiplications, and the lighting and shading in a ray tracer.{' '}
+              <Cite id="F06-100">GPU physics on general compute</Cite>
+            </li>
+          </ul>
           <EnginePicker />
           <Box variant="p">
-            Policy training and RTX rendering share the general compute cores and memory and differ in one
-            specialised unit each, so a card designed around the trainer&apos;s tensor cores can ship without the
-            renderer&apos;s RT cores. <Cite id="F06-60">AWS Machine Learning Blog, Isaac Lab on SageMaker AI</Cite>
+            Policy training and RTX rendering both use the general compute cores and GPU memory. Each of them also
+            uses one specialised unit: training uses the tensor cores, and RTX rendering uses the RT cores. So a GPU
+            designed around tensor cores for training can come without RT cores, as the A100 and the H100 do.{' '}
+            <Cite id="F06-60">AWS Machine Learning Blog, Isaac Lab on SageMaker AI</Cite>
           </Box>
         </SpaceBetween>
       </Container>
@@ -367,25 +400,25 @@ export function Rendering() {
         header={
           <Header
             variant="h2"
-            description="Find your simulator's renderer, and read in its vendor's words whether it needs RT cores, the general compute cores or no GPU at all"
+            description="Find out which renderer your simulator uses. The vendor's documentation then tells you whether that renderer needs RT cores, runs on the general compute cores, or can run without a GPU."
           >
-            The RT-core rule follows the renderer
+            Which renderers need RT cores
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            A simulator pairs a physics engine, which steps the scene, with a renderer, which draws it. GPU physics
-            runs on the general compute cores (section 12), so whether a job needs RT cores is mostly a question
-            about its renderer.{' '}
+            A simulator combines two parts. The physics engine moves the scene forward in time, and the renderer
+            draws it. GPU physics runs on the general compute cores (section 12, Physics Simulation). So whether a
+            job needs RT cores depends mostly on its renderer.{' '}
             <Cite id="F06-100">GPU physics on general compute</Cite>
           </Box>
           <Box variant="p">
-            By our reading of the renderers&apos; documentation, the renderers of Isaac Sim, Isaac Lab and MuJoCo
-            fall into three groups by where the BVH walk runs. The
-            rasterisers skip the walk. The ray tracers written as ordinary GPU code, such as those built on Warp,
-            NVIDIA&apos;s compiler from Python to GPU code, run it on the general compute cores. RTX rendering hands
-            it to the RT cores, and it is the only group whose documentation asks for them.{' '}
+            The renderers in Isaac Sim, Isaac Lab and MuJoCo fall into three groups, based on where they run the
+            BVH walk. Rasterisers do not do the walk at all. Warp is NVIDIA&apos;s framework for writing GPU code in
+            Python. Ray tracers written as ordinary GPU code, such as the ones built on Warp, run the walk on the
+            general compute cores. RTX renderers hand the walk to the RT cores, and they are the only group whose
+            documentation asks for RT cores.{' '}
             <Cite id="F06-101">synthesis of the renderer entries</Cite>{' '}
             <Cite id="F06-39">Newton v1.8.0 README</Cite>
           </Box>
@@ -393,35 +426,36 @@ export function Rendering() {
             <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 640 }}>
               <thead>
                 <tr>
-                  <th style={TH}>Way to render</th>
-                  <th style={TH}>Where you meet it</th>
-                  <th style={TH}>What it loads</th>
-                  <th style={TH}>RT cores</th>
+                  <th style={TH}>Rendering method</th>
+                  <th style={TH}>Where it is used</th>
+                  <th style={TH}>Hardware it uses</th>
+                  <th style={TH}>Are RT cores required?</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
                   <td style={TD}>Rasterisation</td>
                   <td style={TD}>MuJoCo&apos;s built-in renderers</td>
-                  <td style={TD}>The GPU&apos;s graphics pipeline, or CPU cores with no GPU at all</td>
+                  <td style={TD}>The GPU&apos;s graphics pipeline, or CPU cores when there is no GPU</td>
                   <td style={TD}>
-                    Not needed. <Cite id="F06-61">MuJoCo 4.0.1 docs, rendering</Cite>
+                    No. <Cite id="F06-61">MuJoCo 4.0.1 docs, rendering</Cite>
                   </td>
                 </tr>
                 <tr>
                   <td style={TD}>Ray tracing written as ordinary GPU code</td>
-                  <td style={TD}>MuJoCo Warp&apos;s batch renderer; the Warp renderer in Newton and Isaac Lab</td>
+                  <td style={TD}>MuJoCo Warp&apos;s batch renderer, and the Warp renderer in Newton and Isaac Lab</td>
                   <td style={TD}>General compute cores and GPU memory</td>
                   <td style={TD}>
-                    Not asked for. <Cite id="F06-24">MuJoCo 4.0.1 docs, batch rendering</Cite>
+                    The documentation does not ask for them.{' '}
+                    <Cite id="F06-24">MuJoCo 4.0.1 docs, batch rendering</Cite>
                   </td>
                 </tr>
                 <tr>
                   <td style={TD}>RTX rendering</td>
                   <td style={TD}>Isaac Sim&apos;s renderer, and the same renderer as a standalone library for Isaac Lab</td>
-                  <td style={TD}>RT cores for the walk; general compute cores and GPU memory for the rest</td>
+                  <td style={TD}>RT cores for the BVH walk; general compute cores and GPU memory for everything else</td>
                   <td style={TD}>
-                    Required. <Cite id="F06-52">Isaac Sim 6.2.0 requirements</Cite>{' '}
+                    Yes. <Cite id="F06-52">Isaac Sim 6.2.0 requirements</Cite>{' '}
                     <Cite id="F08-36">Nsight Compute, multiprocessor units</Cite>
                   </td>
                 </tr>
@@ -429,67 +463,89 @@ export function Rendering() {
             </table>
           </div>
           <Box variant="p">
-            Isaac Sim is the one exception to the renderer rule: it carries the requirement into every job it runs, because the application
-            as a whole is unsupported on a GPU without RT cores.{' '}
-            <Cite id="F06-52">Isaac Sim 6.2.0 requirements</Cite> Isaac Lab 3.0 no longer needs Isaac Sim
-            underneath it, and its install guide separates physics on Newton, its GPU physics engine (section 12),
-            from rendering: &quot;Headless Newton simulation does not require RTX hardware&quot;, and &quot;RTX rendering has its own GPU and driver requirements&quot;. The
-            guide adds a renderer&apos;s requirements &quot;when you need camera images or an interactive
-            view&quot;, so headless here means a run with neither.{' '}
-            <Cite id="F06-51">Isaac Lab v3.0.0 installation guide</Cite> A Newton training run with no camera and
-            no viewer falls outside the rule, and the rule returns the moment an RTX renderer is switched on.
+            Isaac Sim is the one case where the requirement does not depend on the renderer. The whole application
+            is unsupported on a GPU without RT cores, so every job that runs in Isaac Sim needs them.{' '}
+            <Cite id="F06-52">Isaac Sim 6.2.0 requirements</Cite>
           </Box>
           <Box variant="p">
-            Of Isaac Lab 3.0&apos;s three renderers, Newton Warp is a ray tracer built on Warp, and it computes
-            direct lighting only: light that reaches a surface straight from a lamp, with no bounce. The documentation recommends it when
-            &quot;camera throughput and memory matter more than material and lighting fidelity&quot;. The other
-            two are RTX renderers: OVRTX, the same RTX renderer packaged to run without Isaac Sim and the one the
-            documentation recommends, and Isaac RTX, which runs inside Isaac Sim and is labelled legacy.{' '}
-            <Cite id="F06-50">Isaac Lab v3.0.0 docs, renderers</Cite>
+            Isaac Lab 3.0 does not need Isaac Sim. It can run its tasks on Newton, a GPU physics engine (section
+            12, Physics Simulation). Its installation guide treats physics and rendering separately. It says that
+            &quot;Headless Newton simulation does not require RTX hardware&quot;, and that &quot;RTX rendering has
+            its own GPU and driver requirements&quot;. The guide adds the renderer&apos;s requirements only
+            &quot;when you need camera images or an interactive view&quot;. So headless here means a run with no
+            camera images and no interactive view.{' '}
+            <Cite id="F06-51">Isaac Lab v3.0.0 installation guide</Cite> A Newton training run with no camera and no
+            viewer therefore does not need RTX hardware. As soon as you switch on an RTX renderer, the job needs RT
+            cores again.
           </Box>
+          <Box variant="p">Isaac Lab 3.0 offers three renderers:</Box>
+          <ul style={LIST}>
+            <li>
+              <strong>Newton Warp</strong> is a ray tracer built on Warp. It computes only direct lighting. Direct
+              lighting is light that reaches a surface straight from a lamp. Light that first bounces off other
+              surfaces is called indirect light, and Newton Warp does not compute it.
+              The documentation recommends Newton Warp when &quot;camera throughput and memory matter more than
+              material and lighting fidelity&quot;.
+            </li>
+            <li>
+              <strong>OVRTX</strong> is the same RTX renderer as in Isaac Sim, packaged to run without Isaac Sim. It
+              is the renderer that the documentation recommends.
+            </li>
+            <li>
+              <strong>Isaac RTX</strong> runs inside Isaac Sim, and the documentation labels it as legacy.{' '}
+              <Cite id="F06-50">Isaac Lab v3.0.0 docs, renderers</Cite>
+            </li>
+          </ul>
           <Box variant="p">
-            Newton Warp pairs with Newton, with OvPhysX (PhysX as a standalone library) or with Isaac Sim&apos;s
-            PhysX. Paired with Newton, with no Isaac Sim underneath, it leaves the job with no documented RT-core
-            requirement. Every pairing gives up reflections and indirect light.{' '}
+            PhysX is the physics engine inside Isaac Sim. OvPhysX is PhysX packaged as a standalone library. Newton
+            Warp can work with three physics engines: Newton, OvPhysX, or the PhysX inside Isaac Sim. When you
+            combine Newton Warp with Newton and do not run Isaac Sim, the job has no documented requirement for RT
+            cores. With any of the three physics engines, Newton Warp gives up reflections and indirect light.{' '}
             <Cite id="F06-50">Isaac Lab v3.0.0 docs, renderers</Cite>{' '}
             <Cite id="F06-52">Isaac Sim 6.2.0 requirements</Cite>
           </Box>
           <Box variant="p">
-            What that fidelity is worth depends on how the policy is meant to cross to real cameras (section 14,
-            Sim-to-Real and Real-to-Sim). Domain randomisation needs none of it: it varies the rendering so widely
-            that &quot;the real world may appear to the model as just another variation&quot;.{' '}
-            <Cite id="F06-66">Tobin et al., domain randomisation, abstract</Cite> The task that ships for this arm
-            takes that route, varying colours, lighting, camera parameters and per-pixel noise on its 64x64 image.{' '}
-            <Cite id="F06-28">MuJoCo Playground v1.0.1, SO-101 pick-cube task.py</Cite> On a Franka arm, a different
-            robot from the SO-101, the MuJoCo Playground authors report 12 successes in 12 real trials, a small sample, for a pick policy trained on
-            64x64 images from a ray tracer written as GPU code.{' '}
-            <Cite id="F06-34">MuJoCo Playground paper, pick-cube from pixels</Cite>
+            Whether you need reflections and indirect light depends on how you plan to make the policy work with the
+            real cameras (section 14, Sim-to-Real and Real-to-Sim). One method is domain randomisation. It varies
+            the rendering so widely during training that &quot;the real world may appear to the model as just
+            another variation&quot;. <Cite id="F06-66">Tobin et al., domain randomisation, abstract</Cite> This
+            method does not need reflections or indirect light. The task that ships for this arm
+            uses domain randomisation. It varies the colours, the lighting, the camera parameters and per-pixel noise
+            in its 64x64 image. <Cite id="F06-28">MuJoCo Playground v1.0.1, SO-101 pick-cube task.py</Cite>{' '}
+            <Cite id="F06-27">MuJoCo Playground v1.0.1, SO-101 pick-cube task.py</Cite>
           </Box>
           <Box variant="p">
-            RTX earns its RT cores when the images must carry reflections, transparency or indirect light. On
-            speed, the order depends on the comparison and on image size. Isaac Lab 3.0&apos;s documentation reports that in its release benchmarks
-            &quot;Newton Warp has the highest throughput, and OVRTX outperforms Isaac RTX&quot;, and the Isaac Lab
-            authors found a camera that casts its rays with Warp to be faster at low resolutions, and their tiled
-            RTX camera faster at higher ones. <Cite id="F06-50">Isaac Lab v3.0.0 docs, renderers</Cite>{' '}
-            <Cite id="F06-63">Isaac Lab paper, section 4.1.2</Cite> Both comparisons set whole renderers against
-            each other, so neither isolates what the RT cores add. Time the candidates at the image size your
-            policy reads before you choose one.
+            The MuJoCo Playground authors trained a pick policy for a Franka arm, a different robot from the SO-101,
+            on 64x64 images from a ray tracer written as GPU code. They report 12 successes in 12 trials on the real
+            arm, which is a small sample. <Cite id="F06-34">MuJoCo Playground paper, pick-cube from pixels</Cite>
           </Box>
           <Box variant="p">
-            A Warp renderer keeps P-family GPUs open, and one test run decides it. No vendor sentence naming the
-            A100, H100 or B200 as supported for a Warp renderer was located in this research, so run one on a
-            P-family GPU before you commit P capacity to it.{' '}
+            An RTX renderer is the better choice when the images must show reflections, transparency or indirect
+            light. Which renderer is faster depends on what you compare and on the image size. Isaac Lab 3.0&apos;s
+            documentation reports that in its release benchmarks &quot;Newton Warp has the highest throughput, and
+            OVRTX outperforms Isaac RTX&quot;. The authors of the Isaac Lab paper found that a camera that casts its
+            rays with Warp is faster at low resolutions, and that their tiled RTX camera is faster at higher
+            resolutions. <Cite id="F06-50">Isaac Lab v3.0.0 docs, renderers</Cite>{' '}
+            <Cite id="F06-63">Isaac Lab paper, section 4.1.2</Cite> Both comparisons measure whole renderers against
+            each other, so neither shows how much of the difference comes from the RT cores. To choose a renderer,
+            time each candidate at the image size that your policy reads.
+          </Box>
+          <Box variant="p">
+            A Warp renderer may let you run the simulation on P-family GPUs, but you need a test run to confirm it.
+            We found no vendor statement that names the A100, H100 or B200 as supported for a Warp renderer. So
+            before you commit P-family capacity to a Warp renderer, run it once on a P-family GPU.{' '}
             <Cite id="F06-101">synthesis of the renderer entries</Cite>{' '}
             <Cite id="F06-62">MuJoCo docs, MuJoCo Warp chapter, default branch</Cite>
           </Box>
-          <ExpandableSection headerText="Why the Warp path needs no RTX hardware: MuJoCo Warp's two back ends">
+          <ExpandableSection headerText="MuJoCo Warp's two ray-tracing back ends, and why the Warp back end needs no RTX hardware">
             <Box variant="p">
-              MuJoCo Warp, the GPU version of MuJoCo (section 12), ships the same kind of renderer as Newton Warp
-              as its default, <code>backend=&quot;warp&quot;</code>: a ray tracer whose BVH walk is ordinary code on
-              the general compute cores. Its documentation after 4.0.1 adds <code>backend=&quot;optix&quot;</code>,
-              a hardware back end built on NVIDIA&apos;s OptiX ray-tracing library and &quot;available on NVIDIA RTX
-              GPUs&quot;, and when OptiX is unavailable MuJoCo Warp &quot;warns and falls back&quot; to the Warp
-              path. The fallback shows that the Warp path does not depend on RTX hardware.{' '}
+              MuJoCo Warp is the GPU version of MuJoCo (section 12, Physics Simulation). Its default renderer,{' '}
+              <code>backend=&quot;warp&quot;</code>, is the same kind of renderer as Newton Warp: a ray tracer whose
+              BVH walk is ordinary code on the general compute cores. Its documentation after version 4.0.1 adds a
+              second option, <code>backend=&quot;optix&quot;</code>. This is a hardware back end built on OptiX,
+              NVIDIA&apos;s ray-tracing library, and it is &quot;available on NVIDIA RTX GPUs&quot;. When OptiX is
+              unavailable, MuJoCo Warp &quot;warns and falls back&quot; to the Warp back end. This fallback shows
+              that the Warp back end does not depend on RTX hardware.{' '}
               <Cite id="F06-24">MuJoCo 4.0.1 docs, batch rendering</Cite>{' '}
               <Cite id="F06-62">MuJoCo docs, MuJoCo Warp chapter, default branch</Cite>
             </Box>
@@ -501,55 +557,57 @@ export function Rendering() {
         header={
           <Header
             variant="h2"
-            description="Count the rays a training step sends from four settings, and put a time on them from a published benchmark"
+            description="You can count the rays that one training step sends from four settings: the number of environments, the number of cameras in each, and the width and height of the images. A published benchmark then gives a time for that work."
           >
-            A step of 8,192 small cameras is 33.6 million rays
+            Counting the rays in one training step
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            A ray tracer&apos;s work is counted in rays, and the count is a product. A 64x64 image has 64 x 64 =
-            4,096 pixels, so 4,096 rays leave the camera before any shadow ray is sent. A 640x480 frame, the size
-            the arm&apos;s real cameras deliver (section 3), is 307,200 rays, 75 times as many.{' '}
-            <Cite id="F06-24">MuJoCo Warp docs and render benchmark</Cite>
+            The work of a ray tracer grows with the number of rays it sends. A 64x64 image has 64 x 64 = 4,096
+            pixels, so 4,096 rays leave the camera before any shadow ray is sent. The arm&apos;s real cameras deliver
+            640x480 frames (section 3, The Robot as a Computer). A 640x480 frame has 307,200 pixels, 75 times as
+            many. <Cite id="F06-24">MuJoCo Warp docs and render benchmark</Cite>
           </Box>
           <Box variant="p">
-            Training multiplies that by every camera in every environment. With <M>E</M> environments, <M>C</M>{' '}
-            cameras in each, and images <M>W</M> pixels wide and <M>H</M> pixels high, one step sends at least{' '}
-            <M>{String.raw`N_{\text{rays}}`}</M> rays:
+            Training multiplies this count by every camera in every environment. Take <M>E</M> environments,{' '}
+            <M>C</M> cameras in each environment, and images that are <M>W</M> pixels wide and <M>H</M> pixels
+            high. Then one simulation step sends at least <M>{String.raw`N_{\text{rays}}`}</M> camera rays:
           </Box>
           <Formula
             name="Camera rays per simulation step, at one ray per pixel"
             tex={String.raw`N_{\text{rays}} = E \times C \times W \times H`}
           />
           <Box variant="p">
-            The learning algorithm sets <M>E</M>, by how many parallel copies it wants, and the policy sets the
-            rest, by what it has to see. For 8,192 environments with one 64 x 64 camera each, that is 8,192 x 64 x
-            64 = 33.6 million rays per step.{' '}
-            <Cite id="F06-103">Isaac Lab v3.0.0 camera_cfg.py and benchmark README</Cite> No term is cheap to grow:
-            the MuJoCo Warp project says its renderer &quot;scales linearly with resolution and number of
-            cameras&quot;. <Cite id="F06-24">MuJoCo Warp pull request 1113</Cite>
+            You set <M>E</M> when you choose how many parallel copies of the scene the learning algorithm runs. You
+            set <M>C</M>, <M>W</M> and <M>H</M> when you decide what the policy has to see. For 8,192 environments
+            with one 64 x 64 camera each, the formula gives 8,192 x 64 x 64 = 33.6 million rays per step.{' '}
+            <Cite id="F06-103">Isaac Lab v3.0.0 camera_cfg.py and benchmark README</Cite> None of the four terms is
+            cheap to increase. The MuJoCo Warp project says that its renderer &quot;scales linearly with resolution
+            and number of cameras&quot;. <Cite id="F06-24">MuJoCo Warp pull request 1113</Cite>
           </Box>
           <Box variant="p">
-            The same project&apos;s render benchmark puts a time on the product. With 8192 worlds (a world is one
-            copy of the scene, section 12) and one 64x64 camera in each, on an RTX 6000 Ada, it records a render time
-            of 756 per world per frame. Taking that as nanoseconds, the unit its physics rows imply, one batch of
-            images takes 8192 x 756 ns = <Derived>6.2</Derived> ms.
-            Carry the linear scaling to 640x480 and the batch takes <Derived>6.2 ms x 75 = 465 ms</Derived>, close
-            to half a second for every step of the policy (an extrapolation: no published run is behind it).
-            The task that ships for this arm stays at the small end, at 64x64.{' '}
+            The same project&apos;s render benchmark gives a time for this work. MuJoCo calls one copy of the scene
+            a world, where Isaac Lab says environment (section 12, Physics Simulation). The benchmark runs 8192
+            worlds with one 64x64 camera in each, on an RTX 6000 Ada GPU, and records a render time of 756 per world
+            per frame. If that figure is in nanoseconds, which is the unit that the benchmark&apos;s physics rows
+            imply, one batch of images for all the worlds takes 8192 x 756 ns = <Derived>6.2</Derived> ms. If the
+            linear scaling holds up to 640x480 images, the batch would take{' '}
+            <Derived>6.2 ms x 75 = 465 ms</Derived>, close to half a second for every policy step. This is an
+            extrapolation, and no published run measures it. The task that ships for this arm uses the small 64x64
+            size.{' '}
             <Cite id="F06-24">MuJoCo Warp render benchmark and pull request 1113</Cite>{' '}
             <Cite id="F06-27">MuJoCo Playground v1.0.1, SO-101 pick-cube task.py</Cite>
           </Box>
           <Box variant="p">
-            Isaac Lab draws thousands of cameras in one pass by tiled rendering, the job of its{' '}
-            <code>TiledCamera</code> sensor class: each environment&apos;s camera owns one tile of a single large
-            image on the GPU, which is drawn once and then cut apart. The result is
-            already a tensor of shape (environments, height, width, channels) in GPU memory, where the policy reads
-            it with no copy to the CPU. <Cite id="F06-64">Isaac Lab paper, section 2.3</Cite> Every
-            camera&apos;s image sits in GPU memory at the same moment, beside the physics and the policy that
-            reads them.
+            To draw thousands of cameras in one pass, Isaac Lab uses tiled rendering, which its{' '}
+            <code>TiledCamera</code> sensor class performs. Each environment&apos;s camera gets one tile of a single
+            large image on the GPU. The renderer draws the large image once and then cuts it into the separate
+            camera images. The result is already a tensor of shape (environments, height, width, channels) in GPU
+            memory, and the policy reads it there with no copy to the CPU.{' '}
+            <Cite id="F06-64">Isaac Lab paper, section 2.3</Cite> This means that the images from all the cameras
+            are in GPU memory at the same time, together with the physics state and the policy that reads them.
           </Box>
         </SpaceBetween>
       </Container>
@@ -558,19 +616,20 @@ export function Rendering() {
         header={
           <Header
             variant="h2"
-            description="Read what one camera did to published training runs, and how far up the memory ladder each kind of camera takes one environment"
+            description="Published training runs show how much one camera per environment lowers throughput and raises GPU memory use. The memory per environment ranges from kilobytes with no camera to about 2 GB for one full-fidelity camera, and it is the number you size the GPU by."
           >
-            The camera&apos;s memory, more than its speed, sizes the card
+            How cameras change training throughput and GPU memory
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The Cartpole benchmark measures what a camera costs a whole training run, on one RTX PRO 6000 Blackwell
-            Server Edition with 96 GB, a card with RTX in its name running a renderer that is not an RTX renderer.
-            Newton steps the physics, and the Newton Warp renderer draws one 64 x 64 or
-            96 x 96 camera per environment (the benchmark does not record which). The camera divides throughput by 6.7 and multiplies
-            memory by 62: 57.3 GB, more than half the card, against 0.93 GB without it.{' '}
+            The Cartpole benchmark measures the effect of a camera on a whole training run. It ran on one RTX PRO
+            6000 Blackwell Server Edition GPU with 96 GB of memory. The card has RTX in its name, but the renderer in
+            this benchmark is not an RTX renderer. Newton steps the physics, and the Newton Warp renderer draws one
+            camera per environment, at 64 x 64 or 96 x 96 pixels. The benchmark does not record which of the two
+            sizes it used. The camera lowers throughput by a factor of 6.7 and raises memory use by a factor of 62,
+            from 0.93 GB without a camera to 57.3 GB, which is more than half the card.{' '}
             <Cite id="F06-58">NVIDIA product page, RTX PRO 6000 Blackwell Server Edition</Cite>{' '}
             <Cite id="F06-48">Isaac Lab v3.0.0 benchmark file, Cartpole-Camera rows</Cite>{' '}
             <Cite id="F06-104">Isaac Lab v3.0.0 cartpole_common.py and benchmark export</Cite>
@@ -579,89 +638,98 @@ export function Rendering() {
             cites="F06-47 F06-48 F06-58"
             caption={
               <>
-                NVIDIA&apos;s figures for Cartpole with 8,192 environments on one GPU, with the two ratios worked
-                from them. The dashed line is the 96 GB of the card the benchmark ran on.
+                The chart shows NVIDIA&apos;s figures for Cartpole with 8,192 environments on one GPU, and the two
+                ratios calculated from them. The dashed line marks the 96 GB of memory on the card that the
+                benchmark ran on.
               </>
             }
           >
             <CameraCostChart />
           </Figure>
           <Box variant="p">
-            Only part of the throughput factor is the renderer&apos;s. The benchmark&apos;s training figure
-            includes the policy updates, and with a camera the policy being updated reads images.{' '}
-            <Cite id="F06-47">Isaac Lab v3.0.0 benchmark README</Cite> For a camera-based pick task on a Franka
-            arm, the MuJoCo Playground authors report physics at 24% of training time, rendering at 18%, policy
-            inference at 1% and the policy update at 57%, on one RTX 4090.{' '}
-            <Cite id="F06-33">MuJoCo Playground paper, vision time breakdown</Cite> In a split like that one, a
-            renderer twice as fast returns 9% of the training time and leaves the update&apos;s 57% where it was.
+            Only part of the 6.7-fold drop in throughput comes from the renderer.{' '}
+            <Cite id="F06-48">Isaac Lab v3.0.0 benchmark file, Cartpole-Camera rows</Cite> The benchmark&apos;s training
+            figure includes the policy updates, and with a camera, the policy being updated reads images.{' '}
+            <Cite id="F06-47">Isaac Lab v3.0.0 benchmark README</Cite> For a camera-based pick task on a Franka arm,
+            on one RTX 4090, the MuJoCo Playground authors report how the training time splits: physics takes 24%,
+            rendering 18%, policy inference 1% and the policy update 57%.{' '}
+            <Cite id="F06-33">MuJoCo Playground paper, vision time breakdown</Cite> With a split like that, a
+            renderer that is twice as fast saves 9% of the training time. The time spent on the policy update, 57%
+            of the original, does not change.
           </Box>
           <Box variant="p">
-            Heavier physics shrinks the factor. With a Kuka arm and an Allegro hand lifting a cube, 8,192
-            environments and one fixed 64 x 64 camera in each, NVIDIA reports 220,831 training frames per second
-            with no camera and 115,889 with the Newton Warp renderer. That is a factor of 1.9 against
-            Cartpole&apos;s 6.7: contact physics already takes much of each step, so the camera adds less on top.{' '}
+            When the physics is heavier, the camera has a smaller effect on throughput. In one task, a Kuka arm with
+            an Allegro hand lifts a cube, with 8,192 environments and one fixed 64 x 64 camera in each. For this
+            task, NVIDIA reports 220,831 training frames per second with no camera and 115,889 with the Newton Warp
+            renderer. That is a factor of 1.9, compared with 6.7 for Cartpole. The contact physics of this task
+            already takes much of each step, so the camera adds less on top.{' '}
             <Cite id="F06-49">Isaac Lab v3.0.0 benchmark file, Kuka-Allegro rows</Cite>{' '}
             <Cite id="F06-48">Isaac Lab v3.0.0 benchmark file, Cartpole-Camera rows</Cite>{' '}
             <Cite id="F06-103">Isaac Lab v3.0.0 camera_cfg.py</Cite>
           </Box>
           <Box variant="p">
-            The same task shows what choosing RTX costs. On the same Newton physics, the Newton Warp renderer
-            trains at 115,889 frames per second in 13.6 GB and the RTX renderer OVRTX at 97,307 in 18.6 GB:
-            97,307 / 115,889 = <Derived>0.84</Derived> of the throughput, in <Derived>5.0</Derived> GB more
-            memory. The two rows do not draw the same output, and the task&apos;s camera presets show the
-            difference:{' '}
-            <code>rgb64</code> renders plain colour at 64 x 64 for Newton Warp, and{' '}
-            <code>simple_shading_full_mdl64</code> a shaded image at the same size for the RTX renderers. The gap
-            is the renderer and its heavier output together.{' '}
+            The same task also shows the cost of choosing an RTX renderer. Both runs use Newton for the physics. With
+            the Newton Warp renderer, training reaches 115,889 frames per second in 13.6 GB. With the RTX renderer
+            OVRTX, it reaches 97,307 frames per second in 18.6 GB. So OVRTX gives 97,307 / 115,889 ={' '}
+            <Derived>0.84</Derived> of the throughput and uses <Derived>5.0</Derived> GB more memory. The two runs do
+            not produce the same images, and the task&apos;s camera presets show the difference. The preset{' '}
+            <code>rgb64</code> renders plain colour at 64 x 64 for Newton Warp, and the preset{' '}
+            <code>simple_shading_full_mdl64</code> renders a shaded image at the same size for the RTX renderers. So
+            the gap comes from the renderer and its heavier output together.{' '}
             <Cite id="F06-49">Isaac Lab v3.0.0 benchmark file, Kuka-Allegro rows</Cite>{' '}
             <Cite id="F06-103">Isaac Lab v3.0.0 benchmark README</Cite>
           </Box>
           <Box variant="p">
-            Per environment, memory spans about four orders of magnitude, from the physics state alone to one
-            full-fidelity camera:
+            The memory that each environment needs spans about four orders of magnitude, from the physics state
+            alone to one full-fidelity camera:
           </Box>
           <ul style={LIST}>
             <li>
-              No camera: 57 KB to 468 KB per world for the physics state alone, from a humanoid to a cluttered
-              two-arm table in MuJoCo Warp&apos;s benchmarks. A whole Isaac Lab training process with no camera,
-              learner included, takes 0.1 MB to 1.8 MB per environment across its state-only tasks, 0.11 MB for
-              Cartpole.{' '}
+              <strong>No camera.</strong> In MuJoCo Warp&apos;s benchmarks, the physics state alone takes 57 KB to
+              468 KB per world, from a humanoid to a cluttered table with two arms. A whole Isaac Lab training
+              process with no camera takes 0.1 MB to 1.8 MB per environment, across its tasks whose policies read only
+              the physics state, and 0.11 MB for Cartpole. These Isaac Lab figures include the learner. The
+              learner is the component of the training process that updates the policy.{' '}
               <Cite id="F06-22">MuJoCo Warp nightly benchmarks, total_memory</Cite>{' '}
               <Cite id="F06-102">arithmetic over the Isaac Lab figures</Cite>{' '}
               <Cite id="F06-47">Isaac Lab v3.0.0 benchmark file, state-only rows</Cite>
             </li>
             <li>
-              One small camera per environment: 13.6 GB / 8,192 = 1.7 MB on the Kuka lift and 57.3 GB / 8,192 =
-              7.0 MB on Cartpole, both with the Newton Warp renderer, and up to 63.7 GB / 8,192 = 7.8 MB for
-              Cartpole with an RTX renderer. <Cite id="F06-102">arithmetic over the Isaac Lab figures</Cite>{' '}
+              <strong>One small camera per environment.</strong> With the Newton Warp renderer, each environment
+              takes 13.6 GB / 8,192 = 1.7 MB on the Kuka lift task and 57.3 GB / 8,192 = 7.0 MB on Cartpole. With an
+              RTX renderer, Cartpole takes up to 63.7 GB / 8,192 = 7.8 MB per environment.{' '}
+              <Cite id="F06-102">arithmetic over the Isaac Lab figures</Cite>{' '}
               <Cite id="F06-48">Isaac Lab v3.0.0 benchmark file, Cartpole-Camera rows</Cite> MuJoCo Warp&apos;s
               render benchmark falls in the same range: 44.4 GB for its 8192 worlds, about 5.4 MB per world.{' '}
               <Cite id="F06-24">MuJoCo Warp render benchmark</Cite>
             </li>
             <li>
-              One camera at full fidelity: up to about 2 GB. The Isaac Lab authors report that the USD-Camera,
-              their highest-fidelity camera type, runs out of memory beyond 48 cameras on a 96 GB card. 96 GB / 48
-              = 2 GB is a ceiling on each camera&apos;s share, since the card also holds the physics and the
-              learner, the code that updates the policy.{' '}
+              <strong>One camera at full fidelity.</strong> Each camera can take up to about 2 GB. The USD-Camera is
+              the highest-fidelity camera type in the Isaac Lab paper. Its authors report that it runs out of memory
+              beyond 48 cameras on a 96 GB card. So 96 GB / 48 = 2 GB is an upper limit on each camera&apos;s share,
+              because the card also holds the physics and the learner.{' '}
               <Cite id="F06-63">Isaac Lab paper, section 4.1.2</Cite>
             </li>
           </ul>
           <Box variant="p">
-            The camera type is where a run fails outright. Pick the USD-Camera for a batch of thousands and the run
-            ends in an out-of-memory error, while the <code>TiledCamera</code> and the{' '}
-            <code>RayCasterCamera</code>, which casts its rays with Warp, scale &quot;to several thousand
-            environments&quot;. <Cite id="F06-63">Isaac Lab paper, section 4.1.2</Cite>
+            Whether a run fits in memory at all can depend on the camera type you choose. To train with thousands of
+            environments, use the <code>TiledCamera</code> or the <code>RayCasterCamera</code>, which scale &quot;to
+            several thousand environments&quot;. The <code>RayCasterCamera</code> casts its rays with Warp. With the
+            USD-Camera, a run of that size ends with an out-of-memory error.{' '}
+            <Cite id="F06-63">Isaac Lab paper, section 4.1.2</Cite>
           </Box>
           <Box variant="p">
-            The small-camera range is too wide to size a card from, and the pixels do not account for it. One 64
-            x 64 colour frame is 64 x 64 x 3 bytes, about <Derived>12 KB</Derived>. Subtract the Kuka task&apos;s
-            no-camera row, 7.2 GB, from its camera row and the memory that came with the camera is{' '}
-            <Derived>13.6 GB - 7.2 GB = 6.4 GB</Derived>, about <Derived>0.78 MB</Derived> per environment, more
-            than <Derived>60</Derived> times the frame. Image size does not explain the spread between tasks either:
-            even at 96 x 96 the Cartpole image has only 2.25 times the pixels of the Kuka one, while the memory that
-            came with its camera, <Derived>57.3 GB - 0.93 GB = 56.4 GB</Derived>, is about <Derived>9</Derived>{' '}
-            times the Kuka task&apos;s <Derived>6.4 GB</Derived>. NVIDIA&apos;s memory figures are one total per row for the whole training process, learner
-            included, so where the rest of the megabytes sit is not published.{' '}
+            The range for small cameras, 1.7 MB to 7.8 MB per environment, is too wide to size a GPU from, and the
+            image pixels do not explain it. One 64 x 64 colour frame is 64 x 64 x 3 bytes, about{' '}
+            <Derived>12 KB</Derived>. On the Kuka task, the run without a camera uses 7.2 GB and the run with a
+            camera uses 13.6 GB. So the camera adds <Derived>13.6 GB - 7.2 GB = 6.4 GB</Derived>, about{' '}
+            <Derived>0.78 MB</Derived> per environment, which is more than <Derived>60</Derived> times the size of
+            the frame. Image size does not explain the difference between the two tasks either. Even if the
+            Cartpole camera is 96 x 96, its image has only 2.25 times the pixels of the Kuka image. Yet the memory
+            added by the Cartpole camera, <Derived>57.3 GB - 0.93 GB = 56.4 GB</Derived>, is about{' '}
+            <Derived>9</Derived> times the <Derived>6.4 GB</Derived> added on the Kuka task. NVIDIA reports one
+            memory total per run for the whole training process, including the learner. So NVIDIA&apos;s figures do
+            not show where the rest of the memory goes.{' '}
             <Cite id="F06-47">Isaac Lab v3.0.0 benchmark file</Cite>{' '}
             <Cite id="F06-102">arithmetic over the Isaac Lab figures</Cite>{' '}
             <Cite id="F06-104">Isaac Lab v3.0.0 cartpole_common.py and benchmark export</Cite>{' '}
@@ -674,54 +742,60 @@ export function Rendering() {
         header={
           <Header
             variant="h2"
-            description="Turn the renderer you chose into an EC2 family, then let GPU memory decide the size and how many environments fit"
+            description="The renderer you choose tells you which EC2 instance families can run the job. Within a family, you choose the instance size by the GPU memory the job needs, and from that you can estimate how many environments fit on one GPU."
           >
-            The renderer picks the EC2 family, and GPU memory picks the size
+            Choosing the EC2 instance family and size
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            An RTX renderer ties a simulation job to a G family, and the family in turn decides how the capacity
-            can be booked. <Cite id="F08-58">the instance table</Cite> As of 2026-11-20, Capacity Blocks,
-            AWS&apos;s way to reserve a block of GPU instances for a fixed window, cover P types and no G type
-            (section 24, Orchestrating Physical AI on AWS).{' '}
-            <Cite id="F09-91">EC2 User Guide, Capacity Blocks, supported instance types</Cite> A G-family
-            simulation fleet can be held instead with an On-Demand Capacity Reservation, a reservation type that
-            covers G instances (section 29, Choosing).{' '}
+            If you use an RTX renderer, the simulation job has to run on a G-family instance, and that limits how
+            you can reserve the capacity. <Cite id="F08-58">the instance table</Cite> Capacity Blocks for ML let you
+            reserve a block of GPU instances for a fixed period. As of November 2026, they cover P instance types
+            and no G instance type (section 24, Orchestrating Physical AI on AWS).{' '}
+            <Cite id="F09-91">EC2 User Guide, Capacity Blocks, supported instance types</Cite> To reserve capacity
+            for a G-family simulation fleet, you can use an On-Demand Capacity Reservation instead. This reservation
+            type covers G instances (section 29, Choosing).{' '}
             <Cite id="F09-40">EKS best practices, AI/ML compute, reservations</Cite>
+          </Box>
+          <Box variant="p">
+            The table below maps each GPU job in a simulation pipeline to EC2 instance families, based on what the
+            job needs from the GPU.
           </Box>
           <div style={{ overflowX: 'auto' }}>
             <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 640 }}>
               <thead>
                 <tr>
                   <th style={TH}>Job</th>
-                  <th style={TH}>What it needs from the card</th>
-                  <th style={TH}>EC2 family (our mapping)</th>
+                  <th style={TH}>What it needs from the GPU</th>
+                  <th style={TH}>EC2 instance family</th>
                   <th style={TH}>Source</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
                   <td style={TD}>Newton physics batches with no camera</td>
-                  <td style={TD}>General compute cores, little memory</td>
-                  <td style={TD}>G or P: any NVIDIA GPU of the Turing generation or newer (compute capability 7.5)</td>
+                  <td style={TD}>General compute cores and little memory</td>
+                  <td style={TD}>
+                    G or P: any NVIDIA GPU of the Turing generation (compute capability 7.5) or newer
+                  </td>
                   <td style={TD}>
                     <Cite id="F06-51">Isaac Lab v3.0.0 installation guide</Cite>
                   </td>
                 </tr>
                 <tr>
                   <td style={TD}>Cameras drawn by a ray tracer written as GPU code</td>
-                  <td style={TD}>General compute cores, megabytes of memory per environment</td>
-                  <td style={TD}>G; P after one test run there</td>
+                  <td style={TD}>General compute cores and megabytes of memory per environment</td>
+                  <td style={TD}>G; P only after a test run on a P-family GPU</td>
                   <td style={TD}>
                     <Cite id="F06-101">synthesis of the renderer entries</Cite>
                   </td>
                 </tr>
                 <tr>
-                  <td style={TD}>Cameras drawn by an RTX renderer, and Isaac Sim itself</td>
-                  <td style={TD}>RT cores beside the general compute cores, megabytes to gigabytes of memory per camera</td>
-                  <td style={TD}>G only: G5, G6, G6e, G7, G7e</td>
+                  <td style={TD}>Cameras drawn by an RTX renderer, and any job that runs in Isaac Sim</td>
+                  <td style={TD}>RT cores and general compute cores, and megabytes to gigabytes of memory per camera</td>
+                  <td style={TD}>G only: G5, G6, G6e, G7 and G7e</td>
                   <td style={TD}>
                     <Cite id="F06-60">AWS Machine Learning Blog</Cite>{' '}
                     <Cite id="F08-85">price-performance per part</Cite>
@@ -729,8 +803,8 @@ export function Rendering() {
                 </tr>
                 <tr>
                   <td style={TD}>Training the policy on the images</td>
-                  <td style={TD}>Tensor cores, memory for the model</td>
-                  <td style={TD}>G or P, by model size (section 15)</td>
+                  <td style={TD}>Tensor cores, and enough memory to hold the model</td>
+                  <td style={TD}>G or P, depending on the model size (section 15, Training at Three Scales)</td>
                   <td style={TD}>
                     <Cite id="F08-76">the workload table</Cite>
                   </td>
@@ -739,45 +813,53 @@ export function Rendering() {
             </table>
           </div>
           <Box variant="p">
-            AWS&apos;s compatibility list predates G7, which became generally available on 18 June 2026 with &quot;4th Gen RT Cores&quot; on a 32 GB GPU, so G7 belongs
-            with the RTX families. <Cite id="F08-52">AWS What&apos;s New, EC2 G7</Cite>{' '}
+            AWS posted its compatibility list on 9 June 2026, before G7 became generally available on 18 June
+            2026, so the list does not settle G7. G7 has a 32 GB GPU with &quot;4th Gen RT Cores&quot;, so we expect it
+            to run RTX rendering like the listed G families, but AWS has not confirmed it on that list. <Cite id="F08-52">AWS What&apos;s New, EC2 G7</Cite>{' '}
             <Cite id="F08-43">AWS, EC2 G7 product page</Cite>
           </Box>
           <Box variant="p">
-            Inside a family, GPU memory picks the size, because memory is the part a simulated camera fills
-            first, ahead of the unit that draws it (section 20, The Fifteen Workloads).{' '}
-            <Cite id="F08-76">the workload table</Cite> The Cartpole recipe at 8,192 environments, 57.3 GB, fits the
-            96 GB GPU of G7e, the benchmark&apos;s own card, and not the 32 GB GPU of G7. Scaled down by division,
-            G7&apos;s GPU, sold as 32 GB, holds about <Derived>32 GB / 7.0 MB = 4,600</Derived> Cartpole
-            environments and <Derived>32 GB / 1.7 MB = 19,000</Derived> of the Kuka task. A run&apos;s memory is a
-            fixed part plus a cost per environment, and the published rows do not separate the two. Dividing the
-            card by the average per environment charges the fixed part in proportion to the count. Where the card
-            holds less than the run used, as with Cartpole&apos;s 57.3 GB, that charges too little of the fixed part
-            and the estimate is a ceiling. Where it holds more, as with the Kuka task&apos;s 13.6 GB, it charges too
-            much and the estimate is a floor.{' '}
+            Within a family, you choose the instance size by its GPU memory. For a simulated camera, GPU memory is
+            the bottleneck: it runs out before the unit that draws the images does (section 20, The Fifteen
+            Workloads). <Cite id="F08-76">the workload table</Cite> The Cartpole run with 8,192 environments uses
+            57.3 GB.{' '}
+            <Cite id="F06-48">Isaac Lab v3.0.0 benchmark file, Cartpole-Camera rows</Cite> It fits on the 96 GB GPU of G7e, which is the card that the benchmark ran on, but not on the 32
+            GB GPU of G7.{' '}
+            <Cite id="F08-53">AWS What&apos;s New, EC2 G7e</Cite> G7&apos;s GPU is sold as 32 GB. If you divide those 32 GB by the memory per environment,
+            you get about <Derived>32 GB / 7.0 MB = 4,600</Derived> Cartpole environments, or{' '}
+            <Derived>32 GB / 1.7 MB = 19,000</Derived> environments of the Kuka task.
+          </Box>
+          <Box variant="p">
+            Each of these estimates is a bound on how many environments fit. A run&apos;s memory is a fixed part plus a part
+            that grows with each environment, and the published figures do not separate the two. When you divide
+            the card&apos;s memory by the average per environment, you treat the fixed part as if it also grew with
+            the number of environments. If the card is smaller than the run&apos;s memory, as with Cartpole&apos;s
+            57.3 GB, this counts too little of the fixed part, so the estimate is an upper limit. If the card is
+            larger than the run&apos;s memory, as with the Kuka task&apos;s 13.6 GB, this counts too much of the
+            fixed part, so the estimate is a lower limit.{' '}
             <Cite id="F06-48">Isaac Lab v3.0.0 benchmark file, Cartpole-Camera rows</Cite>{' '}
             <Cite id="F06-102">arithmetic over the Isaac Lab figures</Cite>{' '}
             <Cite id="F08-53">AWS What&apos;s New, EC2 G7e</Cite> <Cite id="F08-43">AWS, EC2 G7 product page</Cite>
           </Box>
-          <ExpandableSection headerText="RT cores and memory card by card, AWS's full list, and Isaac Sim's own limits">
+          <ExpandableSection headerText="RT cores and memory for each GPU, AWS's full compatibility list, and Isaac Sim's hardware limits">
             <div style={{ overflowX: 'auto' }}>
               <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 560 }}>
                 <thead>
                   <tr>
                     <th style={TH}>GPU (EC2 family)</th>
-                    <th style={TH}>RT cores on the product page</th>
+                    <th style={TH}>RT cores listed on the product page</th>
                     <th style={TH}>Memory</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr data-claim="F06-58">
-                    <td style={TD}>A10 (G5 carries its AWS variant, the A10G)</td>
+                    <td style={TD}>A10 (G5 has the AWS variant, the A10G)</td>
                     <td style={TD}>72</td>
                     <td style={TD}>24 GB</td>
                   </tr>
                   <tr data-claim="F06-58">
                     <td style={TD}>L4 (G6)</td>
-                    <td style={TD}>&quot;third-generation RT Cores&quot;, no count printed</td>
+                    <td style={TD}>&quot;third-generation RT Cores&quot;, with no count given</td>
                     <td style={TD}>24 GB</td>
                   </tr>
                   <tr data-claim="F06-58">
@@ -787,7 +869,7 @@ export function Rendering() {
                   </tr>
                   <tr data-claim="F08-43">
                     <td style={TD}>RTX PRO 4500 Blackwell Server Edition (G7)</td>
-                    <td style={TD}>&quot;4th Gen RT Cores&quot; on AWS&apos;s G7 page, no count printed</td>
+                    <td style={TD}>&quot;4th Gen RT Cores&quot; on AWS&apos;s G7 page, with no count given</td>
                     <td style={TD}>32 GB</td>
                   </tr>
                   <tr data-claim="F06-58">
@@ -798,7 +880,7 @@ export function Rendering() {
                   <tr data-claim="F06-59">
                     <td style={TD}>H100 (P5) and H200 (P5e, P5en)</td>
                     <td style={TD}>The product pages do not mention RT cores</td>
-                    <td style={TD}>80 GB or 94 GB; 141 GB</td>
+                    <td style={TD}>H100: 80 GB or 94 GB; H200: 141 GB</td>
                   </tr>
                 </tbody>
               </table>
@@ -810,45 +892,47 @@ export function Rendering() {
             </Box>
             <ul style={LIST}>
               <li>
-                AWS&apos;s post of 9 June 2026, written against Isaac Sim 5.1 before Isaac Lab 3.0 shipped, marks
-                P4d, P4de, P5, P5e, P5en, P6-B200, P6-B300 and P6e-GB200 as incompatible and G5, G6, G6e and G7e as
-                compatible. Its verdict on the P families holds for RTX rendering and does not cover a headless
+                AWS&apos;s post of 9 June 2026 was written for Isaac Sim 5.1, before Isaac Lab 3.0 shipped. It marks
+                P4d, P4de, P5, P5e, P5en, P6-B200, P6-B300 and P6e-GB200 as incompatible, and G5, G6, G6e and G7e as
+                compatible. Its verdict on the P families applies to RTX rendering. It does not cover a headless
                 Newton run.{' '}
                 <Cite id="F06-60">AWS Machine Learning Blog, Isaac Lab on SageMaker AI</Cite>{' '}
                 <Cite id="F06-51">Isaac Lab v3.0.0 installation guide</Cite>
               </li>
               <li>
-                Isaac Sim 6.2.0 lists a GeForce RTX 4080 with 16 GB of GPU memory as its minimum and an RTX PRO 6000
-                Blackwell with 48 GB as its ideal tier. The page names no variant, and its 48 GB is half the 96 GB
-                of the Server Edition that G7e carries.{' '}
+                Isaac Sim 6.2.0 lists a GeForce RTX 4080 with 16 GB of GPU memory as its minimum, and an RTX PRO 6000
+                Blackwell with 48 GB as its ideal tier. The requirements page does not say which variant of the RTX
+                PRO 6000 it means. Its 48 GB is half the 96 GB of the Server Edition in G7e.{' '}
                 <Cite id="F06-52">Isaac Sim 6.2.0 requirements</Cite>{' '}
                 <Cite id="F08-53">AWS What&apos;s New, EC2 G7e</Cite>
               </li>
               <li>
-                On aarch64, the Arm architecture, Isaac Sim 6.2.0 supports one machine, NVIDIA&apos;s DGX Spark
-                desktop, so Graviton, AWS&apos;s Arm processor family, is not on its list.{' '}
-                <Cite id="F06-53">Isaac Sim 6.2.0 requirements, aarch64</Cite>
+                aarch64 is the Arm processor architecture. On aarch64, Isaac Sim 6.2.0 supports only one
+                machine, NVIDIA&apos;s DGX Spark desktop. So AWS Graviton, AWS&apos;s family of Arm processors, is not
+                on its list. <Cite id="F06-53">Isaac Sim 6.2.0 requirements, aarch64</Cite>
               </li>
             </ul>
           </ExpandableSection>
           <Box variant="p">
-            Before you rent a GPU for simulation, ask whether the policy reads images in simulation at all. If it
-            does not and Isaac Sim is not underneath, the physics runs on G or P. If it does, the renderer decides
-            the family: Isaac Sim or any RTX renderer sends the job to a G family, and a ray tracer written as GPU
-            code gives up reflections and indirect light and keeps P possible, pending one test run there.{' '}
+            Before you rent a GPU for simulation, check whether the policy reads images in simulation at all. If it
+            does not, and the job does not run in Isaac Sim, the physics can run on a G or a P family. If the policy
+            does read images, you choose the family from the renderer. A job that runs in Isaac Sim or uses any RTX
+            renderer needs a G family. A job whose cameras use a ray tracer written as GPU code gives up reflections
+            and indirect light. In exchange, it can also run on a P family, once a test run there confirms it.{' '}
             <Cite id="F06-51">Isaac Lab v3.0.0 installation guide</Cite>
           </Box>
           <Box variant="p">
-            Then size the card from your own task,
-            since NVIDIA&apos;s rows put a camera environment anywhere from 1.7 MB to 7.8 MB.{' '}
-            <Cite id="F06-102">arithmetic over the Isaac Lab figures</Cite> Run the task at two counts of
-            environments, reading memory in the GiB the EC2 documentation lists (an L40S sold as 48 GB appears
-            there as 44 GiB), and divide the difference in memory by the difference in count: that is the cost of
-            one more environment, with the fixed part of the process left out.{' '}
-            <Cite id="F08-45">EC2 accelerated computing specifications, accelerator memory</Cite> A second pair of
-            runs at another image size shows how much of that cost grows with the pixels. The card&apos;s memory
-            left free at the smaller run, divided by the cost of one environment, is how many more environments it
-            holds.
+            After that, size the GPU from your own task, because NVIDIA&apos;s figures put one environment with a
+            camera anywhere from 1.7 MB to 7.8 MB. <Cite id="F06-102">arithmetic over the Isaac Lab figures</Cite>{' '}
+            To measure the memory that each additional environment needs, run the task with two different numbers of
+            environments. Read the memory in GiB, the unit that the EC2 documentation uses. For example, an L40S
+            sold as 48 GB appears there as 44 GiB.{' '}
+            <Cite id="F08-45">EC2 accelerated computing specifications, accelerator memory</Cite> Divide the
+            difference in memory by the difference in the number of environments. The result is the memory for one
+            more environment, without the fixed part of the process. A second pair of runs at a different image size
+            shows how much of that memory grows with the number of pixels. Finally, divide the memory left free on
+            the card during the smaller run by the memory per environment. The result is how many more environments
+            the card can hold.
           </Box>
         </SpaceBetween>
       </Container>

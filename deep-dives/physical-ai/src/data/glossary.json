@@ -8,7 +8,7 @@
  {
   "term": "aarch64",
   "expansion": null,
-  "meaning": "The 64-bit Arm processor architecture, used by AWS Graviton and the NVIDIA DGX Spark.",
+  "meaning": "aarch64 is the 64-bit Arm processor architecture. AWS Graviton and the NVIDIA DGX Spark use it.",
   "section": 13
  },
  {
@@ -254,7 +254,7 @@
  {
   "term": "Autoregressive",
   "expansion": null,
-  "meaning": "Generating one token at a time, each conditioned on the ones before.",
+  "meaning": "Generating one token at a time, where each token depends on the ones before it.",
   "section": 6
  },
  {
@@ -440,7 +440,7 @@
  {
   "term": "BVH",
   "expansion": "bounding-volume hierarchy",
-  "meaning": "A tree of nested boxes around the triangles of a scene; a ray tracer walks it to find which triangle a ray lands on first.",
+  "meaning": "A BVH is a tree of nested boxes around the triangles of a scene. A ray tracer walks down this tree to find the first triangle that a ray hits.",
   "section": 13
  },
  {
@@ -482,7 +482,7 @@
  {
   "term": "Candidate",
   "expansion": null,
-  "meaning": "One action sequence being tried inside a world model during planning.",
+  "meaning": "One action sequence that a planner tries inside a world model.",
   "section": 6
  },
  {
@@ -494,7 +494,7 @@
  {
   "term": "Capacity Block for ML",
   "expansion": null,
-  "meaning": "An EC2 reservation of a block of GPU instances for a fixed window; the list read on 2026-11-20 holds P and Trainium types and no G type.",
+  "meaning": "A Capacity Block for ML reserves a block of EC2 GPU instances for a fixed period. As of November 2026, the list of supported types holds P and Trainium types and no G type.",
   "section": 13
  },
  {
@@ -524,19 +524,19 @@
  {
   "term": "Cartpole",
   "expansion": null,
-  "meaning": "A small standard control task, a cart balancing a pole, used in Isaac Lab's benchmark.",
+  "meaning": "Cartpole is a small standard control task in which a cart balances a pole. Isaac Lab uses it in its benchmark.",
   "section": 13
  },
  {
   "term": "CEM",
   "expansion": "cross-entropy method",
-  "meaning": "A search that samples candidate action sequences from a Gaussian, keeps the lowest-cost few and refits the Gaussian to them, round after round.",
+  "meaning": "A search method that samples candidate action sequences from a Gaussian, keeps the few with the lowest cost and refits the Gaussian to them. It repeats this for several rounds.",
   "section": 7
  },
  {
   "term": "Characteristic function",
   "expansion": null,
-  "meaning": "A fingerprint of a distribution, estimated for a batch by averaging cos(t p) and sin(t p) over its values p; SIGReg compares it with a standard Gaussian's.",
+  "meaning": "A fingerprint of a distribution. For a batch, you estimate it by averaging cos(t p) and sin(t p) over the batch's values p. SIGReg compares it with the characteristic function of a standard Gaussian.",
   "section": 7
  },
  {
@@ -632,7 +632,7 @@
  {
   "term": "Collapse",
   "expansion": null,
-  "meaning": "The shortcut in which the encoder maps every input to the same latent, which zeroes the loss and makes the latents useless.",
+  "meaning": "A shortcut in which the encoder maps every input to the same latent. The loss drops to zero and the latents become useless.",
   "section": 7
  },
  {
@@ -740,7 +740,7 @@
  {
   "term": "Context encoder",
   "expansion": null,
-  "meaning": "The encoder copy that sees only the visible tokens and is trained by the loss.",
+  "meaning": "The copy of the encoder that sees only the visible tokens. The loss trains it.",
   "section": 7
  },
  {
@@ -752,7 +752,7 @@
  {
   "term": "Contrastive negatives",
   "expansion": null,
-  "meaning": "Latents of different inputs that a loss term pushes apart to block collapse; an older method.",
+  "meaning": "Latents of different inputs that a contrastive loss term pushes apart to prevent collapse. Contrastive learning is an older method than variance and covariance terms.",
   "section": 7
  },
  {
@@ -782,7 +782,7 @@
  {
   "term": "Control video",
   "expansion": null,
-  "meaning": "A version of an episode reduced to its shapes (edges, depth or a segmentation map) that steers a video generator.",
+  "meaning": "A version of an episode reduced to its geometry, such as edges, depth or a segmentation map. A video generator uses it to keep the new video's geometry the same.",
   "section": 11
  },
  {
@@ -812,7 +812,7 @@
  {
   "term": "Cosmos 3",
   "expansion": null,
-  "meaning": "NVIDIA's current video-generating world model family (Super, Nano, Edge), released at the end of May 2026.",
+  "meaning": "NVIDIA's current family of video world models, released at the end of May 2026 in three sizes: Super, Nano and Edge.",
   "section": 6
  },
  {
@@ -830,7 +830,7 @@
  {
   "term": "Covariance (of two latent dimensions)",
   "expansion": null,
-  "meaning": "Whether two dimensions rise and fall together across a batch; 0 when they carry unrelated information.",
+  "meaning": "Whether two dimensions rise and fall together across a batch. It is 0 when they carry unrelated information.",
   "section": 7
  },
  {
@@ -950,7 +950,7 @@
  {
   "term": "Decoder",
   "expansion": null,
-  "meaning": "A network that redraws pixels from an encoder's output.",
+  "meaning": "A network that redraws the pixels from an encoder's output.",
   "section": 6
  },
  {
@@ -992,7 +992,7 @@
  {
   "term": "Denoising pass",
   "expansion": null,
-  "meaning": "One run of a generator's transformer over all its tokens, cleaning them a little; a video generator makes tens of them per clip. Section 4 builds diffusion and flow matching.",
+  "meaning": "One run of a generator's transformer over all its tokens, which removes a little of the noise. A video generator makes tens of these passes per clip. Section 4 explains diffusion and flow matching.",
   "section": 6
  },
  {
@@ -1028,7 +1028,7 @@
  {
   "term": "Diffusers",
   "expansion": null,
-  "meaning": "A second inference library for generative models, benchmarked by NVIDIA beside its PyTorch path.",
+  "meaning": "A second inference library for generative models. NVIDIA benchmarks it alongside its PyTorch scripts.",
   "section": 11
  },
  {
@@ -1046,7 +1046,7 @@
  {
   "term": "Dimensional collapse",
   "expansion": null,
-  "meaning": "A partial collapse in which latents differ but only inside a thin slice of the space, so most of their numbers carry nothing.",
+  "meaning": "A partial collapse in which the latents still differ but all lie inside a thin slice of the space, so most of their numbers carry no information.",
   "section": 7
  },
  {
@@ -1064,7 +1064,7 @@
  {
   "term": "Direct lighting",
   "expansion": null,
-  "meaning": "Light that reaches a surface straight from a lamp, with no bounce off other surfaces; all that Isaac Lab's Newton Warp renderer computes.",
+  "meaning": "Direct lighting is light that reaches a surface straight from a lamp, without bouncing off other surfaces. Isaac Lab's Newton Warp renderer computes only direct lighting.",
   "section": 13
  },
  {
@@ -1118,7 +1118,7 @@
  {
   "term": "DreamZero",
   "expansion": null,
-  "meaning": "NVIDIA's February 2026 world-action model, the paper that coined the term.",
+  "meaning": "NVIDIA's world-action model from February 2026. Its paper gave the name world-action model to this design.",
   "section": 6
  },
  {
@@ -1238,13 +1238,13 @@
  {
   "term": "Elites",
   "expansion": null,
-  "meaning": "The lowest-cost candidates of a CEM round, used to refit the sampling distribution.",
+  "meaning": "The candidates with the lowest cost in one CEM round. CEM refits its sampling distribution to them.",
   "section": 7
  },
  {
   "term": "EMA",
   "expansion": "exponential moving average",
-  "meaning": "A running average in which recent values count most; the target encoder's weights are an EMA of the context encoder's.",
+  "meaning": "A running average in which recent values count most and older values fade out. The target encoder's weights are an EMA of the context encoder's weights.",
   "section": 7
  },
  {
@@ -1298,7 +1298,7 @@
  {
   "term": "Energy",
   "expansion": null,
-  "meaning": "The distance between a predicted latent and a target or goal latent: low when the two are a plausible match.",
+  "meaning": "The distance between a predicted latent and a target latent or a goal latent. It is low when the two are a plausible match.",
   "section": 7
  },
  {
@@ -1502,7 +1502,7 @@
  {
   "term": "fps",
   "expansion": "frames per second",
-  "meaning": "How many video frames cover one second.",
+  "meaning": "The number of video frames in one second of video.",
   "section": 11
  },
  {
@@ -1544,7 +1544,7 @@
  {
   "term": "Frozen encoder",
   "expansion": null,
-  "meaning": "A pretrained encoder whose weights are not changed while a predictor is trained on top of it.",
+  "meaning": "A pretrained encoder whose weights stay fixed while a predictor is trained on top of it.",
   "section": 7
  },
  {
@@ -1568,7 +1568,7 @@
  {
   "term": "Full attention",
   "expansion": null,
-  "meaning": "A transformer layer in which every position on the grid is compared with every other, so its work grows faster than the number of positions.",
+  "meaning": "A transformer layer in which every position on the grid is compared with every other position, so its work grows faster than the number of positions.",
   "section": 11
  },
  {
@@ -1586,7 +1586,7 @@
  {
   "term": "G and P families",
   "expansion": null,
-  "meaning": "EC2 GPU instance families: G carries GPUs with RT cores, P carries data-centre training GPUs.",
+  "meaning": "G and P are EC2 GPU instance families. G instances have GPUs with RT cores, and P instances have data-centre training GPUs.",
   "section": 13
  },
  {
@@ -1634,7 +1634,7 @@
  {
   "term": "General compute cores",
   "expansion": null,
-  "meaning": "The units of a GPU that run ordinary GPU code, such as batched physics, a ray tracer written as code, a network's code beside its matrix multiplies, and the lighting and shading of an RTX renderer.",
+  "meaning": "The general compute cores are the units of a GPU that run ordinary GPU code. They run batched physics, ray tracers written as GPU code, the parts of a neural network other than its matrix multiplications, and the lighting and shading of an RTX renderer.",
   "section": 13
  },
  {
@@ -1652,13 +1652,13 @@
  {
   "term": "GiB",
   "expansion": "gibibyte",
-  "meaning": "The binary gigabyte, slightly larger than a GB.",
+  "meaning": "The binary gigabyte, which is slightly larger than a GB.",
   "section": 6
  },
  {
   "term": "Goal image",
   "expansion": null,
-  "meaning": "A picture of the desired end state; its latent is what the planner tries to reach.",
+  "meaning": "A picture of the desired end state. The planner tries to reach the latent of this picture.",
   "section": 7
  },
  {
@@ -1706,7 +1706,7 @@
  {
   "term": "GR00T 2",
   "expansion": null,
-  "meaning": "NVIDIA's world-action model described in a November 2026 whitepaper; code announced for December 2026, not yet downloadable.",
+  "meaning": "NVIDIA's world-action model, described in a November 2026 whitepaper. NVIDIA announced its code for December 2026, and as of November 2026 the code cannot be downloaded yet.",
   "section": 6
  },
  {
@@ -1730,7 +1730,7 @@
  {
   "term": "Gradient-based planning",
   "expansion": null,
-  "meaning": "Computing through the predictor which way to change the candidate actions, where a search only samples them.",
+  "meaning": "A planning method that computes, through the predictor, which way to change the candidate actions. A search only samples them.",
   "section": 6
  },
  {
@@ -1832,7 +1832,7 @@
  {
   "term": "Horizon",
   "expansion": null,
-  "meaning": "How many actions ahead each candidate looks during planning.",
+  "meaning": "The number of actions ahead that each candidate looks during planning.",
   "section": 6
  },
  {
@@ -1910,7 +1910,7 @@
  {
   "term": "Image transform",
   "expansion": null,
-  "meaning": "A small random change to a camera frame at training time, such as brightness or a slight rotation, with the recorded actions left alone.",
+  "meaning": "A small random change to a camera frame at training time, such as a change in brightness or a slight rotation. The recorded actions stay unchanged.",
   "section": 11
  },
  {
@@ -2042,13 +2042,13 @@
  {
   "term": "Isaac Lab",
   "expansion": null,
-  "meaning": "NVIDIA's robot-learning framework built on its simulator.",
+  "meaning": "NVIDIA's framework for robot learning. It runs on Isaac Sim, and since version 3.0 it can also run without it.",
   "section": 11
  },
  {
   "term": "Isaac Lab Mimic",
   "expansion": null,
-  "meaning": "The Isaac Lab tool that cuts demonstrations into subtasks, fits them to a new scene, replays them and keeps the successes.",
+  "meaning": "The replay tool in Isaac Lab. It cuts demonstrations into subtasks, fits them to a new scene, replays them and keeps the ones that succeed.",
   "section": 11
  },
  {
@@ -2060,7 +2060,7 @@
  {
   "term": "Isaac Sim",
   "expansion": null,
-  "meaning": "NVIDIA's simulator application; it draws simulated cameras with a ray tracer that needs RT cores.",
+  "meaning": "NVIDIA's simulator application. It draws simulated cameras with a ray tracer that needs RT cores.",
   "section": 11
  },
  {
@@ -2084,7 +2084,7 @@
  {
   "term": "JEPA-WMs",
   "expansion": null,
-  "meaning": "The name a peer-reviewed 2026 study gives to world models trained only by a predictive loss in latent space; it compares their planners.",
+  "meaning": "The name that a peer-reviewed 2026 study gives to world models trained only by a predictive loss in latent space. The study compares their planners.",
   "section": 7
  },
  {
@@ -2228,7 +2228,7 @@
  {
   "term": "L1 distance",
   "expansion": null,
-  "meaning": "Subtract two lists of numbers entry by entry, drop the signs and add up (or average).",
+  "meaning": "A distance between two lists of numbers. You subtract them entry by entry, drop the signs and add up the results, or take their mean.",
   "section": 7
  },
  {
@@ -2258,19 +2258,19 @@
  {
   "term": "Latent",
   "expansion": null,
-  "meaning": "The internal code an encoder makes of a frame or clip: a grid or vector of numbers. Both families have one; the pixel family's is built to be decoded back into pixels.",
+  "meaning": "The internal code that an encoder makes of a frame or a clip: a grid or a vector of numbers. Both families of world model use one. In the pixel family, the latent is built to be decoded back into pixels.",
   "section": 6
  },
  {
   "term": "Latent family",
   "expansion": null,
-  "meaning": "World models that predict the encoder's summary of the next frames and never draw a picture.",
+  "meaning": "World models that predict the encoder's summary of the next frames. They never draw a picture.",
   "section": 6
  },
  {
   "term": "Latent-action model",
   "expansion": null,
-  "meaning": "The second kind of model the DreamGen paper names for recovering actions from generated video.",
+  "meaning": "The second kind of model that the DreamGen paper names for recovering actions from generated video.",
   "section": 11
  },
  {
@@ -2324,7 +2324,7 @@
  {
   "term": "LeWorldModel (LeWM)",
   "expansion": null,
-  "meaning": "A JEPA world model of about 15M parameters that trains encoder and predictor together and blocks collapse with SIGReg.",
+  "meaning": "A JEPA world model of about 15M parameters. It trains the encoder and the predictor together and prevents collapse with SIGReg.",
   "section": 7
  },
  {
@@ -2420,13 +2420,13 @@
  {
   "term": "Mask token",
   "expansion": null,
-  "meaning": "A learned placeholder vector, tagged with a position, that tells the predictor to output the latent that belongs there.",
+  "meaning": "A learned placeholder vector, tagged with a position, that tells the predictor to output the latent that belongs at that position.",
   "section": 7
  },
  {
   "term": "Masking",
   "expansion": null,
-  "meaning": "Removing tokens before the encoder sees them, so the model has to predict the latents of what was hidden.",
+  "meaning": "Removing some tokens before the encoder sees them, so that the model has to predict the latents of what was hidden.",
   "section": 7
  },
  {
@@ -2474,7 +2474,7 @@
  {
   "term": "Mesh",
   "expansion": null,
-  "meaning": "A surface stored as a set of triangles; how a simulator holds every shape it draws.",
+  "meaning": "A mesh is a surface stored as a set of triangles. A simulator stores every shape it draws as a mesh.",
   "section": 13
  },
  {
@@ -2516,7 +2516,7 @@
  {
   "term": "MimicGen",
   "expansion": null,
-  "meaning": "The 2023 system that introduced replaying a few human demonstrations in simulation from new object positions.",
+  "meaning": "The system, published in 2023, that introduced replaying a few human demonstrations in simulation from new object positions.",
   "section": 11
  },
  {
@@ -2564,7 +2564,7 @@
  {
   "term": "Momentum (m)",
   "expansion": null,
-  "meaning": "The fraction of its old value a target weight keeps at each EMA update; 0.99925 in V-JEPA 2.",
+  "meaning": "The fraction of its old value that a target weight keeps at each EMA update. V-JEPA 2 uses 0.99925.",
   "section": 7
  },
  {
@@ -2582,7 +2582,7 @@
  {
   "term": "MPC",
   "expansion": "model-predictive control",
-  "meaning": "Plan a sequence of actions through a model, execute only the first part, observe, and plan again.",
+  "meaning": "A control method in which you plan a sequence of actions through a model, execute only the first part, observe the result, and plan again.",
   "section": 7
  },
  {
@@ -2684,13 +2684,13 @@
  {
   "term": "Newton Warp",
   "expansion": null,
-  "meaning": "The lightweight ray tracer in Isaac Lab 3.0's base install, which draws direct lighting only and runs without Isaac Sim.",
+  "meaning": "The lightweight ray tracer in the base install of Isaac Lab 3.0. It draws direct lighting only and runs without Isaac Sim.",
   "section": 11
  },
  {
   "term": "NIM",
   "expansion": "NVIDIA Inference Microservice",
-  "meaning": "The packaged container NVIDIA ships for serving a model; its support matrix prints minimum GPU memory per device.",
+  "meaning": "The packaged container that NVIDIA ships for serving a model. Its support matrix prints the minimum GPU memory per device.",
   "section": 6
  },
  {
@@ -2822,7 +2822,7 @@
  {
   "term": "On-Demand Capacity Reservation",
   "expansion": null,
-  "meaning": "An EC2 reservation type that, unlike Capacity Blocks, covers G instances.",
+  "meaning": "An On-Demand Capacity Reservation is an EC2 reservation type that covers G instances, which Capacity Blocks do not.",
   "section": 13
  },
  {
@@ -2882,7 +2882,7 @@
  {
   "term": "OptiX",
   "expansion": null,
-  "meaning": "NVIDIA's ray-tracing library for RTX GPUs; MuJoCo Warp's optional hardware back end is built on it and falls back to the Warp path when it is unavailable.",
+  "meaning": "OptiX is NVIDIA's ray-tracing library for RTX GPUs. MuJoCo Warp's optional hardware back end is built on it, and MuJoCo Warp falls back to the Warp back end when OptiX is unavailable.",
   "section": 13
  },
  {
@@ -2906,7 +2906,7 @@
  {
   "term": "OVRTX",
   "expansion": null,
-  "meaning": "The RTX renderer that Isaac Lab 3.0's documentation recommends; it runs without Isaac Sim and needs RT cores.",
+  "meaning": "OVRTX is the RTX renderer that Isaac Lab 3.0's documentation recommends. It runs without Isaac Sim and needs RT cores.",
   "section": 13
  },
  {
@@ -2948,7 +2948,7 @@
  {
   "term": "Parallel environments",
   "expansion": null,
-  "meaning": "Independent copies of one simulated scene that a single GPU steps at the same time.",
+  "meaning": "Independent copies of one simulated scene that a single GPU simulates at the same time.",
   "section": 11
  },
  {
@@ -3062,7 +3062,7 @@
  {
   "term": "Physics engine",
   "expansion": null,
-  "meaning": "The software that steps a simulated scene forward in time: PhysX, Newton and MuJoCo Warp are the ones met here.",
+  "meaning": "A physics engine is the software that moves a simulated scene forward in time. PhysX, Newton and MuJoCo Warp are the physics engines in this section.",
   "section": 13
  },
  {
@@ -3104,7 +3104,7 @@
  {
   "term": "Pixel family",
   "expansion": null,
-  "meaning": "World models that predict the next camera frames, through a reconstruction code that a decoder turns back into pixels.",
+  "meaning": "World models that predict the next camera frames. They predict a reconstruction code, which a decoder turns back into pixels.",
   "section": 6
  },
  {
@@ -3122,19 +3122,19 @@
  {
   "term": "Planning by search",
   "expansion": null,
-  "meaning": "Choosing an action by imagining many candidates in a world model, scoring each against a goal and running the best.",
+  "meaning": "Choosing an action by trying many candidates in a world model, scoring each predicted future against a goal and running the best one.",
   "section": 6
  },
  {
   "term": "Planning horizon",
   "expansion": null,
-  "meaning": "How many predictor steps ahead a planner imagines for each candidate.",
+  "meaning": "The number of predictor steps that a planner looks ahead for each candidate.",
   "section": 7
  },
  {
   "term": "PLDM",
   "expansion": null,
-  "meaning": "A JEPA world model that trains its encoder with variance and covariance terms; the LeWorldModel authors count six tunable loss coefficients in it.",
+  "meaning": "A JEPA world model that trains its encoder with variance and covariance terms. The LeWorldModel authors count six tunable loss coefficients in it.",
   "section": 7
  },
  {
@@ -3230,7 +3230,7 @@
  {
   "term": "Predictor pass",
   "expansion": null,
-  "meaning": "One forward run of the predictor for one candidate and one step; samples x iterations x horizon passes are needed per decision.",
+  "meaning": "One forward run of the predictor for one candidate and one step. A planner needs samples x iterations x horizon passes for each decision.",
   "section": 7
  },
  {
@@ -3278,7 +3278,7 @@
  {
   "term": "Pseudo-actions",
   "expansion": null,
-  "meaning": "Action labels inferred from a generated video by a second model, the DreamGen paper's term.",
+  "meaning": "Action labels that a second model infers from a generated video. The term comes from the DreamGen paper.",
   "section": 11
  },
  {
@@ -3350,7 +3350,7 @@
  {
   "term": "Rasterisation",
   "expansion": null,
-  "meaning": "Making an image by projecting each triangle onto it and filling the pixels the triangle covers.",
+  "meaning": "Rasterisation makes an image by projecting each triangle onto it and filling the pixels that the triangle covers.",
   "section": 13
  },
  {
@@ -3368,7 +3368,7 @@
  {
   "term": "Ray tracing",
   "expansion": null,
-  "meaning": "Making an image by following a ray from the camera through each pixel to the surface it lands on, then more rays from that point.",
+  "meaning": "Ray tracing makes an image by following a ray from the camera through each pixel to the surface it hits, and then sending more rays from that point.",
   "section": 13
  },
  {
@@ -3380,7 +3380,7 @@
  {
   "term": "RayCasterCamera",
   "expansion": null,
-  "meaning": "Isaac Lab's camera that casts its rays with Warp; faster than the tiled camera at low resolutions, by the Isaac Lab paper.",
+  "meaning": "RayCasterCamera is Isaac Lab's camera that casts its rays with Warp. The Isaac Lab paper found it faster than the tiled camera at low resolutions.",
   "section": 13
  },
  {
@@ -3428,7 +3428,7 @@
  {
   "term": "Reconstruction code",
   "expansion": null,
-  "meaning": "A latent that must keep enough to rebuild every pixel, which is what a video generator predicts.",
+  "meaning": "A latent that has to keep enough information to rebuild every pixel. A video generator predicts this kind of latent.",
   "section": 6
  },
  {
@@ -3476,7 +3476,7 @@
  {
   "term": "Rendering",
   "expansion": null,
-  "meaning": "Drawing the image a simulated camera would see.",
+  "meaning": "Drawing the image that a simulated camera would see.",
   "section": 11
  },
  {
@@ -3500,7 +3500,7 @@
  {
   "term": "Representation collapse",
   "expansion": null,
-  "meaning": "The failure in which an encoder scored against encodings gives every input the same vector; section 7 covers what prevents it.",
+  "meaning": "A training failure in which an encoder gives every input the same vector. It can happen when the encoder's output is scored against other encodings, because identical vectors always agree. Section 7 covers how to prevent it.",
   "section": 6
  },
  {
@@ -3566,7 +3566,7 @@
  {
   "term": "RoboJEPA",
   "expansion": null,
-  "meaning": "Meta's latent world model for robot arms: predictors of 22M to 8B parameters on a frozen 2B encoder.",
+  "meaning": "Meta's latent world model for robot arms. Its predictors have 22M to 8B parameters and work on a frozen 2B encoder.",
   "section": 6
  },
  {
@@ -3590,7 +3590,7 @@
  {
   "term": "Rollout loss",
   "expansion": null,
-  "meaning": "A loss term that runs the predictor on its own previous output and compares the result with the latent of the frame the robot really reached.",
+  "meaning": "A loss term that runs the predictor on its own previous output and compares the result with the latent of the frame the robot actually reached.",
   "section": 7
  },
  {
@@ -3608,7 +3608,7 @@
  {
   "term": "RT cores",
   "expansion": "ray-tracing cores",
-  "meaning": "A unit some NVIDIA GPUs carry that speeds up the costliest step of ray tracing, finding which triangle a ray hits; the H100 and A100 lack it.",
+  "meaning": "Units in some NVIDIA GPUs that speed up the costliest step of ray tracing, which is finding which triangle a ray hits. The H100 and A100 do not have them.",
   "section": 11
  },
  {
@@ -3626,7 +3626,7 @@
  {
   "term": "RTX rendering",
   "expansion": null,
-  "meaning": "NVIDIA's name for rendering that hands the ray search to the RT cores; the renderer of Isaac Sim works this way.",
+  "meaning": "RTX rendering is NVIDIA's name for rendering that hands the search for what each ray hits to the RT cores. Isaac Sim's renderer works this way.",
   "section": 13
  },
  {
@@ -3782,7 +3782,7 @@
  {
   "term": "Shadow ray",
   "expansion": null,
-  "meaning": "A ray sent from a point on a surface toward a light; if something blocks it, the point is in shadow.",
+  "meaning": "A shadow ray is a ray sent from a point on a surface toward a light. If something blocks it, the point is in shadow.",
   "section": 13
  },
  {
@@ -3806,7 +3806,7 @@
  {
   "term": "SIGReg",
   "expansion": "Sketched Isotropic Gaussian Regularization",
-  "meaning": "A loss term that pushes a batch of latents toward a round Gaussian cloud by testing its projections on random directions.",
+  "meaning": "A loss term that pushes a batch of latents toward an isotropic Gaussian. It tests the projections of the batch onto random directions.",
   "section": 7
  },
  {
@@ -3854,7 +3854,7 @@
  {
   "term": "Simulated replay",
   "expansion": null,
-  "meaning": "Replaying a few demonstrations recorded in a simulator from new object positions, and keeping the candidates that physics says succeed.",
+  "meaning": "Replaying a few demonstrations recorded in a simulator from new object positions, and keeping the candidates that succeed in the physics simulation.",
   "section": 11
  },
  {
@@ -3866,7 +3866,7 @@
  {
   "term": "SkillGen",
   "expansion": null,
-  "meaning": "The Isaac Lab variant that plans a collision-free motion between skill segments with a GPU motion planner.",
+  "meaning": "A variant of the replay tool in Isaac Lab. It uses a GPU motion planner to plan a collision-free motion between skill segments.",
   "section": 11
  },
  {
@@ -4046,7 +4046,7 @@
  {
   "term": "State (world model sense)",
   "expansion": null,
-  "meaning": "The model's description of the whole scene at one instant, as opposed to observation.state, the six measured joint angles.",
+  "meaning": "The model's description of the whole scene at one instant. Section 3 uses the word more narrowly, for observation.state, the six measured joint angles.",
   "section": 6
  },
  {
@@ -4082,7 +4082,7 @@
  {
   "term": "Stop-gradient",
   "expansion": null,
-  "meaning": "An instruction to treat a value as a constant during training, so no weight behind it is changed by the loss.",
+  "meaning": "An instruction to treat a value as a constant during training, so that the loss does not change any weight that produced the value.",
   "section": 7
  },
  {
@@ -4184,7 +4184,7 @@
  {
   "term": "Target encoder",
   "expansion": null,
-  "meaning": "The encoder copy that sees the whole clip and supplies the answers; it is updated by an EMA and receives no gradient.",
+  "meaning": "The copy of the encoder that sees the whole clip and supplies the target latents. It receives no gradient and follows the context encoder through an EMA.",
   "section": 7
  },
  {
@@ -4310,13 +4310,13 @@
  {
   "term": "Tiled rendering",
   "expansion": null,
-  "meaning": "Drawing every environment's camera into one tile of a single large GPU image in one pass, then cutting it apart into a tensor the policy reads on the GPU.",
+  "meaning": "Tiled rendering draws the camera of every environment into its own tile of one large GPU image in a single pass. The image is then cut into a tensor that the policy reads directly in GPU memory.",
   "section": 13
  },
  {
   "term": "TiledCamera",
   "expansion": null,
-  "meaning": "Isaac Lab's camera sensor class that draws every environment's camera in one tiled pass; it scales to several thousand environments.",
+  "meaning": "TiledCamera is Isaac Lab's camera sensor class that draws the camera of every environment in one tiled pass. It scales to several thousand environments.",
   "section": 13
  },
  {
@@ -4346,7 +4346,7 @@
  {
   "term": "Token (vision)",
   "expansion": null,
-  "meaning": "One element of the sequence a transformer processes; here a vector made from one tubelet of pixels.",
+  "meaning": "One element of the sequence that a transformer processes. Here it is a vector made from the pixels of one tubelet.",
   "section": 7
  },
  {
@@ -4400,7 +4400,7 @@
  {
   "term": "Training frames per second",
   "expansion": null,
-  "meaning": "The throughput figure in Isaac Lab's benchmark: the rate of simulated frames a training run gets through, with the policy's updates included.",
+  "meaning": "Training frames per second is the throughput figure in Isaac Lab's benchmark. It counts the simulated frames that a training run processes per second, including the time spent updating the policy.",
   "section": 13
  },
  {
@@ -4448,7 +4448,7 @@
  {
   "term": "Transfer",
   "expansion": null,
-  "meaning": "A generative workflow that takes a prompt and a control video and writes a new video with the same geometry and a different appearance.",
+  "meaning": "A way of using a video model that takes a text prompt and a control video and writes a new video with the same geometry and a different appearance.",
   "section": 11
  },
  {
@@ -4472,7 +4472,7 @@
  {
   "term": "Tubelet",
   "expansion": null,
-  "meaning": "A patch extended through time: the same square in 2 consecutive frames, which becomes one token.",
+  "meaning": "A patch extended through time: the same square in 2 consecutive frames. Each tubelet becomes one token.",
   "section": 7
  },
  {
@@ -4520,7 +4520,7 @@
  {
   "term": "USD-Camera",
   "expansion": null,
-  "meaning": "The Isaac Lab paper's highest-fidelity camera type; it runs out of memory beyond 48 cameras on a 96 GB card.",
+  "meaning": "The USD-Camera is the highest-fidelity camera type in the Isaac Lab paper. It runs out of memory beyond 48 cameras on a 96 GB card.",
   "section": 13
  },
  {
@@ -4532,25 +4532,25 @@
  {
   "term": "V-JEPA 2",
   "expansion": null,
-  "meaning": "Meta's video JEPA of 2025: an encoder pretrained on video by masked latent prediction.",
+  "meaning": "Meta's video JEPA from 2025. Its encoder is pretrained on video by predicting the latents of masked regions.",
   "section": 7
  },
  {
   "term": "V-JEPA 2-AC",
   "expansion": null,
-  "meaning": "Meta's latent world model that takes actions: a frozen video encoder plus a trained predictor, used for planning.",
+  "meaning": "Meta's latent world model that takes actions as input. It is a frozen video encoder plus a trained predictor, and it is used for planning.",
   "section": 6
  },
  {
   "term": "V-JEPA 2.1",
   "expansion": null,
-  "meaning": "The March 2026 successor encoder family, trained with a revised recipe and offered up to 2B parameters.",
+  "meaning": "The successor encoder family, released in March 2026. It is trained with a revised recipe and comes in sizes up to 2B parameters.",
   "section": 7
  },
  {
   "term": "VAE",
   "expansion": "variational autoencoder",
-  "meaning": "An encoder and decoder trained together so the decoder can rebuild the pixels from the encoder's much smaller grid of numbers.",
+  "meaning": "An encoder and a decoder that are trained together, so that the decoder can rebuild the pixels from the encoder's much smaller grid of numbers.",
   "section": 6
  },
  {
@@ -4574,7 +4574,7 @@
  {
   "term": "Variance (of a latent dimension)",
   "expansion": null,
-  "meaning": "How far one dimension's values spread around their average across a batch; 0 when every input gives the same value.",
+  "meaning": "How far the values of one dimension spread around their average across a batch. It is 0 when every input gives the same value.",
   "section": 7
  },
  {
@@ -4604,7 +4604,7 @@
  {
   "term": "VICReg",
   "expansion": "named after its terms: variance, invariance, covariance",
-  "meaning": "A 2022 method that blocks collapse with loss terms that keep every latent dimension spread out and uncorrelated with the others.",
+  "meaning": "A method from 2022 that prevents collapse with loss terms that keep every latent dimension spread out and uncorrelated with the others.",
   "section": 7
  },
  {
@@ -4634,7 +4634,7 @@
  {
   "term": "ViT",
   "expansion": "Vision Transformer",
-  "meaning": "A transformer that reads a picture as a sequence of patches, one token per patch.",
+  "meaning": "A transformer that reads an image as a sequence of patches, with one token per patch.",
   "section": 7
  },
  {
@@ -4664,7 +4664,7 @@
  {
   "term": "Warp",
   "expansion": null,
-  "meaning": "NVIDIA's Python framework for writing GPU code; MuJoCo Warp and the Newton Warp renderer are built on it.",
+  "meaning": "Warp is NVIDIA's framework for writing GPU code in Python. MuJoCo Warp and the Newton Warp renderer are built on it.",
   "section": 13
  },
  {
@@ -4730,7 +4730,7 @@
  {
   "term": "World-action model",
   "expansion": null,
-  "meaning": "One model that outputs future video and the robot's actions together, so the world model is the policy and nothing is searched.",
+  "meaning": "One model that outputs the future video and the robot's actions together. The world model is then also the policy, and no search is needed.",
   "section": 6
  },
  {
