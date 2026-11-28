@@ -82,7 +82,7 @@ Tier ladder (repository standard): Tier 0 our experiments; Tier 1 code, official
 - AWS Batch User Guide, Unmanaged compute environments: https://docs.aws.amazon.com/batch/latest/userguide/unmanaged_compute_environments.html (accessed 2026-11-20) (sections 25)
 - AWS Batch User Guide, When to use Fargate: https://docs.aws.amazon.com/batch/latest/userguide/when-to-use-fargate.html (accessed 2026-11-20) (sections 25)
 - AgentCore Developer Guide, quotas: https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/bedrock-agentcore-limits.html (accessed 2026-11-20) (sections 19)
-- searches of AWS documentation run on 2026-11-20: https://docs.aws.amazon.com/decision-guides/latest/decision-guides/genai-guide.html (accessed 2026-11-20) (sections 24, 29)
+- AWS decision guide, Choosing a generative AI service: https://docs.aws.amazon.com/decision-guides/latest/decision-guides/genai-guide.html (accessed 2026-11-20) (sections 24, 29)
 - EC2 instance types, single-GPU sizes: https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html (accessed 2026-11-20) (sections 1, 2, 10, 11, 13, 15, 20, 21, 23, 26, 29)
 - checkpointing: https://docs.aws.amazon.com/eks/latest/best-practices/aiml-compute.html (accessed 2026-11-20) (sections 13, 15, 24, 28, 29)
 - EKS best practices, hybrid nodes and disconnections: https://docs.aws.amazon.com/eks/latest/best-practices/hybrid-nodes-kubernetes-pod-failover.html (accessed 2026-11-20) (sections 18)

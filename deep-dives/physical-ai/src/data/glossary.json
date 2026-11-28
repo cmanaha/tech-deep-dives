@@ -140,7 +140,7 @@
  {
   "term": "Allocation strategy",
   "expansion": null,
-  "meaning": "The rule by which Batch chooses an instance type from the list when its first choice is not available.",
+  "meaning": "The rule that Batch follows to choose an instance type from the list when its first choice is not available.",
   "section": 25
  },
  {
@@ -164,7 +164,7 @@
  {
   "term": "Amazon EventBridge",
   "expansion": null,
-  "meaning": "The AWS event bus that routes events such as a new S3 object or a Spot notice to targets.",
+  "meaning": "The AWS event bus. It routes events, such as a new S3 object or a Spot interruption notice, to the targets you choose.",
   "section": 24
  },
  {
@@ -314,7 +314,7 @@
  {
   "term": "AWS Step Functions",
   "expansion": null,
-  "meaning": "The AWS workflow service that orders steps as states and can submit a Batch job and wait for it.",
+  "meaning": "The AWS workflow service. It runs the steps of a workflow as states, and one state can submit an AWS Batch job and wait for it to finish.",
   "section": 24
  },
  {
@@ -494,7 +494,7 @@
  {
   "term": "Capacity Block",
   "expansion": null,
-  "meaning": "A reservation of GPU instances for a fixed window, bought ahead.",
+  "meaning": "A reservation of GPU instances for a fixed window, bought in advance.",
   "section": 25
  },
  {
@@ -512,8 +512,8 @@
  {
   "term": "Capacity market",
   "expansion": null,
-  "meaning": "The way a cloud machine is bought, which decides whether it can be taken back in the middle of a job.",
-  "section": 24
+  "meaning": "The way an instance is paid for and what AWS promises in return.",
+  "section": 29
  },
  {
   "term": "Capacity type",
@@ -680,8 +680,8 @@
  {
   "term": "Compute environment",
   "expansion": null,
-  "meaning": "The pool of capacity behind a Batch queue: a type, a list of instance types, an allocation strategy and a vCPU floor and ceiling.",
-  "section": 25
+  "meaning": "The component of AWS Batch that starts the instances for the jobs in a job queue.",
+  "section": 24
  },
  {
   "term": "Compute node",
@@ -692,8 +692,8 @@
  {
   "term": "Compute node group",
   "expansion": null,
-  "meaning": "The PCS object that describes how nodes are created: the instance types, the minimum and maximum instance count, the subnets, the image and one purchase option.",
-  "section": 26
+  "meaning": "In AWS PCS, the group of EC2 instances that PCS launches for waiting jobs. Each group has exactly one purchase option.",
+  "section": 24
  },
  {
   "term": "Confidence interval",
@@ -1112,7 +1112,7 @@
  {
   "term": "Draining",
   "expansion": null,
-  "meaning": "The state Batch puts an instance in on the Spot notice: running jobs continue and no new job is placed on it.",
+  "meaning": "The state that Batch puts an instance in when the Spot notice arrives. Running jobs continue, and Batch places no new job on the instance.",
   "section": 25
  },
  {
@@ -1160,7 +1160,7 @@
  {
   "term": "EC2",
   "expansion": "Elastic Compute Cloud",
-  "meaning": "The AWS service that rents virtual machines, called instances.",
+  "meaning": "The AWS service that rents virtual machines, which AWS calls instances.",
   "section": 24
  },
  {
@@ -1184,7 +1184,7 @@
  {
   "term": "ECS",
   "expansion": "Elastic Container Service",
-  "meaning": "The AWS service that starts containers on instances; a Batch compute environment contains an ECS cluster that its instances join.",
+  "meaning": "The AWS service that starts containers on instances. Each Batch compute environment contains an ECS cluster, and its instances join that cluster.",
   "section": 25
  },
  {
@@ -1202,7 +1202,7 @@
  {
   "term": "EFS",
   "expansion": "Elastic File System",
-  "meaning": "A shared network file system on AWS that a Batch job can mount as a volume, for example to keep checkpoints.",
+  "meaning": "A shared network file system on AWS. A Batch job can mount it as a volume, for example to keep its checkpoints.",
   "section": 25
  },
  {
@@ -1226,7 +1226,7 @@
  {
   "term": "EKS Auto Mode",
   "expansion": null,
-  "meaning": "The managed form of Karpenter-based scaling, in which AWS also runs the node software.",
+  "meaning": "A managed form of Karpenter-based scaling, in which AWS also runs the node software.",
   "section": 24
  },
  {
@@ -1350,6 +1350,12 @@
   "section": 4
  },
  {
+  "term": "Evaluation sweep",
+  "expansion": null,
+  "meaning": "The 500 simulated episodes that test each new policy before it may drive the real arm. Batch runs them as one array job.",
+  "section": 25
+ },
+ {
   "term": "Event source",
   "expansion": null,
   "meaning": "The name under which Linux exposes the PMU of one core type, such as armv8_pmuv3_1 for the Cortex-X925 on a DGX Spark. You name perf events through it.",
@@ -1406,7 +1412,7 @@
  {
   "term": "FIFO",
   "expansion": "first in, first out",
-  "meaning": "The default order of a Batch queue: the job at the front goes next, and blocks the rest if it cannot be placed.",
+  "meaning": "The default order of a Batch queue. The job at the front goes next, and if Batch cannot place it, it blocks the jobs behind it.",
   "section": 25
  },
  {
@@ -1744,6 +1750,12 @@
   "expansion": null,
   "meaning": "The Arm processors that AWS designs for EC2. Graviton2, 3, 4 and 5 use the Neoverse N1, V1, V2 and V3 cores.",
   "section": 21
+ },
+ {
+  "term": "Greengrass component",
+  "expansion": null,
+  "meaning": "A software package that AWS IoT Greengrass receives from the cloud and runs on the device. Its recipe names its dependencies and the commands that install and run it.",
+  "section": 24
  },
  {
   "term": "GRES",
@@ -2126,7 +2138,7 @@
  {
   "term": "Job definition",
   "expansion": null,
-  "meaning": "The template of a Batch job: image, command, resource needs, retry strategy and timeout.",
+  "meaning": "The template of a Batch job. It names the image and the command, and it sets the resources, the retry strategy and the timeout.",
   "section": 25
  },
  {
@@ -2138,13 +2150,13 @@
  {
   "term": "Job queue",
   "expansion": null,
-  "meaning": "The Batch object where jobs wait, with a priority and an ordered list of up to three compute environments.",
+  "meaning": "The Batch object where jobs wait. It has a priority and an ordered list of up to three compute environments.",
   "section": 25
  },
  {
   "term": "Job state",
   "expansion": null,
-  "meaning": "Where a Batch job is: SUBMITTED, PENDING, RUNNABLE, STARTING, RUNNING, then SUCCEEDED or FAILED.",
+  "meaning": "The stage a Batch job has reached: SUBMITTED, PENDING, RUNNABLE, STARTING and RUNNING, then SUCCEEDED or FAILED.",
   "section": 25
  },
  {
@@ -2222,7 +2234,7 @@
  {
   "term": "Kueue",
   "expansion": null,
-  "meaning": "A Kubernetes add-on that holds jobs against per-team quotas and decides when each is admitted.",
+  "meaning": "A Kubernetes add-on that holds jobs against per-team quotas and decides when each job can start.",
   "section": 24
  },
  {
@@ -2522,7 +2534,7 @@
  {
   "term": "minvCpus, desiredvCpus, maxvCpus",
   "expansion": null,
-  "meaning": "The floor a compute environment keeps running, the current target that Batch moves with queue demand, and the ceiling it may reach.",
+  "meaning": "The three numbers that size a compute environment: the floor it keeps running, the current target that Batch moves with queue demand, and the ceiling.",
   "section": 25
  },
  {
@@ -2540,7 +2552,7 @@
  {
   "term": "MLflow",
   "expansion": null,
-  "meaning": "An experiment tracking server and model registry, offered managed by SageMaker.",
+  "meaning": "An experiment tracking server and model registry. SageMaker offers it as a managed service.",
   "section": 24
  },
  {
@@ -2570,7 +2582,7 @@
  {
   "term": "Mountpoint for Amazon S3",
   "expansion": null,
-  "meaning": "A client that presents an S3 bucket as a local file system for reading and creating files.",
+  "meaning": "A client that presents an S3 bucket as a local file system. It can read files and create new ones, but it cannot modify existing files.",
   "section": 24
  },
  {
@@ -2642,7 +2654,7 @@
  {
   "term": "Multi-node parallel job",
   "expansion": null,
-  "meaning": "One Batch job that spans several instances, with a main node that starts first; On-Demand only.",
+  "meaning": "One Batch job that spans several instances. Its main node starts first, and the job runs on On-Demand Instances only.",
   "section": 25
  },
  {
@@ -2718,9 +2730,9 @@
   "section": 26
  },
  {
-  "term": "Node provider",
+  "term": "Node provisioner",
   "expansion": null,
-  "meaning": "The layer that starts a machine when a job is waiting and removes it when nothing is.",
+  "meaning": "The layer that starts a machine when a job is waiting and removes it when no job is waiting.",
   "section": 24
  },
  {
@@ -2816,7 +2828,7 @@
  {
   "term": "ODCR",
   "expansion": "On-Demand Capacity Reservation",
-  "meaning": "Capacity held for a named instance type in one Availability Zone for any duration, charged at the On-Demand rate.",
+  "meaning": "Capacity held for one instance type in one Availability Zone for as long as you keep it. You pay the On-Demand rate whether or not an instance runs in it.",
   "section": 24
  },
  {
@@ -2830,6 +2842,12 @@
   "expansion": null,
   "meaning": "An On-Demand Capacity Reservation is an EC2 reservation type that covers G instances, which Capacity Blocks do not.",
   "section": 13
+ },
+ {
+  "term": "On-Demand Instances",
+  "expansion": null,
+  "meaning": "EC2 capacity billed by the second with no commitment. AWS does not reclaim it.",
+  "section": 25
  },
  {
   "term": "Onboard computer",
@@ -2900,7 +2918,7 @@
  {
   "term": "OSMO",
   "expansion": null,
-  "meaning": "NVIDIA's open-source workflow orchestrator for physical AI pipelines on Kubernetes clusters.",
+  "meaning": "NVIDIA's open-source workflow orchestrator for physical AI pipelines. It runs on Kubernetes clusters.",
   "section": 24
  },
  {
@@ -2984,7 +3002,7 @@
  {
   "term": "PCS",
   "expansion": "AWS Parallel Computing Service",
-  "meaning": "Managed Slurm: AWS runs the Slurm controller and compute node groups launch EC2 instances for waiting jobs.",
+  "meaning": "Managed Slurm. AWS runs the Slurm controller, and compute node groups launch EC2 instances for waiting jobs.",
   "section": 24
  },
  {
@@ -3100,6 +3118,12 @@
   "expansion": null,
   "meaning": "World models that predict the next camera frames. They predict a reconstruction code, which a decoder turns back into pixels.",
   "section": 6
+ },
+ {
+  "term": "Placement group",
+  "expansion": null,
+  "meaning": "An EC2 setting that keeps the nodes of one job physically close together.",
+  "section": 24
  },
  {
   "term": "Plan",
@@ -3230,7 +3254,7 @@
  {
   "term": "Preemption",
   "expansion": null,
-  "meaning": "A scheduler stopping a running job to give its capacity to another; Batch does it only for SageMaker Training queues.",
+  "meaning": "A scheduler stopping a running job to give its capacity to another job. Batch does this only for queues of SageMaker Training jobs.",
   "section": 25
  },
  {
@@ -3326,7 +3350,7 @@
  {
   "term": "Queue",
   "expansion": null,
-  "meaning": "The layer that holds waiting jobs and decides which runs next.",
+  "meaning": "The layer that holds the waiting jobs and decides which one runs next.",
   "section": 24
  },
  {
@@ -3334,6 +3358,12 @@
   "expansion": null,
   "meaning": "The PCS object that users submit jobs to. It is one Slurm partition, and it points at one or more compute node groups.",
   "section": 26
+ },
+ {
+  "term": "Quota share",
+  "expansion": null,
+  "meaning": "A virtual queue nested inside a Batch queue for SageMaker Training jobs. A queue can have up to 20, and they can lend idle capacity to each other and take it back.",
+  "section": 25
  },
  {
   "term": "Rail (power)",
@@ -3398,7 +3428,7 @@
  {
   "term": "Rebalance recommendation",
   "expansion": null,
-  "meaning": "An EC2 signal that a Spot instance is at elevated risk of interruption.",
+  "meaning": "An EC2 signal that a Spot Instance is at elevated risk of interruption.",
   "section": 24
  },
  {
@@ -3542,7 +3572,7 @@
  {
   "term": "Retry strategy",
   "expansion": null,
-  "meaning": "The part of a job definition that says how many attempts a job gets and which failures are retried, for example only a status reason matching Host EC2*.",
+  "meaning": "The part of a job definition that sets how many attempts a job gets and which failures are retried, for example only a status reason that matches Host EC2*.",
   "section": 25
  },
  {
@@ -3644,7 +3674,7 @@
  {
   "term": "RUNNABLE",
   "expansion": null,
-  "meaning": "The state of a job that is ready and waiting for capacity, including the whole time an instance is launching for it.",
+  "meaning": "The state of a job that is ready and waits for capacity, including the whole time an instance launches for it. A job can stay in this state indefinitely when no capacity is available.",
   "section": 25
  },
  {
@@ -3668,7 +3698,7 @@
  {
   "term": "SageMaker Training Job",
   "expansion": null,
-  "meaning": "A managed run of one training container that bills for the duration of the job and then shuts the instances down.",
+  "meaning": "A managed run of one training container. It bills for the duration of the job and then shuts the instances down.",
   "section": 24
  },
  {
@@ -3710,13 +3740,13 @@
  {
   "term": "Scale to zero",
   "expansion": null,
-  "meaning": "A compute environment with a floor of 0 vCPUs, which holds no instance when its queue is empty.",
+  "meaning": "What a compute environment does when its floor, minvCpus, is 0 vCPUs: it holds no instance while its queue is empty.",
   "section": 25
  },
  {
   "term": "Scale-down delay",
   "expansion": null,
-  "meaning": "The time, set with minScaleDownDelayMinutes, that Batch keeps an instance after its last job so the next job skips the launch.",
+  "meaning": "The time, set with minScaleDownDelayMinutes, that Batch keeps an instance after its last job, so that the next job skips the instance launch.",
   "section": 25
  },
  {
@@ -3806,7 +3836,7 @@
  {
   "term": "Share identifier",
   "expansion": null,
-  "meaning": "A label on a job saying whose work it is, used by fair-share scheduling.",
+  "meaning": "A label on a job that says whose work it is. Fair-share scheduling uses it to divide the capacity.",
   "section": 25
  },
  {
@@ -3830,7 +3860,7 @@
  {
   "term": "SIGTERM and SIGKILL",
   "expansion": null,
-  "meaning": "The Unix signals that ask a process to stop and that force it to stop; Batch sends them 30 seconds apart when a job times out.",
+  "meaning": "The Unix signals that ask a process to stop and that force it to stop. When a job times out, Batch sends them 30 seconds apart.",
   "section": 25
  },
  {
@@ -3968,13 +3998,13 @@
  {
   "term": "Spot interruption",
   "expansion": null,
-  "meaning": "EC2 taking a Spot instance back, announced two minutes before on a best-effort basis.",
+  "meaning": "The event in which EC2 reclaims a Spot Instance. EC2 announces it two minutes before, on a best-effort basis.",
   "section": 24
  },
  {
   "term": "Spot interruption notice",
   "expansion": null,
-  "meaning": "The warning EC2 sends two minutes, on a best-effort basis, before it takes a Spot instance back.",
+  "meaning": "The warning that EC2 sends, on a best-effort basis, two minutes before it reclaims a Spot Instance.",
   "section": 25
  },
  {
@@ -4040,7 +4070,7 @@
  {
   "term": "STARTING",
   "expansion": null,
-  "meaning": "The state of a job that has been placed on an instance while its container image is pulled; it sits outside the timeout.",
+  "meaning": "The state of a job that Batch has placed on an instance while its container image is pulled. This time does not count toward the timeout.",
   "section": 25
  },
  {
@@ -4178,7 +4208,7 @@
  {
   "term": "Taint",
   "expansion": null,
-  "meaning": "A Kubernetes mark on a node that keeps pods off unless they tolerate it; Batch taints the EKS nodes it manages.",
+  "meaning": "A Kubernetes mark on a node that keeps pods off the node unless they tolerate it. Batch taints the EKS nodes it manages.",
   "section": 25
  },
  {

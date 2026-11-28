@@ -30,7 +30,7 @@ const TD: CSSProperties = { padding: '6px 10px', borderBottom: '1px solid #d5dbd
 const STAGE_TD: CSSProperties = { padding: '8px 10px 4px', borderBottom: '1px solid #5f6b7a', background: '#f4f5f7', fontWeight: 700 };
 
 /** The thread task, stated once for this section. */
-const TASK_SENTENCE = `The running example is the evaluation of one policy for the ${ARM} arm that must ${TASK_STORY}: 500 simulated episodes, each with its own random seed.`;
+const TASK_SENTENCE = `The example used throughout is the evaluation of one policy for the ${ARM} arm, whose task is to ${TASK_STORY}. The evaluation runs 500 simulated episodes, each with its own random seed.`;
 
 /* ------------------------------------------------------------------------ */
 /* Configuration text, adapted from a pinned first-party page; the Snippet    */
@@ -107,13 +107,14 @@ function ThreeLayersDiagram() {
         fontFamily="sans-serif"
       >
         <title id="aws-orchestration-layers-title">
-          Three layers chosen separately: a queue decides what runs next, a node provider starts the machines, a capacity
-          market supplies them
+          Three layers that you choose separately: a queue decides which job runs next, a node provisioner starts the
+          machines, and a purchase option supplies them
         </title>
         <desc>
-          A stack of four bands. On top an optional workflow layer. Then the queue layer and the node provider layer, each
-          listing what fills it for AWS Batch, AWS PCS, SageMaker HyperPod and Amazon EKS. At the bottom the capacity
-          market layer with five ways of buying a machine.
+          A stack of four bands. The top band is an optional workflow layer. Below it are the queue layer and the node
+          provisioner layer, and each of them lists what plays that role in AWS Batch, AWS PCS, SageMaker HyperPod and
+          Amazon EKS. The bottom band is the purchase option layer, with five ways of buying a machine and Savings Plans
+          as a discount on the bill.
         </desc>
         <rect x={0} y={0} width={400} height={592} fill="#fbfbfd" />
 
@@ -130,7 +131,7 @@ function ThreeLayersDiagram() {
           y={82}
           fill={CPU_FILL}
           ink={CPU_INK}
-          title="1. A queue decides what runs next"
+          title="1. A queue decides which job runs next"
           rows={[
             { tag: 'AWS Batch', tagFill: ORCH_TAGS.batch, text: 'a job queue' },
             { tag: 'AWS PCS', tagFill: ORCH_TAGS.pcs, text: 'a queue (a Slurm partition)' },
@@ -143,7 +144,7 @@ function ThreeLayersDiagram() {
           y={242}
           fill={MEM_FILL}
           ink={MEM_INK}
-          title="2. A node provider starts the machines"
+          title="2. A node provisioner starts the machines"
           rows={[
             { tag: 'AWS Batch', tagFill: ORCH_TAGS.batch, text: 'a compute environment' },
             { tag: 'AWS PCS', tagFill: ORCH_TAGS.pcs, text: 'a compute node group' },
@@ -155,14 +156,14 @@ function ThreeLayersDiagram() {
 
         <rect x={10} y={402} width={380} height={180} rx={6} fill={STORE_FILL} stroke={STORE_INK} strokeWidth={1.2} />
         <text x={22} y={426} fontSize={13} fontWeight={700} fill={STORE_INK}>
-          3. A capacity market supplies them
+          3. A purchase option supplies the machines
         </text>
         {[
           { x: 22, y: 440, w: 174, label: 'On-Demand' },
-          { x: 204, y: 440, w: 174, label: 'Spot' },
-          { x: 22, y: 476, w: 356, label: 'On-Demand Capacity Reservation (ODCR)' },
-          { x: 22, y: 512, w: 174, label: 'Capacity Block for ML' },
-          { x: 204, y: 512, w: 174, label: 'SageMaker training plan' },
+          { x: 204, y: 440, w: 174, label: 'Spot Instances' },
+          { x: 22, y: 476, w: 356, label: 'On-Demand Capacity Reservations (ODCRs)' },
+          { x: 22, y: 512, w: 174, label: 'Capacity Blocks for ML' },
+          { x: 204, y: 512, w: 174, label: 'SageMaker training plans' },
         ].map((c) => (
           <g key={c.label}>
             <rect x={c.x} y={c.y} width={c.w} height={28} rx={4} fill="#ffffff" stroke={STORE_INK} />
@@ -186,7 +187,7 @@ function ThreeLayersDiagram() {
 interface Placed {
   name: string;
   does: string;
-  shape: string;
+  workloadType: string;
   runs: string;
   next: string;
   cites: ReactNode;
@@ -197,7 +198,7 @@ interface StageRows {
   rows: Placed[];
 }
 
-const EDGE_SHAPE = 'On the device, at the edge';
+const ROBOT_TYPE = 'Real-time on the robot';
 
 const PLACED: StageRows[] = [
   {
@@ -205,13 +206,13 @@ const PLACED: StageRows[] = [
     rows: [
       {
         name: 'Record and encode',
-        does: 'Records the cameras and joint angles while a person guides the arm, and compresses the video.',
-        shape: EDGE_SHAPE,
-        runs: 'No scheduler: the computer beside the robot. The upload to Amazon S3 is the event that starts the cloud side.',
+        does: 'Records the cameras and the joint angles while a person guides the arm, and compresses the video.',
+        workloadType: ROBOT_TYPE,
+        runs: 'No cloud scheduler: it runs on the computer next to the robot. The upload of each recording to Amazon S3 is the event that starts the cloud part of the loop.',
         next: 'Section 9, Collecting Data',
         cites: (
           <>
-            <Cite id="F08-76">our workload table</Cite> <Cite id="F09-102">S3 User Guide, Using EventBridge</Cite>
+            <Cite id="F08-76">workload table, section 20</Cite> <Cite id="F09-102">S3 User Guide, Using EventBridge</Cite>
           </>
         ),
       },
@@ -223,8 +224,8 @@ const PLACED: StageRows[] = [
       {
         name: 'Decode and filter',
         does: 'Turns the video back into frames and drops the bad episodes.',
-        shape: 'Many small independent jobs, one per shard of episodes',
-        runs: 'An AWS Batch array job on Spot',
+        workloadType: 'Independent tasks, one per shard of episodes',
+        runs: 'An AWS Batch array job on Spot Instances',
         next: 'Section 25, AWS Batch',
         cites: (
           <>
@@ -236,8 +237,8 @@ const PLACED: StageRows[] = [
       {
         name: 'Embed and deduplicate',
         does: 'Runs a vision model over the clips and drops the near-duplicates.',
-        shape: 'Many small independent jobs, one whole GPU each',
-        runs: 'An AWS Batch array job on Spot',
+        workloadType: 'Independent tasks, each on one whole GPU',
+        runs: 'An AWS Batch array job on Spot Instances',
         next: 'Section 25, AWS Batch',
         cites: (
           <>
@@ -253,10 +254,10 @@ const PLACED: StageRows[] = [
     rows: [
       {
         name: 'CPU physics step',
-        does: 'Steps one simulated arm per CPU core to produce rollouts.',
-        shape: 'Many small independent jobs, CPU only',
-        runs: 'A Batch array job on Spot, or a Slurm job array on AWS PCS',
-        next: 'Sections 25 and 26',
+        does: 'Steps one simulated arm per CPU core to produce simulated episodes.',
+        workloadType: 'Independent tasks on CPU cores only',
+        runs: 'An AWS Batch array job on Spot Instances, or a Slurm job array on AWS PCS',
+        next: 'Section 25, AWS Batch; section 26, AWS Parallel Computing Service',
         cites: (
           <>
             <Cite id="F10-5">AWS Batch API Reference, instance types</Cite>{' '}
@@ -267,8 +268,9 @@ const PLACED: StageRows[] = [
       {
         name: 'GPU-parallel physics',
         does: 'Steps thousands of copies of the arm together on one GPU.',
-        shape: 'One GPU for minutes to hours, restartable from a checkpoint',
-        runs: 'A Batch job on G-family Spot',
+        workloadType:
+          'Independent tasks, or a Long single-machine run when it is part of reinforcement learning. It uses one GPU for minutes to hours and can restart from a checkpoint.',
+        runs: 'An AWS Batch job on G-family Spot Instances',
         next: 'Section 25, AWS Batch',
         cites: (
           <>
@@ -280,9 +282,9 @@ const PLACED: StageRows[] = [
       {
         name: 'Simulated cameras',
         does: 'Renders what each simulated camera sees at every step.',
-        shape: 'One GPU with ray-tracing cores, restartable',
-        runs: 'Batch or Amazon EKS on G-family Spot, with a short list of instance types',
-        next: 'Sections 25 and 28',
+        workloadType: 'Independent tasks that can restart, each on one GPU with ray-tracing cores',
+        runs: 'AWS Batch or Amazon EKS on G-family Spot Instances, with the instance list narrowed to G families of generation 4 or later',
+        next: 'Section 25, AWS Batch; section 28, Amazon EKS',
         cites: (
           <>
             <Cite id="F09-78">AWS Guidance for Physical AI for Robotics</Cite>{' '}
@@ -292,10 +294,10 @@ const PLACED: StageRows[] = [
       },
       {
         name: 'Generative augmentation',
-        does: 'A world model re-renders recorded clips or invents new ones.',
-        shape: 'Many restartable GPU jobs that need a large GPU memory',
-        runs: 'Batch on Spot; HyperPod when the generator shares a GPU pool with training',
-        next: 'Sections 25 and 27',
+        does: 'A world model re-renders recorded clips or generates new ones.',
+        workloadType: 'Independent tasks: many GPU jobs that can restart, and each needs a lot of GPU memory',
+        runs: 'AWS Batch on Spot Instances, or SageMaker HyperPod when the generator shares a GPU pool with training',
+        next: 'Section 25, AWS Batch; section 27, Amazon SageMaker HyperPod',
         cites: (
           <>
             <Cite id="F10-69">AWS HPC Blog, Cosmos world models on AWS Batch</Cite>{' '}
@@ -311,16 +313,16 @@ const PLACED: StageRows[] = [
       {
         name: 'Dataloader decode and augment',
         does: 'Decodes a few frames and transforms the images for every training sample.',
-        shape: 'Part of the training job: it runs on the CPU cores of the training machine',
-        runs: 'No scheduler decision. The lever is the instance size: CPU cores per GPU.',
-        next: 'The section of the training job it rides in',
-        cites: <Cite id="F08-76">our workload table</Cite>,
+        workloadType: 'Part of the training job: it runs on the CPU cores of the training machine',
+        runs: 'There is no scheduler to choose. You choose the instance size, which sets the number of CPU cores per GPU.',
+        next: 'The section that covers its training job',
+        cites: <Cite id="F08-76">workload table, section 20</Cite>,
       },
       {
         name: 'Policy fine-tune',
         does: "Fits a policy to the arm's own episodes.",
-        shape: 'One GPU for hours',
-        runs: 'One Batch job, or a SageMaker Training Job',
+        workloadType: 'Long single-machine runs: one GPU for hours',
+        runs: 'One AWS Batch job, or a SageMaker Training Job',
         next: 'Section 25, AWS Batch',
         cites: (
           <>
@@ -332,17 +334,17 @@ const PLACED: StageRows[] = [
       {
         name: 'World-model training',
         does: 'Teaches a small model to predict what the cameras will see next.',
-        shape: 'One GPU for hours',
-        runs: 'The same as the fine-tune',
+        workloadType: 'Long single-machine runs: one GPU for hours',
+        runs: 'The same as the policy fine-tune',
         next: 'Section 25, AWS Batch',
-        cites: <Cite id="F08-76">our workload table</Cite>,
+        cites: <Cite id="F08-76">workload table, section 20</Cite>,
       },
       {
         name: 'Robot foundation-model pretraining',
         does: 'Trains the base model that every fine-tune starts from.',
-        shape: 'Many nodes for days, as one job',
+        workloadType: 'Multi-node training: many nodes for days, as one job',
         runs: 'SageMaker HyperPod or AWS PCS, on reserved capacity',
-        next: 'Sections 27 and 26',
+        next: 'Section 27, Amazon SageMaker HyperPod; section 26, AWS Parallel Computing Service',
         cites: (
           <>
             <Cite id="F09-112">AWS Machine Learning Blog, 4 September 2026</Cite>{' '}
@@ -352,10 +354,10 @@ const PLACED: StageRows[] = [
       },
       {
         name: 'World-model pretraining',
-        does: 'Trains the base world model that the two world-model rows start from.',
-        shape: 'Many nodes for days, as one job',
+        does: 'Trains the base world model that world-model training and generative augmentation start from.',
+        workloadType: 'Multi-node training: many nodes for days, as one job',
         runs: 'SageMaker HyperPod or AWS PCS, on reserved capacity',
-        next: 'Sections 27 and 26',
+        next: 'Section 27, Amazon SageMaker HyperPod; section 26, AWS Parallel Computing Service',
         cites: (
           <>
             <Cite id="F09-84">AWS and NVIDIA post on Cosmos 3, reference architecture</Cite>{' '}
@@ -371,8 +373,8 @@ const PLACED: StageRows[] = [
       {
         name: 'Closed-loop evaluation',
         does: 'Lets each checkpoint attempt the task many times in simulation and counts the successes.',
-        shape: 'Many small independent jobs, one per seed',
-        runs: 'An AWS Batch array job on Spot',
+        workloadType: 'Independent tasks, one per seed',
+        runs: 'An AWS Batch array job on Spot Instances',
         next: 'Section 25, AWS Batch',
         cites: <Cite id="F09-5">AWS Batch User Guide, Array jobs</Cite>,
       },
@@ -384,17 +386,17 @@ const PLACED: StageRows[] = [
       {
         name: 'Engine build',
         does: 'Compiles the chosen policy for the chip on the robot.',
-        shape: `${EDGE_SHAPE}, for minutes`,
-        runs: 'No scheduler: the build runs on the target device. Only the export before it is a small cloud job.',
+        workloadType: "Independent tasks that run for minutes on the robot's own computer",
+        runs: 'No cloud scheduler: the build runs on the target device. Only the export of the model before the build is a small cloud job.',
         next: 'Section 17, Running on the Robot',
-        cites: <Cite id="F08-76">our workload table</Cite>,
+        cites: <Cite id="F08-76">workload table, section 20</Cite>,
       },
       {
         name: 'On-robot inference',
         does: "Runs the policy inside the arm's control loop.",
-        shape: EDGE_SHAPE,
-        runs: 'No scheduler: AWS IoT Greengrass delivers the policy and the arm runs it.',
-        next: 'Sections 17 and 18',
+        workloadType: ROBOT_TYPE,
+        runs: "No cloud scheduler: AWS IoT Greengrass delivers the policy, and the robot's computer runs it.",
+        next: 'Section 17, Running on the Robot; section 18, The Fleet',
         cites: <Cite id="F07-84">AWS IoT Greengrass v2 documentation</Cite>,
       },
     ],
@@ -417,10 +419,10 @@ interface CompareRow {
 const COMPARE: CompareRow[] = [
   {
     row: 'What you submit',
-    batch: 'A container job, to a job queue',
-    pcs: 'A script, with sbatch, from a login node',
+    batch: 'A container job, sent to a job queue',
+    pcs: 'A script, submitted with sbatch from a login node',
     hyperpod: 'An sbatch script, or a Kubernetes job',
-    eks: 'A Kubernetes Job, labelled with its queue',
+    eks: 'A Kubernetes Job, labelled with the name of its queue',
     cites: (
       <>
         <Cite id="F09-130">AWS Batch API Reference, SubmitJob</Cite> <Cite id="F10-228">AWS PCS User Guide, submitting jobs</Cite>{' '}
@@ -431,9 +433,9 @@ const COMPARE: CompareRow[] = [
   },
   {
     row: 'Where work waits',
-    batch: 'A job queue: first in, first out, or fair share',
+    batch: 'A job queue, first in first out or fair share',
     pcs: 'A queue, which is a Slurm partition',
-    hyperpod: 'A Slurm partition, or a per-team Kueue queue',
+    hyperpod: 'A Slurm partition, or a Kueue queue for each team',
     eks: 'Nowhere, until you install Kueue or KAI Scheduler',
     cites: (
       <>
@@ -445,10 +447,10 @@ const COMPARE: CompareRow[] = [
   },
   {
     row: 'Who starts instances',
-    batch: 'Batch, from the demand in the queue',
-    pcs: 'PCS, for the nodes Slurm has allocated to waiting jobs',
-    hyperpod: 'You set a count; on EKS, managed Karpenter can add nodes for pending pods',
-    eks: 'Karpenter or EKS Auto Mode, for pods that fit no node',
+    batch: 'Batch, based on the jobs waiting in the queue',
+    pcs: 'PCS, for the nodes that Slurm has allocated to waiting jobs',
+    hyperpod: 'You set the instance count. On a HyperPod cluster that uses EKS, managed Karpenter can add nodes for pending pods.',
+    eks: 'Karpenter or EKS Auto Mode, for pods that fit on no existing node',
     cites: (
       <>
         <Cite id="F10-37">AWS Batch User Guide, scaling</Cite> <Cite id="F10-217">AWS PCS User Guide, job-level scaling</Cite>{' '}
@@ -460,10 +462,10 @@ const COMPARE: CompareRow[] = [
   },
   {
     row: 'Scale to zero',
-    batch: 'Yes: with a floor of 0 vCPUs, an empty queue holds no instance',
-    pcs: 'Yes, per node group. The controller stays, with its own hourly fee.',
-    hyperpod: 'Only on EKS with managed Karpenter. Under Slurm the pool is fixed.',
-    eks: 'Yes for the nodes. The control plane stays.',
+    batch: 'Yes. With a minimum of 0 vCPUs, no instance keeps running when the queue is empty.',
+    pcs: 'Yes, for each node group. The Slurm controller keeps running and has its own hourly fee.',
+    hyperpod: 'Only on a cluster that uses EKS, with managed Karpenter. Under Slurm, the number of instances is fixed.',
+    eks: 'Yes for the nodes. The control plane keeps running.',
     cites: (
       <>
         <Cite id="F10-38">AWS Batch User Guide, minvCpus</Cite> <Cite id="F10-208">AWS PCS User Guide, scaling configuration</Cite>{' '}
@@ -475,9 +477,9 @@ const COMPARE: CompareRow[] = [
     ),
   },
   {
-    row: 'Spot',
-    batch: 'Yes, with a retry rule for reclaimed hosts',
-    pcs: 'Yes, one market per node group. No page read describes an interruption step by step.',
+    row: 'Spot Instances',
+    batch: 'Yes, with a retry rule for jobs whose instance is reclaimed',
+    pcs: 'Yes, with one purchase option per node group. As of November 2026, the PCS User Guide does not describe step by step what happens when a Spot Instance is reclaimed.',
     hyperpod: 'Documented for EKS-orchestrated clusters only',
     eks: 'Yes, as a capacity type on the node pool',
     cites: (
@@ -491,10 +493,10 @@ const COMPARE: CompareRow[] = [
   },
   {
     row: 'Multi-node training',
-    batch: 'On-Demand only, one instance type; a lost worker node is not replaced',
-    pcs: 'Yes: a job starts only when all of its nodes are up',
-    hyperpod: 'Its purpose: a faulty node is replaced and the job resumes',
-    eks: 'Yes, with JobSet, which restarts all workers as one unit',
+    batch: 'On-Demand only, with one instance type. A lost worker node is not replaced.',
+    pcs: 'Yes. A job starts only when all of its nodes are up.',
+    hyperpod: 'This is what it is built for: it replaces a faulty node, and the job resumes.',
+    eks: 'Yes, with JobSet, which restarts all workers together as one unit',
     cites: (
       <>
         <Cite id="F09-8">AWS Batch User Guide, multi-node parallel jobs</Cite> <Cite id="F10-49">AWS Batch API Reference, node properties</Cite>{' '}
@@ -507,13 +509,13 @@ const COMPARE: CompareRow[] = [
   },
   {
     row: 'What you operate yourself',
-    batch: 'The container image, and machine image updates',
-    pcs: 'The machine image, launch templates, storage mounts',
-    hyperpod: 'Instance counts; under Slurm, a controller instance you size',
+    batch: 'The container image, and updates to the machine image',
+    pcs: 'The machine image, the launch templates and the storage mounts',
+    hyperpod: 'The instance counts and, under Slurm, a controller instance whose size you choose',
     eks: 'The queueing layer, and the node software unless Auto Mode runs it',
     cites: (
       <>
-        <Cite id="F10-14">AWS Batch User Guide, image updates</Cite> <Cite id="F10-245">our reading of the AWS PCS User Guide</Cite>{' '}
+        <Cite id="F10-14">AWS Batch User Guide, image updates</Cite> <Cite id="F10-245">AWS PCS User Guide, what you operate</Cite>{' '}
         <Cite id="F10-300">SageMaker Developer Guide, HyperPod orchestrators</Cite>{' '}
         <Cite id="F10-430">EKS User Guide, what Auto Mode manages</Cite>
       </>
@@ -532,7 +534,7 @@ export function AwsOrchestration() {
         header={
           <Header
             variant="h1"
-            description="See each of the loop's fifteen workloads placed on an AWS scheduler and a capacity market, so you know which of the next four sections is yours (AWS documentation and first-party posts, read 2026-11-20)."
+            description="Each of the five workload types in the robot's loop has an AWS service that fits it. For each of the fifteen workloads, you can find where it runs, which purchase option it should use and how to set up its queue and machines. You can also find which of the next four sections covers your workload."
           >
             24. Orchestrating Physical AI on AWS: Which Service Runs Each Workload
           </Header>
@@ -540,16 +542,88 @@ export function AwsOrchestration() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            This section is the map from the robot&apos;s loop to AWS. It builds on section 20, The Fifteen Workloads, which named the jobs the loop is made of and sorted them by how long they run, how tightly their
-            parts depend on each other and whether they survive an interruption. Here each of those jobs gets a place
-            to run.
+            Section 20, The Fifteen Workloads, sorted the jobs of the robot&apos;s loop into five workload types. It
+            used three properties of each job: how long it runs, whether its parts exchange data while they run, and
+            whether it can survive an interruption. Here, you match each workload type to an AWS service and a
+            purchase option.
           </Box>
           <Box variant="p">
-            A place has two parts. An <em>orchestrator</em> is the service that holds the waiting jobs, starts machines
-            for them and removes the machines afterwards. AWS has four that schedule GPU work, and each has its own
-            section after this one. A <em>capacity market</em> is the way the machine is bought, and it decides whether
-            the machine can be taken back in the middle of a job. {TASK_SENTENCE}
+            An <em>orchestrator</em> is the service that holds the waiting jobs, starts machines for them and removes
+            the machines when the work is done. AWS has four orchestrators for GPU work: AWS Batch, AWS Parallel
+            Computing Service (PCS), Amazon SageMaker HyperPod and Amazon Elastic Kubernetes Service (Amazon EKS). Each
+            of them has its own section after this one. The <em>purchase option</em> is the way you buy the machines.
+            Some purchase options let AWS reclaim a machine in the middle of a job, and others do not. The options are On-Demand, Spot
+            Instances, Savings Plans, Capacity Blocks for ML and On-Demand Capacity Reservations, and each one is
+            explained further down.
           </Box>
+          <Box variant="p">{TASK_SENTENCE}</Box>
+          <Box variant="p">Here is where each workload type runs on AWS, and how to set it up:</Box>
+          <ul style={LIST}>
+            <li>
+              <strong>Independent tasks.</strong> The work splits into many short pieces that do not depend on each
+              other, such as decoding each shard of recorded episodes, stepping the CPU physics or running the 500
+              evaluation episodes. Run this work as an AWS Batch array job. An array job is one submission that creates
+              a child job for each piece. In AWS Batch, you submit jobs to a job queue, and the compute environment
+              behind the queue starts the instances. Give the queue a compute environment that runs on Spot Instances,
+              allows at least 10 instance types and has a minimum of 0 vCPUs. With that minimum, no instance keeps
+              running when the queue is empty. If AWS reclaims an instance, only the pieces running on it are lost, and
+              a retry rule on the job runs them again. Slurm is a job scheduler that comes from supercomputing, and AWS
+              PCS runs it as a managed service. A team that already uses Slurm can run the same work as a Slurm job
+              array on AWS PCS. <Cite id="F09-5">AWS Batch User Guide, Array jobs</Cite>{' '}
+              <Cite id="F10-38">AWS Batch User Guide, minvCpus</Cite>{' '}
+              <Cite id="F10-529">EC2 User Guide, Spot best practices</Cite>{' '}
+              <Cite id="F09-10">AWS Batch User Guide, Spot best practices</Cite>{' '}
+              <Cite id="F10-228">AWS PCS User Guide, submitting jobs</Cite>
+            </li>
+            <li>
+              <strong>Long single-machine runs.</strong> Fine-tuning a policy or training a small world model keeps
+              one GPU busy for hours. Run each one as a single AWS Batch job or as a SageMaker Training Job. A
+              SageMaker Training Job runs one training container, bills for the duration of the job and then shuts its
+              instances down. A checkpoint is the saved weights of the model at one point in training, and the job can
+              resume from it. If you run these jobs on Spot Instances, write checkpoints on a timer, because the job
+              loses all the work done since the last checkpoint when AWS reclaims its instance. The AWS Batch guide
+              advises splitting Spot work into parts of 30 minutes or less.{' '}
+              <Cite id="F09-81">AWS Physical AI Blog, 19 November 2026</Cite>{' '}
+              <Cite id="F10-535">AWS Batch User Guide and EKS Best Practices Guide, checkpointing</Cite>
+            </li>
+            <li>
+              <strong>Multi-node training.</strong> Pretraining a robot foundation model or a world model runs across
+              many nodes for days as one job. Run it on SageMaker HyperPod. HyperPod is a persistent GPU cluster that
+              replaces a failed node and resumes the job. AWS PCS also fits, because it starts a job only when all of
+              its nodes are up. On either service, run the job on reserved capacity, such as Capacity Blocks for ML. A
+              Capacity Block reserves GPU instances for a fixed period that you book in advance. On AWS PCS, the
+              instances come from compute node groups, and each node group has exactly one purchase option and takes
+              one Capacity Block. So put the Capacity Block in a compute node group of its own. Spot Instances are not
+              an option, because AWS strongly discourages Spot for work that is tightly coupled
+              between nodes. AWS Batch can run multi-node jobs, but only on On-Demand instances of one instance type,
+              and it does not replace a lost worker node.{' '}
+              <Cite id="F09-112">AWS Machine Learning Blog, 4 September 2026</Cite>{' '}
+              <Cite id="F10-314">SageMaker Developer Guide, node recovery</Cite>{' '}
+              <Cite id="F10-217">AWS PCS User Guide, job-level scaling</Cite>{' '}
+              <Cite id="F10-234">AWS PCS User Guide, Capacity Blocks</Cite>{' '}
+              <Cite id="F10-207">AWS PCS User Guide, purchase options</Cite>{' '}
+              <Cite id="F10-530">EC2 User Guide, Spot best practices</Cite>{' '}
+              <Cite id="F09-8">AWS Batch User Guide, multi-node parallel jobs</Cite>
+            </li>
+            <li>
+              <strong>Always-on streams.</strong> This work runs all the time at a steady rate. For one arm, none of
+              the fifteen workloads is a service that has to stay up, and video decoding becomes an always-on
+              stream only when a fleet sends video all day (section 20, The Fifteen Workloads). A team needs machines that stay up in two cases:
+              when it serves a model, as the AWS and NVIDIA architecture for the Cosmos 3 world model does on Amazon
+              EKS, and when several teams share one permanent pool of GPUs. Amazon EKS fits when services and batch jobs
+              must share the same machines. SageMaker HyperPod fits when several teams share the pool under quotas.{' '}
+              <Cite id="F09-84">AWS and NVIDIA post on Cosmos 3, reference architecture</Cite>{' '}
+              <Cite id="F10-320">SageMaker Developer Guide, task governance</Cite>
+            </li>
+            <li>
+              <strong>Real-time on the robot.</strong> Recording the arm and running its policy happen on the computer
+              next to the arm, so no cloud orchestrator is involved. New versions of the policy reach that computer
+              through AWS IoT Greengrass. Greengrass is software on the device that receives software packages, called
+              components, from the cloud. The computer next to the arm then runs the policy itself.{' '}
+              <Cite id="F07-84">AWS IoT Greengrass v2 documentation</Cite>
+            </li>
+          </ul>
+          <Box variant="p">For one arm, most of the loop therefore runs on AWS Batch.</Box>
         </SpaceBetween>
       </Container>
 
@@ -557,50 +631,50 @@ export function AwsOrchestration() {
         header={
           <Header
             variant="h2"
-            description="Follow one episode from the bench to the cloud and back, and see which service carries each stage, before any service is taken apart."
+            description="Follow one episode from the robot to the cloud and back, and see which AWS service runs each stage of the loop."
           >
-            The loop on AWS
+            Which AWS service runs each stage of the loop
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The arm&apos;s loop has six stages, and each hands something to the next: recorded episodes, a clean
-            dataset, synthetic episodes, a checkpoint (the saved weights of a policy), a success rate, and a policy
-            running on the arm. The figure walks them in order. Read the &quot;Runs on&quot; row of each card: it is
-            where this dive places the stage.
+            The arm&apos;s loop has six stages: collect, curate, simulate, train, evaluate and deploy. Each stage hands
+            its result to the next one. Collecting produces recorded episodes, curating produces a clean dataset,
+            simulating produces synthetic episodes, training produces a checkpoint, evaluating produces a success rate,
+            and deploying puts the policy on the arm. The figure walks through the stages in order, and the &quot;Runs
+            on&quot; row of each card names the AWS service for that stage.
           </Box>
           <LoopOnAws
             emphasis="service"
             cites="F08-76 F09-5 F09-73 F09-78 F09-81 F09-84 F09-100 F09-102 F09-110 F09-112 F07-84 F10-69"
-            caption="Press Play or Step. Each card is one stage of the loop: what happens to the arm's data, the part of the machine the stage loads (section 20), the AWS service it runs on, and what it hands on. The placements are this dive's reading of AWS's reference architectures and documentation. Illustrative, not measured."
+            caption="Press Play or Step. Each card is one stage of the loop. It shows what happens to the arm's data, the stage's bottleneck (section 20, The Fifteen Workloads), the AWS service the stage runs on, and what the stage hands to the next one. The service placements are this dive's recommendation, based on AWS's reference architectures and documentation. The figure is an illustration, not a measurement."
           />
           <Box variant="p">
-            Collecting happens on the computer beside the robot, and the cloud&apos;s part starts when an episode file
-            lands in Amazon S3. Curating and evaluating are the same kind of job: many small pieces that do not depend
-            on each other, so a machine lost in the middle costs one piece. AWS Batch has a primitive for that, the{' '}
-            <em>array job</em>: one submission that spawns 2 to 10,000 child jobs, each of which reads its own index
-            and uses it to pick a shard or a seed. The 500 evaluation episodes are one array of 500 children.{' '}
-            <Cite id="F09-5">AWS Batch User Guide, Array jobs</Cite>
+            Collecting happens on the computer next to the robot. The cloud&apos;s work starts when an episode file
+            arrives in Amazon S3. Curating and evaluating are both Independent tasks: they split into many small pieces
+            that do not depend on each other, so if a machine is lost in the
+            middle, only one piece is lost. AWS Batch runs
+            this kind of work as an array job. One array job creates between 2 and 10,000 child jobs, and each child
+            reads its own index number to pick a shard of data or a random seed. The 500 evaluation episodes become one
+            array job with 500 children. <Cite id="F09-5">AWS Batch User Guide, Array jobs</Cite>
           </Box>
           <Box variant="p">
-            AWS&apos;s reference architecture for robotics puts the simulation workloads on AWS Batch across GPU
-            instances that scale with demand, trains on Amazon SageMaker, and deploys to the robot with AWS IoT
-            Greengrass, which also sends sensor data back. The AWS and NVIDIA architecture for the Cosmos 3 world model
-            assigns a service per stage in the same way: curation on Batch, post-training on SageMaker HyperPod,
-            serving on Amazon EKS.{' '}
+            Two published reference architectures also assign one AWS service to each stage. In AWS&apos;s
+            Guidance for Physical AI for Robotics, simulation runs on AWS Batch on GPU instances that scale with demand,
+            training runs on Amazon SageMaker, and AWS IoT Greengrass deploys the policy to the robot and sends sensor
+            data back. In the AWS and NVIDIA architecture for the Cosmos 3 world model, curation runs on AWS Batch,
+            post-training runs on SageMaker HyperPod and serving runs on Amazon EKS.{' '}
             <Cite id="F09-78">AWS Guidance for Physical AI for Robotics</Cite>{' '}
             <Cite id="F09-84">AWS and NVIDIA post on Cosmos 3, reference architecture</Cite>
           </Box>
           <Box variant="p">
-            Training splits by size. A fine-tune on one GPU needs no cluster. A run across many nodes for days needs a
-            cluster that stays up and repairs itself. AWS&apos;s newest post on training robot policies, which uses
-            the {ARM}, gives the rule in one sentence: Training Jobs for a fully managed service, HyperPod for a team
-            that already runs Kubernetes or Slurm (the job scheduler of classic supercomputing, taken apart in section 26) and wants a persistent cluster. A <em>SageMaker Training Job</em> is
-            the one name in that rule that is not an orchestrator: it runs one training container, bills for the
-            duration of the job and shuts the instances down. Deployment is a delivery: Greengrass is software on the
-            robot&apos;s computer that receives components from the cloud, and the arm runs the policy itself. <Cite id="F09-81">AWS Physical AI Blog, 19 November 2026</Cite>{' '}
-            <Cite id="F07-84">AWS IoT Greengrass v2 documentation</Cite>
+            For training, you choose the service by the size of the run. A fine-tune on one GPU does not need a
+            cluster. A run across many nodes for days needs a cluster that stays up and repairs itself when a node
+            fails. An AWS post on training robot policies with the {ARM} arm gives a simple rule for choosing between
+            two SageMaker options. Use SageMaker Training Jobs if you want a fully managed service. Use SageMaker HyperPod if your team
+            already runs Kubernetes or Slurm and wants a persistent cluster. Of these two, only HyperPod is one of the
+            four orchestrators. <Cite id="F09-81">AWS Physical AI Blog, 19 November 2026</Cite>
           </Box>
         </SpaceBetween>
       </Container>
@@ -609,19 +683,24 @@ export function AwsOrchestration() {
         header={
           <Header
             variant="h2"
-            description="Find your job in the table and leave with its shape, its scheduler and the section that takes that scheduler apart."
+            description="Find your workload in the table to see its workload type, the AWS service it runs on and the section that covers that service."
           >
-            The fifteen workloads placed
+            Where each of the fifteen workloads runs
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The table lists the fifteen workloads of section 20 in loop order. Each row says what the workload does for
-            the robot, the shape of the job in plain words, and where it runs. The placement is our reading of the
-            sources in each row: no AWS page that compares Batch, HyperPod and EKS side by side for training or
-            simulation was located in this research.{' '}
-            <Cite id="F09-110">searches of AWS documentation run on 2026-11-20</Cite>
+            The table lists the fifteen workloads of section 20, The Fifteen Workloads, in the order of the loop. Each
+            row says what the workload does for the robot, its workload type and where it runs. Each placement is
+            this dive&apos;s recommendation, based on the sources cited in its row. A search of the AWS
+            documentation in November 2026 found no AWS page that compares AWS Batch, SageMaker HyperPod and Amazon EKS
+            side by side for training or simulation.{' '}
+            <Cite id="F09-110">search of the AWS documentation, and the AWS generative AI decision guide</Cite>
+          </Box>
+          <Box variant="p">
+            Two GPU instance families appear in the rows. The G family has GPUs with ray-tracing cores, which simulated
+            cameras need (section 13, Rendering and Ray Tracing). The P family has GPUs sized for training throughput.
           </Box>
           <div style={{ overflowX: 'auto' }}>
             <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 900 }}>
@@ -629,7 +708,7 @@ export function AwsOrchestration() {
                 <tr>
                   <th style={TH}>Workload</th>
                   <th style={TH}>What it does in the loop</th>
-                  <th style={TH}>Job shape</th>
+                  <th style={TH}>Workload type</th>
                   <th style={TH}>Runs on</th>
                   <th style={TH}>Read next</th>
                   <th style={TH}>Sources</th>
@@ -648,7 +727,7 @@ export function AwsOrchestration() {
                         <strong>{r.name}</strong>
                       </td>
                       <td style={TD}>{r.does}</td>
-                      <td style={TD}>{r.shape}</td>
+                      <td style={TD}>{r.workloadType}</td>
                       <td style={TD}>{r.runs}</td>
                       <td style={TD}>{r.next}</td>
                       <td style={TD}>{r.cites}</td>
@@ -659,12 +738,12 @@ export function AwsOrchestration() {
             </table>
           </div>
           <Box variant="p">
-            Most rows land on AWS Batch, because most of the loop is either many small independent jobs or one GPU for
-            hours. The two pretraining rows are the only ones that need many nodes as one job, and they belong to labs
-            that build base models. Three rows never reach a cloud scheduler: they run at the edge. None of the fifteen
-            is a service that stays up. That shape appears when a team serves a model, as the Cosmos architecture does
-            on EKS, or when several teams share one standing pool of GPUs.{' '}
-            <Cite id="F09-84">AWS and NVIDIA post on Cosmos 3, reference architecture</Cite>
+            Most of the workloads run on AWS Batch, because most of the loop is either Independent tasks or a Long
+            single-machine run on one GPU. Only the two pretraining workloads need many nodes as one job, and only labs
+            that build base models run them. Three workloads never reach a cloud scheduler, because they run on the
+            computer next to the robot. None of the fifteen is a service that has to stay up. You need a service like
+            that when a team serves a model, as the Cosmos 3 architecture does on Amazon EKS, or when several teams
+            share one permanent pool of GPUs. <Cite id="F09-84">AWS and NVIDIA post on Cosmos 3, reference architecture</Cite>
           </Box>
         </SpaceBetween>
       </Container>
@@ -673,74 +752,86 @@ export function AwsOrchestration() {
         header={
           <Header
             variant="h2"
-            description="Say in two sentences what each service is and name the situation that calls for it, so the next four sections read as one family."
+            description="The four orchestrators differ in which of three layers they manage for you: the queue, the machines and the purchase option. For each orchestrator, you learn what it is and when to choose it. Each of the next four sections then covers one of them in detail."
           >
-            Four orchestrators on three layers
+            The four orchestrators and when to use each one
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Every way of running a job on rented GPUs answers three questions, and each question has its own layer. A{' '}
-            <em>queue</em> holds the waiting jobs and decides which runs next. A <em>node provider</em> starts a
-            machine when a job is waiting and removes it when nothing is. A <em>capacity market</em> is how the machine
-            is bought. The four services differ in how many layers they own and in what they call them.
+            Running a job on rented GPUs involves three layers. The <em>queue</em> holds the waiting jobs and decides
+            which one runs next. The <em>node provisioner</em> starts a machine when a job is waiting and removes it
+            when no job is waiting. The purchase option is how the machine is bought. The four orchestrators
+            differ in which of these layers they manage for you and in what they call each layer.
           </Box>
+          <ul style={LIST}>
+            <li>
+              <strong>AWS Batch</strong> is a managed job queue for containers. You describe a job once and submit it.
+              Batch starts EC2 (Amazon Elastic Compute Cloud) instances for the job, runs it, retries it if it fails
+              and removes the instances when the queue is empty. Choose it for Independent tasks and Long
+              single-machine runs when you have no cluster: 500 evaluation seeds, a night of synthetic data, or a
+              fine-tune a few times a week. It is the wrong choice when teams must take GPUs back from each other,
+              because Batch does not preempt a running container job. It is also the wrong choice for a job that spans
+              many nodes on Spot Instances. Section 25, AWS Batch, covers it in detail.{' '}
+              <Cite id="F10-38">AWS Batch User Guide, minvCpus</Cite>{' '}
+              <Cite id="F10-34">AWS Batch User Guide, quota management and preemption</Cite>{' '}
+              <Cite id="F09-8">AWS Batch User Guide, multi-node parallel jobs</Cite>{' '}
+              <Cite id="F09-5">AWS Batch User Guide, Array jobs</Cite>
+            </li>
+            <li>
+              <strong>AWS Parallel Computing Service (PCS)</strong> is managed Slurm. You submit work to Slurm with
+              commands such as <code>sbatch</code>. AWS runs the Slurm controller, and your compute node groups launch
+              EC2 instances for waiting jobs and scale back to zero when there are none. Choose PCS when your team
+              already works with Slurm, or when you need multi-node jobs without keeping machines running between
+              them. It is a poor fit for container-first work, because a PCS job is a process on a machine image. It is
+              also a poor fit when you need documentation of what happens, step by step, when AWS reclaims a Spot
+              Instance. Section 26,
+              AWS Parallel Computing Service, covers it in detail.{' '}
+              <Cite id="F10-200">AWS PCS User Guide, what PCS is</Cite>{' '}
+              <Cite id="F10-208">AWS PCS User Guide, scaling configuration</Cite>{' '}
+              <Cite id="F10-245">AWS PCS User Guide, strengths and gaps</Cite>{' '}
+              <Cite id="F10-222">AWS PCS User Guide, losing a node</Cite>
+            </li>
+            <li>
+              <strong>Amazon SageMaker HyperPod</strong> is a persistent cluster of GPU instances that AWS keeps
+              healthy. When a node fails, HyperPod replaces it and can resume the job that was running on it. You
+              schedule work on it with Slurm or with Kubernetes. Choose it for Multi-node training that runs for days.
+              An AWS post describes this case as &quot;the tens-of-nodes tail where failures are statistically
+              frequent&quot;. Choose it also when several teams share one pool of GPUs under quotas. It is a poor fit
+              for a single fine-tune on one GPU or for a simulation fleet on G-family instances. The reason is that,
+              as far as the documentation shows, its distinguishing features are built for multi-GPU P-family nodes,
+              and a persistent cluster bills for every provisioned instance whether or not jobs are running. Section 27,
+              Amazon SageMaker HyperPod, covers it in detail.{' '}
+              <Cite id="F10-300">SageMaker Developer Guide, HyperPod orchestrators</Cite>{' '}
+              <Cite id="F10-314">SageMaker Developer Guide, node recovery</Cite>{' '}
+              <Cite id="F09-112">AWS Machine Learning Blog, 4 September 2026</Cite>{' '}
+              <Cite id="F10-334">HyperPod documentation, strengths and gaps</Cite>
+            </li>
+            <li>
+              <strong>Amazon EKS</strong> is managed Kubernetes. AWS runs the Kubernetes control plane, and you add the
+              parts that start nodes and queue jobs. Karpenter is an open-source node provisioner: it starts nodes for
+              pods that fit on no existing node. EKS Auto Mode is a managed form of
+              this scaling, in which AWS also runs the node software. Kueue is an add-on that holds each job until its
+              team&apos;s quota has room, and decides whose job goes first. Nothing queues jobs on EKS until you install
+              Kueue or another scheduler with queues, such as KAI Scheduler. Choose EKS when your team already works in
+              Kubernetes, or when services and batch jobs must share one pool of machines. It is a poor fit when you
+              want the queue and the scaling as one service with nothing to assemble. Section 28, Amazon EKS, covers it
+              in detail. <Cite id="F10-401">Karpenter v1.15.3 documentation, NodePools</Cite>{' '}
+              <Cite id="F10-430">EKS User Guide, what Auto Mode manages</Cite>{' '}
+              <Cite id="F10-450">Kueue v0.20.7 documentation, concepts</Cite>
+            </li>
+          </ul>
           <Figure
             cites="F10-21 F10-215 F10-206 F10-300 F10-320 F10-401 F10-450"
-            caption="Read from the top down. A job enters a queue, the queue asks a node provider for a machine, and the node provider draws the machine from a capacity market. Each band lists what fills that layer for the four AWS orchestrators. The decomposition is our reading of the documentation. Illustrative, not measured."
+            caption="Read the figure from the top down. A job enters a queue, the queue asks a node provisioner for a machine, and the node provisioner gets the machine through a purchase option. Each band lists what plays that role in each of the four AWS orchestrators. An optional workflow layer on top orders the steps of a pipeline. The split into three layers is this dive's interpretation of the documentation. The figure is an illustration, not a measurement."
           >
             <ThreeLayersDiagram />
           </Figure>
           <Box variant="p">
-            <strong>AWS Batch</strong> is a managed job queue for containers. You describe a job once and submit it;
-            Batch starts EC2 (Elastic Compute Cloud) instances for it, runs it, retries it and removes the instances
-            when the queue is empty. Reach for it when you have independent runs and no cluster: 500 evaluation seeds,
-            a night of synthetic data, a fine-tune a few times a week. Look elsewhere when teams must take GPUs back
-            from each other, because Batch does not preempt a running container job, or when one job spans many nodes
-            on Spot. Section 25, AWS Batch, takes it apart.{' '}
-            <Cite id="F10-38">AWS Batch User Guide, minvCpus</Cite>{' '}
-            <Cite id="F10-34">AWS Batch User Guide, quota management and preemption</Cite>{' '}
-            <Cite id="F09-8">AWS Batch User Guide, multi-node parallel jobs</Cite>{' '}
-            <Cite id="F09-5">AWS Batch User Guide, Array jobs</Cite>
+            The table compares the four orchestrators row by row. Each of the next four sections covers one column in
+            detail.
           </Box>
-          <Box variant="p">
-            <strong>AWS Parallel Computing Service (PCS)</strong> is managed Slurm. Slurm is
-            driven by commands such as <code>sbatch</code>; AWS runs its controller, and your
-            compute node groups launch EC2 instances for waiting jobs and scale back to zero. Reach for it when the
-            team already thinks in Slurm, or needs multi-node jobs without machines held between them. Look elsewhere
-            when the work is container-first, since a PCS job is a process on a machine image, or when you need a
-            documented Spot interruption sequence. Section 26, AWS Parallel Computing Service, takes it apart.{' '}
-            <Cite id="F10-200">AWS PCS User Guide, what PCS is</Cite>{' '}
-            <Cite id="F10-208">AWS PCS User Guide, scaling configuration</Cite>{' '}
-            <Cite id="F10-245">our reading of the AWS PCS User Guide</Cite>{' '}
-            <Cite id="F10-222">AWS PCS User Guide, losing a node</Cite>
-          </Box>
-          <Box variant="p">
-            <strong>Amazon SageMaker HyperPod</strong> is a persistent cluster of GPU instances that AWS keeps healthy:
-            it replaces a faulty node and can resume the job that was on it. You schedule it with Slurm or with
-            Kubernetes. Reach for it when training runs across many nodes for days, the regime an AWS post describes
-            as &quot;the tens-of-nodes tail where failures are statistically frequent&quot;, or when several teams
-            share a held pool under quotas. Look elsewhere for a single one-GPU fine-tune or a G-family simulation
-            fleet: by our reading its distinguishing features are built for multi-GPU P-family nodes, and a held
-            cluster bills per provisioned instance whether or not jobs run. Section 27, Amazon SageMaker HyperPod,
-            takes it apart. <Cite id="F10-300">SageMaker Developer Guide, HyperPod orchestrators</Cite>{' '}
-            <Cite id="F10-314">SageMaker Developer Guide, node recovery</Cite>{' '}
-            <Cite id="F09-112">AWS Machine Learning Blog, 4 September 2026</Cite>{' '}
-            <Cite id="F10-334">our reading of the HyperPod documentation</Cite>
-          </Box>
-          <Box variant="p">
-            <strong>Amazon EKS (Elastic Kubernetes Service)</strong> is managed Kubernetes: AWS runs the control plane
-            and you assemble the rest. Karpenter, the open-source node provisioner, or EKS Auto Mode, its managed
-            form, starts nodes for pods that fit nowhere. Kueue, an add-on that holds jobs against per-team quotas,
-            decides whose job goes first, and nothing queues jobs until you install it or a scheduler like it. Reach
-            for EKS when the team already lives in Kubernetes, or when services and batch jobs must share one pool.
-            Look elsewhere when you want the queue and the scaling as one service with nothing to assemble. Section
-            28, Amazon EKS, takes it apart. <Cite id="F10-401">Karpenter v1.15.3 documentation, NodePools</Cite>{' '}
-            <Cite id="F10-430">EKS User Guide, what Auto Mode manages</Cite>{' '}
-            <Cite id="F10-450">Kueue v0.20.7 documentation, concepts</Cite>
-          </Box>
-          <Box variant="p">The table puts the four on the same rows. Each of the next four sections expands one column.</Box>
           <div style={{ overflowX: 'auto' }}>
             <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 980 }}>
               <thead>
@@ -770,12 +861,13 @@ export function AwsOrchestration() {
             </table>
           </div>
           <Box variant="p">
-            Multi-node training on any of the four adds the same two things: a placement group that keeps the nodes
-            close together, and EFA (Elastic Fabric Adapter), the EC2 network device that lets the nodes of one job
-            exchange data without going through the operating system&apos;s network stack. One kind of reserved
-            capacity takes EFA alone: a Capacity Block for ML, a block of GPU instances booked for a fixed window
-            (next part), cannot be launched into a placement group, and EC2 places its instances close together
-            itself. The <Link href="../efa/">EFA dive</Link> covers that network.{' '}
+            Multi-node training needs two more things on any of the four orchestrators. The first is a placement
+            group. A placement group keeps the nodes physically close together. The second is EFA (Elastic Fabric
+            Adapter). EFA is the EC2 network device that lets the nodes of one job exchange data without going
+            through the operating system&apos;s network stack. With Capacity Blocks for ML, you skip the placement
+            group. You cannot launch instances from a Capacity Block into a placement group. Instead, EC2
+            places the instances of a block close together automatically. The{' '}
+            <Link href="../efa/">EFA dive</Link> covers that network in detail.{' '}
             <Cite id="F10-233">AWS PCS User Guide, EFA and placement groups</Cite>{' '}
             <Cite id="F10-426">Karpenter v1.15.3 documentation, EC2NodeClass</Cite>{' '}
             <Cite id="F09-92">EC2 User Guide, Capacity Blocks for ML, considerations</Cite>
@@ -787,102 +879,136 @@ export function AwsOrchestration() {
         header={
           <Header
             variant="h2"
-            description="Know, for the instance family your job needs, which ways of buying it exist, and what a two-minute Spot notice asks of your job."
+            description="Which purchase options you can use depends on the GPU family your job needs. Learn what each option offers and what a job must do to run safely on Spot Instances."
           >
-            The capacity markets
+            Choosing the purchase option
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The GPU family decides the market before the orchestrator does. Training wants the P family, whose GPUs
-            are sized for training throughput. A simulator that renders cameras needs the G family, whose GPUs carry
-            ray-tracing cores (section 13, Rendering and Ray Tracing). The two are bought differently, even inside one
-            cluster.
+            Which purchase options you can use depends first on the GPU family, and only then on the orchestrator.
+            Training uses the P family, and a simulator that renders cameras needs the G family. AWS sells the two
+            families through different purchase options, so one cluster may buy its training nodes and its simulation
+            nodes in different ways.
           </Box>
-          <Box variant="p">
-            <em>On-Demand</em> is a machine with no commitment and no promise that one is free. An{' '}
-            <em>On-Demand Capacity Reservation (ODCR)</em> holds capacity for a named instance type in one
-            Availability Zone for any duration, charged at the On-Demand rate whether or not an instance runs in it.
-            A <em>Capacity Block for ML</em> reserves GPU instances for a fixed window, booked up to eight weeks ahead
-            and paid up front: up to 64 instances per block, for up to six months, ending at 11:30 UTC with its
-            instances terminated from 11:00 UTC that day, and it cannot be cancelled, moved or split. A <em>SageMaker training plan</em> is the same kind of reservation made
-            through SageMaker, for a HyperPod cluster or a training job. Savings Plans sit beside these as a discount
-            on the bill. <Cite id="F09-94">EC2 User Guide, On-Demand Capacity Reservations</Cite>{' '}
-            <Cite id="F09-90">EC2 User Guide, Capacity Blocks for ML</Cite>{' '}
-            <Cite id="F09-34">SageMaker Developer Guide, training plans</Cite>
-          </Box>
-          <Box variant="p">
-            <em>Spot</em> is spare capacity sold at a discount that EC2 can take back. The taking back is a{' '}
-            <em>Spot interruption</em>, and it is announced by a notice issued two minutes before, as an event on
-            Amazon EventBridge and as an item in the instance&apos;s metadata. The notice is best effort: an instance
-            can be interrupted before the warning is available. A second signal, the{' '}
-            <em>rebalance recommendation</em>, flags an instance at elevated risk; it can arrive sooner than the
-            two-minute notice or together with it.{' '}
-            <Cite id="F10-520">EC2 User Guide, Spot Instance interruption notices</Cite>{' '}
-            <Cite id="F10-522">EC2 User Guide, Prepare for Spot Instance interruptions</Cite>{' '}
-            <Cite id="F10-523">EC2 User Guide, rebalance recommendations</Cite>
-          </Box>
-          <Box variant="p">AWS&apos;s advice follows from those two minutes, and it is the same under all four orchestrators.</Box>
+          <Box variant="p">AWS offers these purchase options for GPU instances:</Box>
           <ul style={LIST}>
             <li>
-              <strong>Be flexible.</strong> The rule of thumb is &quot;at least 10 instance types for each
-              workload&quot;. For GPUs the EKS guide narrows it to G families of generation 4 or higher, across sizes
-              and Availability Zones. <Cite id="F10-529">EC2 User Guide, Spot best practices</Cite>{' '}
-              <Cite id="F10-534">EKS Best Practices Guide, Spot for GPUs</Cite>
+              <strong>On-Demand.</strong> You buy an instance with no commitment. AWS makes no promise that an instance is
+              available when you ask for one.
             </li>
             <li>
-              <strong>Let the allocation strategy choose.</strong> AWS recommends{' '}
-              <code>price-capacity-optimized</code>, which takes instances &quot;from the most-available Spot capacity
-              pools that also have the lowest possible price&quot;. Karpenter applies it by itself, and Batch has its
-              own names for it. <Cite id="F10-528">EC2 User Guide, Spot allocation strategies</Cite>{' '}
-              <Cite id="F10-403">Karpenter v1.15.3 documentation, scheduling</Cite>
+              <strong>Spot Instances.</strong> Spot Instances are spare EC2 capacity sold at a discount. EC2 can reclaim
+              a Spot Instance in the middle of a job, with the warning described below.
             </li>
             <li>
-              <strong>Checkpoint on a timer, never only on the notice.</strong> Two first-party figures exist: the
-              Batch guide advises parts &quot;of 30 minutes or less&quot; on Spot, and the EKS guide&apos;s fast tier
-              saves every 5 to 30 minutes. <Cite id="F10-535">AWS Batch User Guide and EKS Best Practices Guide, checkpointing</Cite>
+              <strong>Savings Plans.</strong> Savings Plans are a discount on the bill for the instances you run.
             </li>
             <li>
-              <strong>Keep coupled work off Spot, and read fallbacks with care.</strong> AWS strongly discourages Spot
-              for work that is tightly coupled between nodes. The same page discourages failing over to On-Demand to
-              handle interruptions, a caveat that sits beside every Spot-then-On-Demand pattern in the next four
-              sections. <Cite id="F10-530">EC2 User Guide, Spot best practices</Cite>
+              <strong>Capacity Blocks for ML.</strong> A Capacity Block reserves GPU instances for a fixed period that
+              you book in advance, and you pay the whole fee up front. A Capacity Block cannot be cancelled, moved or
+              split. <Cite id="F09-90">EC2 User Guide, Capacity Blocks for ML</Cite>
             </li>
             <li>
-              <strong>Raise the quota first.</strong> The page prints a default Spot quota of 0 for G instances and
-              for P instances, so a new account cannot launch one GPU Spot instance until it is raised.{' '}
-              <Cite id="F10-533">EC2 User Guide, Spot Instance quotas</Cite>
+              <strong>SageMaker training plans.</strong> A training plan is the same kind of reservation, made through
+              SageMaker for a HyperPod cluster or a training job.{' '}
+              <Cite id="F09-34">SageMaker Developer Guide, training plans</Cite>
+            </li>
+            <li>
+              <strong>On-Demand Capacity Reservations (ODCRs).</strong> An ODCR holds capacity for one instance type in
+              one Availability Zone for as long as you keep it. You pay the On-Demand rate whether or not an instance
+              runs in it. <Cite id="F09-94">EC2 User Guide, On-Demand Capacity Reservations</Cite>
             </li>
           </ul>
           <Box variant="p">
             <strong>
-              The Capacity Blocks list and the SageMaker training plans list, as read on 2026-11-20, name no G-family
-              type.
+              As of November 2026, the lists of instance types for Capacity Blocks for ML and for SageMaker training
+              plans include no G-family type.
             </strong>{' '}
-            Both lists hold P types and Trainium types (Trainium is AWS&apos;s own training chip, sold as the trn
-            instance types), and the training plans page says availability &quot;may change over time&quot;. For a
-            G-family fleet the reservation the documentation does describe is the ODCR.{' '}
+            Both lists contain P-family types and Trainium types. Trainium is AWS&apos;s own training chip, sold as the
+            trn instance types. The training plans page adds that the availability of instance types &quot;may change
+            over time&quot;. So, as of that date, the only reservation that the documentation describes for a G-family
+            simulation fleet is an On-Demand Capacity Reservation.{' '}
             <Cite id="F09-91">EC2 User Guide, Capacity Blocks, supported instance types</Cite>{' '}
             <Cite id="F09-35">SageMaker Developer Guide, training plans, supported instance types</Cite>{' '}
             <Cite id="F09-40">EKS Best Practices Guide, capacity reservations</Cite>
           </Box>
-          <ExpandableSection headerText="Family by family: Spot interruption bands, Capacity Blocks and training plans">
+          <ExpandableSection headerText="Capacity Blocks for ML: booking window, size limits and end time">
+            <Box variant="p">
+              You can book a Capacity Block up to eight weeks ahead. One block holds up to 64 instances and lasts up to
+              six months. A block ends at 11:30 UTC on its last day, and EC2 starts terminating its instances at 11:00
+              UTC that day. <Cite id="F09-90">EC2 User Guide, Capacity Blocks for ML</Cite>
+            </Box>
+          </ExpandableSection>
+          <Box variant="p">
+            A <em>Spot interruption</em> is the event in which EC2 reclaims a Spot Instance. EC2 announces it with a
+            notice two minutes before. The notice arrives as an event on Amazon EventBridge and as an item in the
+            instance&apos;s metadata. EventBridge is the AWS event bus, which routes events to the targets you
+            choose. The notice is best
+            effort, so an instance can be interrupted before the warning is available. EC2 also sends a second signal,
+            the <em>rebalance recommendation</em>, when an instance is at elevated risk of interruption. The
+            rebalance recommendation can arrive before the two-minute notice or together with it.{' '}
+            <Cite id="F10-520">EC2 User Guide, Spot Instance interruption notices</Cite>{' '}
+            <Cite id="F10-522">EC2 User Guide, Prepare for Spot Instance interruptions</Cite>{' '}
+            <Cite id="F10-523">EC2 User Guide, rebalance recommendations</Cite>
+          </Box>
+          <Box variant="p">
+            Because the notice gives a job only two minutes, AWS gives the same advice for Spot Instances under all
+            four orchestrators:
+          </Box>
+          <ul style={LIST}>
+            <li>
+              <strong>Use many instance types.</strong> AWS&apos;s rule of thumb is &quot;at least 10 instance types
+              for each workload&quot;. For GPUs, the EKS Best Practices Guide narrows this to G families of generation
+              4 or later, across sizes and Availability Zones.{' '}
+              <Cite id="F10-529">EC2 User Guide, Spot best practices</Cite>{' '}
+              <Cite id="F10-534">EKS Best Practices Guide, Spot for GPUs</Cite>
+            </li>
+            <li>
+              <strong>Let an allocation strategy choose the instances.</strong> AWS recommends the{' '}
+              <code>price-capacity-optimized</code> allocation strategy, which takes instances &quot;from the most-available Spot
+              capacity pools that also have the lowest possible price&quot;. Karpenter applies this strategy
+              automatically, and AWS Batch has its own names for it.{' '}
+              <Cite id="F10-528">EC2 User Guide, Spot allocation strategies</Cite>{' '}
+              <Cite id="F10-403">Karpenter v1.15.3 documentation, scheduling</Cite>
+            </li>
+            <li>
+              <strong>Write checkpoints on a timer, and do not rely on the notice alone.</strong> The AWS Batch guide
+              advises splitting Spot work into parts &quot;of 30 minutes or less&quot;. The EKS Best Practices Guide
+              describes two tiers of checkpoints, and the faster tier saves every 5 to 30 minutes.{' '}
+              <Cite id="F10-535">AWS Batch User Guide and EKS Best Practices Guide, checkpointing</Cite>
+            </li>
+            <li>
+              <strong>Keep tightly coupled work off Spot Instances, and be careful with fallbacks.</strong> AWS
+              strongly discourages Spot for work that is tightly coupled between nodes, such as Multi-node training.
+              The same page also discourages failing over to On-Demand to handle interruptions. Keep that caveat in
+              mind for every pattern in the next four sections that falls back from Spot to On-Demand.{' '}
+              <Cite id="F10-530">EC2 User Guide, Spot best practices</Cite>
+            </li>
+            <li>
+              <strong>Raise the Spot quota before the first run.</strong> The EC2 documentation lists a default Spot
+              quota of 0 for G instances and for P instances. So a new account cannot launch a single GPU Spot Instance
+              until the quota is raised. <Cite id="F10-533">EC2 User Guide, Spot Instance quotas</Cite>
+            </li>
+          </ul>
+          <ExpandableSection headerText="Spot interruption rates, Capacity Blocks and training plans by instance family">
             <SpaceBetween size="m">
               <div style={{ overflowX: 'auto' }}>
                 <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 860 }}>
                   <caption style={{ captionSide: 'top', textAlign: 'left', paddingBottom: 6 }}>
                     <Box variant="small" color="text-body-secondary">
-                      Spot columns come from AWS&apos;s Spot Instance Advisor data file, last modified 20 March 2026. A
-                      bucket is the share of running instances interrupted in the trailing month.
+                      The Spot column comes from AWS&apos;s Spot Instance Advisor data file, last modified on 20 March
+                      2026. Each bucket is the share of running instances that were interrupted in the trailing month.
+                      The Capacity Blocks and training plans columns show the AWS lists as of November 2026.
                     </Box>
                   </caption>
                   <thead>
                     <tr>
                       <th style={TH}>Family</th>
-                      <th style={TH}>Spot, by the advisor file</th>
-                      <th style={TH}>Capacity Block for ML</th>
-                      <th style={TH}>SageMaker training plan</th>
+                      <th style={TH}>Spot interruption rate (Spot Instance Advisor)</th>
+                      <th style={TH}>Capacity Blocks for ML</th>
+                      <th style={TH}>SageMaker training plans</th>
                       <th style={TH}>Sources</th>
                     </tr>
                   </thead>
@@ -890,8 +1016,8 @@ export function AwsOrchestration() {
                     <tr>
                       <td style={TD}>G5</td>
                       <td style={TD}>US East (N. Virginia): 7 of 8 sizes in the &quot;&gt;20%&quot; bucket</td>
-                      <td style={TD}>Not on the list read</td>
-                      <td style={TD}>Not on the list read</td>
+                      <td style={TD}>Not on the list</td>
+                      <td style={TD}>Not on the list</td>
                       <td style={TD}>
                         <Cite id="F09-96">Spot Instance Advisor data file</Cite> <Cite id="F09-91">Capacity Blocks list</Cite>{' '}
                         <Cite id="F09-35">training plans list</Cite>
@@ -900,8 +1026,8 @@ export function AwsOrchestration() {
                     <tr>
                       <td style={TD}>G6e</td>
                       <td style={TD}>US East (N. Virginia): 5 of 8 sizes in the &quot;&gt;20%&quot; bucket</td>
-                      <td style={TD}>Not on the list read</td>
-                      <td style={TD}>Not on the list read</td>
+                      <td style={TD}>Not on the list</td>
+                      <td style={TD}>Not on the list</td>
                       <td style={TD}>
                         <Cite id="F09-96">Spot Instance Advisor data file</Cite> <Cite id="F09-91">Capacity Blocks list</Cite>{' '}
                         <Cite id="F09-35">training plans list</Cite>
@@ -912,8 +1038,8 @@ export function AwsOrchestration() {
                       <td style={TD}>
                         US East (N. Virginia): 3 of 6 sizes above 20%. US East (Ohio): 4 of 6 sizes in &quot;&lt;5%&quot;
                       </td>
-                      <td style={TD}>Not on the list read</td>
-                      <td style={TD}>Not on the list read</td>
+                      <td style={TD}>Not on the list</td>
+                      <td style={TD}>Not on the list</td>
                       <td style={TD}>
                         <Cite id="F09-96">Spot Instance Advisor data file</Cite> <Cite id="F09-91">Capacity Blocks list</Cite>{' '}
                         <Cite id="F09-35">training plans list</Cite>
@@ -921,9 +1047,9 @@ export function AwsOrchestration() {
                     </tr>
                     <tr>
                       <td style={TD}>G7</td>
-                      <td style={TD}>Sold on Spot; no rows in the file, which is older than the family</td>
-                      <td style={TD}>Not on the list read</td>
-                      <td style={TD}>Not on the list read</td>
+                      <td style={TD}>Sold as Spot Instances. The file has no rows for G7, because it is older than the family.</td>
+                      <td style={TD}>Not on the list</td>
+                      <td style={TD}>Not on the list</td>
                       <td style={TD}>
                         <Cite id="F09-98">G7 and G7e launch posts</Cite> <Cite id="F09-96">Spot Instance Advisor data file</Cite>{' '}
                         <Cite id="F09-91">Capacity Blocks list</Cite> <Cite id="F09-35">training plans list</Cite>
@@ -953,7 +1079,7 @@ export function AwsOrchestration() {
                     </tr>
                     <tr>
                       <td style={TD}>P6e-GB200 UltraServers</td>
-                      <td style={TD}>No rows in the file</td>
+                      <td style={TD}>The file has no rows for them</td>
                       <td style={TD}>UltraServer blocks, in the US East (Dallas) Local Zone only</td>
                       <td style={TD}>Through an account manager</td>
                       <td style={TD}>
@@ -966,8 +1092,8 @@ export function AwsOrchestration() {
                       <td style={TD}>
                         US West (Oregon): 7 of 12 C8g sizes and 8 of 12 M8g sizes in the &quot;&lt;5%&quot; bucket
                       </td>
-                      <td style={TD}>Not on the list read</td>
-                      <td style={TD}>Not on the list read</td>
+                      <td style={TD}>Not on the list</td>
+                      <td style={TD}>Not on the list</td>
                       <td style={TD}>
                         <Cite id="F09-97">Spot Instance Advisor data file</Cite> <Cite id="F09-91">Capacity Blocks list</Cite>{' '}
                         <Cite id="F09-34">training plans list</Cite>
@@ -977,10 +1103,11 @@ export function AwsOrchestration() {
                 </table>
               </div>
               <Box variant="p">
-                Read the Spot column as one Region in one month. In the busiest Region the G sizes a simulation fleet wants
-                are often reclaimed, which is why retries, timer checkpoints and a list of several instance types matter
-                most for simulation. The file records interruptions of running instances; how often a Spot request for a
-                GPU type is filled at all is not in it. <Cite id="F09-96">Spot Instance Advisor data file</Cite>
+                Each Spot cell describes one Region over one month. In US East (N. Virginia), many of the G sizes that a
+                simulation fleet would use are often reclaimed. That is why retries, checkpoints on a timer and a list
+                of several instance types matter most for simulation. The file records how often running instances are
+                interrupted. It does not show how often a Spot request for a GPU type is filled in the first place.{' '}
+                <Cite id="F09-96">Spot Instance Advisor data file</Cite>
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -991,42 +1118,53 @@ export function AwsOrchestration() {
         header={
           <Header
             variant="h2"
-            description="You can wire the pieces into one pipeline that starts when an episode lands in S3 and ends with a policy on the arm, and you know your first step."
+            description="You can connect the services into one pipeline that starts when an episode arrives in Amazon S3 and ends with a new policy on the arm. Then you can choose the section to read next."
           >
-            Glue and the edge
+            Connecting the pipeline and the robot
           </Header>
         }
       >
         <SpaceBetween size="m">
+          <ul style={LIST}>
+            <li>
+              <strong>Starting the pipeline and ordering its steps.</strong> Amazon S3 can send every object event in a
+              bucket to Amazon EventBridge. When a new episode file arrives in the bucket, that event starts the
+              pipeline. AWS Step Functions is the AWS workflow service. It runs a workflow as a series of steps,
+              which Step Functions calls states. One task state can submit an AWS Batch job and wait for it to finish, so a pipeline of
+              curating, training and evaluating needs only a few states. The Distributed Map state runs each item of a
+              list as a child workflow. If you do not set its concurrency, it runs as many as 10,000 child workflows at
+              the same time, so always set the concurrency yourself. NVIDIA OSMO is an open-source alternative for this
+              workflow layer. It is a workflow orchestrator for physical AI pipelines, and it runs on Kubernetes
+              clusters. <Cite id="F09-102">S3 User Guide, Amazon EventBridge</Cite>{' '}
+              <Cite id="F09-100">Step Functions Developer Guide, AWS Batch integration</Cite>{' '}
+              <Cite id="F09-101">Step Functions Developer Guide, Distributed Map</Cite>{' '}
+              <Cite id="F09-62">NVIDIA OSMO 6.3.1, README</Cite>
+            </li>
+            <li>
+              <strong>Tracking models.</strong> SageMaker offers MLflow as a managed service. MLflow is an
+              experiment tracking server that also registers models. A SageMaker training job, a HyperPod pod and an
+              AWS Batch job can all write to the same server, because the MLflow client only needs the server&apos;s
+              address.{' '}
+              <Cite id="F09-103">SageMaker Developer Guide, managed MLflow</Cite>
+            </li>
+            <li>
+              <strong>Storing data and checkpoints.</strong> Mountpoint for Amazon S3 presents a bucket as a local file
+              system. It can read files and create new ones, but it cannot modify existing files. That fits a dataset
+              that is written once. For checkpoints that are rewritten in place, the S3 guide points to FSx for Lustre
+              instead. FSx for Lustre is a managed shared file system. <Cite id="F09-106">S3 User Guide, Mountpoint for Amazon S3</Cite>
+            </li>
+            <li>
+              <strong>Interactive workstations.</strong> A simulation workstation that a person uses interactively
+              needs no orchestrator, because the person holds the instance while working on it. Amazon DCV is the
+              remote-desktop protocol for such a workstation. <Cite id="F09-104">Amazon DCV product page</Cite>
+            </li>
+          </ul>
           <Box variant="p">
-            <strong>The trigger and the workflow.</strong> S3 can send every object event in a bucket to Amazon
-            EventBridge, the AWS event bus, which is the trigger for &quot;a new episode landed, start the
-            pipeline&quot;. AWS Step Functions is the AWS-native workflow layer: one task state submits a Batch job and
-            waits for it to finish, so a pipeline of curate, train, evaluate is a few states. Its Distributed Map state
-            runs each item of a list as a child workflow, and with no concurrency set it runs 10,000 of them in
-            parallel, so always set the concurrency. NVIDIA OSMO is the open-source alternative for this layer, a
-            workflow orchestrator for physical AI whose backends are Kubernetes clusters.{' '}
-            <Cite id="F09-102">S3 User Guide, Amazon EventBridge</Cite>{' '}
-            <Cite id="F09-100">Step Functions Developer Guide, AWS Batch integration</Cite>{' '}
-            <Cite id="F09-101">Step Functions Developer Guide, Distributed Map</Cite>{' '}
-            <Cite id="F09-62">NVIDIA OSMO 6.3.1, README</Cite>
-          </Box>
-          <Box variant="p">
-            <strong>The registry, the storage and the desk.</strong> SageMaker&apos;s managed MLflow is a tracking
-            server that registers models, and the same record works from a training job, a HyperPod pod or a Batch
-            job, because the client only needs the server&apos;s address. Mountpoint for Amazon S3 presents a bucket as
-            a local file system that reads files and creates new ones and cannot modify existing ones. That fits a
-            dataset written once; for checkpoints rewritten in place the S3 guide points to FSx for Lustre, a shared
-            file system. An interactive simulation workstation has no orchestrator, because a person holds the
-            instance, and Amazon DCV is the remote-desktop protocol for it.{' '}
-            <Cite id="F09-103">SageMaker Developer Guide, managed MLflow</Cite>{' '}
-            <Cite id="F09-106">S3 User Guide, Mountpoint for Amazon S3</Cite>{' '}
-            <Cite id="F09-104">Amazon DCV product page</Cite>
-          </Box>
-          <Box variant="p">
-            <strong>The edge</strong> is shape E, and section 18, The Fleet, owns it: the Greengrass component that runs
-            the policy container, the deployment document and the staged rollout are printed there. The piece that
-            belongs to this section is the return path, the component that sends episodes back into the pipeline above.
+            <strong>The robot.</strong> Section 18, The Fleet, covers how a policy reaches the robot: the Greengrass
+            component that runs the policy container, the deployment document and the staged rollout. The return path
+            sends recorded episodes from the robot back into the pipeline, and it is also a Greengrass component. A
+            component is described by a recipe: a file that names the component&apos;s dependencies and the commands
+            that install and run it.
           </Box>
           <Snippet
             title="A Greengrass component recipe that calls an AWS service with the device's temporary credentials"
@@ -1036,42 +1174,53 @@ export function AwsOrchestration() {
             {GREENGRASS_AWS_RECIPE}
           </Snippet>
           <Box variant="p">
-            One change from the page: its second manifest, for Windows, is left out. The line that matters is the
-            dependency on <code>aws.greengrass.TokenExchangeService</code>. It gives the component an environment
-            variable that an AWS SDK client reads to fetch credentials, so no access key is stored on the robot; the
-            credentials expire after an hour by default. The documented example lists S3 buckets. An uploader replaces
-            the script and needs S3 write permission on the device role, as section 18 describes.{' '}
+            The recipe above is the example from the Greengrass developer guide, without its second manifest, which
+            is for Windows. The important line is the dependency on <code>aws.greengrass.TokenExchangeService</code>. This
+            dependency gives the component an environment variable, and an AWS SDK client reads that variable to fetch
+            temporary credentials. So no access key is stored on the robot. By default, the credentials expire after
+            one hour. The example in the guide lists S3 buckets. To upload episodes instead, you replace the script,
+            and the device&apos;s role needs permission to write to S3, as section 18, The Fleet, describes.{' '}
             <Cite id="F09-133">Greengrass developer guide, Interact with AWS services</Cite>
           </Box>
           <Box variant="p">
-            The Kubernetes alternative is EKS Hybrid Nodes, which attaches a machine outside AWS to an EKS cluster as a
-            node. Section 18 lists its requirements; three limits decide the choice. It is documented as unfit for
-            machines whose link drops. The network guidance is at least 100 Mbps and at most 200 ms round trip. Jetson
-            Linux is absent from the table of validated operating systems. Since 18 November 2026 the billed vCPUs are capped at 32 per node.
-            Our reading: a Jetson beside a robot is a Greengrass core device, and a desk machine such as a DGX Spark is
-            a hybrid node only when the lab already runs its training and evaluation on EKS.{' '}
-            <Cite id="F09-119">EKS User Guide, Hybrid Nodes overview</Cite>{' '}
-            <Cite id="F09-120">EKS User Guide, Hybrid Nodes prerequisites</Cite>{' '}
+            The Kubernetes alternative to Greengrass is EKS Hybrid Nodes. It is the EKS feature that attaches a machine
+            outside AWS to an EKS cluster as a node. For a Jetson on or next to a robot, we recommend Greengrass. Two
+            limits of Hybrid Nodes matter for a robot. The Hybrid Nodes documentation describes the feature as unfit
+            for machines whose network link drops. Also, as of November 2026, Jetson Linux is not in the Hybrid Nodes
+            table of validated operating systems. A desk machine such as a DGX Spark is worth adding as a hybrid node
+            only when the lab already runs its training and evaluation on EKS. <Cite id="F09-119">EKS User Guide, Hybrid Nodes overview</Cite>{' '}
             <Cite id="F09-52">EKS User Guide, Hybrid Nodes operating systems</Cite>{' '}
-            <Cite id="F09-116">AWS What&apos;s New, 18 November 2026, Hybrid Nodes billing cap</Cite>{' '}
-            <Cite id="F09-127">our reading of the Hybrid Nodes and Greengrass pages</Cite>
+            <Cite id="F09-127">Hybrid Nodes and Greengrass pages, compared</Cite>
           </Box>
+          <ExpandableSection headerText="EKS Hybrid Nodes: network requirements and billing">
+            <ul style={LIST}>
+              <li>
+                <strong>Network.</strong> The network guidance for a hybrid node is at least 100 Mbps of bandwidth and
+                at most 200 ms of round-trip time to AWS. Section 18, The Fleet, lists the other requirements.{' '}
+                <Cite id="F09-120">EKS User Guide, Hybrid Nodes prerequisites</Cite>
+              </li>
+              <li>
+                <strong>Billing.</strong> Since 18 November 2026, AWS bills each hybrid node for at most 32 vCPUs.{' '}
+                <Cite id="F09-116">AWS What&apos;s New, 18 November 2026, Hybrid Nodes billing cap</Cite>
+              </li>
+            </ul>
+          </ExpandableSection>
           <Placeholder
             what={
               <>
-                the measured hook-up of our Jetson and DGX Spark to AWS IoT: the deployment of a policy
-                component to each device and the upload of one recorded episode to S3, timed end to end.
+                a measurement of connecting our Jetson and our DGX Spark to AWS IoT: deploying a policy component to each
+                device and uploading one recorded episode to S3, timed end to end.
               </>
             }
-            source={<>our own hook-up of the two machines, which has not been done yet.</>}
+            source={<>our own setup of the two machines, which we have not done yet.</>}
           />
           <Box variant="p">
-            <strong>What to do next.</strong> Find your workload&apos;s row in the table of fifteen and name its
-            scheduler. For one arm that is almost always AWS Batch: go to section 25, AWS Batch, with the two-minute
-            Spot notice in mind. Go to section 26, AWS Parallel Computing Service, if your team already submits with
-            Slurm. Reach for section 27, Amazon SageMaker HyperPod, or a queueing layer in section 28, Amazon EKS,
-            when you can name the second team that will share the machines. Then take the family, the scheduler and
-            the market to section 29, Choosing.
+            <strong>What to do next.</strong> Find your workload in the table of fifteen workloads and note its
+            orchestrator. For one arm, that is almost always AWS Batch, so go to section 25, AWS Batch, and keep the
+            two-minute Spot notice in mind. If your team already submits jobs with Slurm, go to section 26, AWS
+            Parallel Computing Service. If a second team will share the machines with yours, read section 27, Amazon
+            SageMaker HyperPod, or the queueing options in section 28, Amazon EKS. Then go to section 29, Choosing,
+            with the GPU family, the orchestrator and the purchase option you have picked.
           </Box>
         </SpaceBetween>
       </Container>

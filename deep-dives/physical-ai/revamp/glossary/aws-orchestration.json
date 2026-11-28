@@ -2,82 +2,92 @@
  {
   "term": "Orchestrator",
   "expansion": null,
-  "meaning": "The service that holds waiting jobs, starts machines for them and removes the machines afterwards."
+  "meaning": "The service that holds the waiting jobs, starts machines for them and removes the machines when the work is done."
  },
  {
-  "term": "Capacity market",
+  "term": "Purchase option",
   "expansion": null,
-  "meaning": "The way a cloud machine is bought, which decides whether it can be taken back in the middle of a job."
+  "meaning": "The way you buy cloud machines: On-Demand, Spot Instances, Savings Plans, Capacity Blocks for ML or On-Demand Capacity Reservations. Some purchase options let AWS reclaim a machine in the middle of a job, and others do not."
  },
  {
   "term": "Checkpoint",
   "expansion": null,
-  "meaning": "The saved weights of a policy, or the saved state of a job from which it can resume."
+  "meaning": "The saved weights of a policy, or the saved state of a job from which the job can resume."
  },
  {
   "term": "Array job",
   "expansion": null,
-  "meaning": "One AWS Batch submission that spawns 2 to 10,000 child jobs, each reading its own index."
+  "meaning": "One AWS Batch submission that creates between 2 and 10,000 child jobs. Each child reads its own index number and uses it to pick its piece of work."
  },
  {
   "term": "Queue",
   "expansion": null,
-  "meaning": "The layer that holds waiting jobs and decides which runs next."
+  "meaning": "The layer that holds the waiting jobs and decides which one runs next."
  },
  {
-  "term": "Node provider",
+  "term": "Node provisioner",
   "expansion": null,
-  "meaning": "The layer that starts a machine when a job is waiting and removes it when nothing is."
+  "meaning": "The layer that starts a machine when a job is waiting and removes it when no job is waiting."
  },
  {
   "term": "AWS Batch",
   "expansion": null,
-  "meaning": "A managed job queue for containers that starts EC2 instances for a job and removes them when the queue is empty."
+  "meaning": "A managed job queue for containers. It starts EC2 instances for waiting jobs and removes them when the queue is empty."
+ },
+ {
+  "term": "Compute environment",
+  "expansion": null,
+  "meaning": "The component of AWS Batch that starts the instances for the jobs in a job queue."
  },
  {
   "term": "EC2",
   "expansion": "Elastic Compute Cloud",
-  "meaning": "The AWS service that rents virtual machines, called instances."
+  "meaning": "The AWS service that rents virtual machines, which AWS calls instances."
  },
  {
   "term": "PCS",
   "expansion": "AWS Parallel Computing Service",
-  "meaning": "Managed Slurm: AWS runs the Slurm controller and compute node groups launch EC2 instances for waiting jobs."
+  "meaning": "Managed Slurm. AWS runs the Slurm controller, and compute node groups launch EC2 instances for waiting jobs."
+ },
+ {
+  "term": "Compute node group",
+  "expansion": null,
+  "meaning": "In AWS PCS, the group of EC2 instances that PCS launches for waiting jobs. Each group has exactly one purchase option."
  },
  {
   "term": "Slurm",
   "expansion": null,
-  "meaning": "The job scheduler of classic supercomputing, driven by commands such as sbatch."
+  "meaning": "A job scheduler that comes from supercomputing. You submit work to it with commands such as sbatch."
  },
  {
   "term": "SageMaker HyperPod",
   "expansion": null,
-  "meaning": "A persistent cluster of GPU instances that AWS keeps healthy, scheduled with Slurm or Kubernetes."
+  "meaning": "A persistent cluster of GPU instances that AWS keeps healthy by replacing failed nodes. You schedule work on it with Slurm or with Kubernetes."
  },
  {
   "term": "SageMaker Training Job",
   "expansion": null,
-  "meaning": "A managed run of one training container that bills for the duration of the job and then shuts the instances down."
+  "meaning": "A managed run of one training container. It bills for the duration of the job and then shuts the instances down."
  },
  {
   "term": "EKS",
   "expansion": "Elastic Kubernetes Service",
-  "meaning": "Managed Kubernetes: AWS runs the control plane and the user assembles node supply and queueing."
+  "meaning": "Managed Kubernetes. AWS runs the control plane, and you add the parts that start nodes and queue jobs."
  },
  {
   "term": "Karpenter",
   "expansion": null,
-  "meaning": "The open-source node provisioner that starts EC2 instances for pods that fit no existing node."
+  "meaning": "An open-source node provisioner for Kubernetes. It starts EC2 instances for pods that fit on no existing node."
  },
  {
   "term": "EKS Auto Mode",
   "expansion": null,
-  "meaning": "The managed form of Karpenter-based scaling, in which AWS also runs the node software."
+  "meaning": "A managed form of Karpenter-based scaling, in which AWS also runs the node software."
  },
  {
   "term": "Kueue",
   "expansion": null,
-  "meaning": "A Kubernetes add-on that holds jobs against per-team quotas and decides when each is admitted."
+  "meaning": "A Kubernetes add-on that holds jobs against per-team quotas and decides when each job can start."
  },
  {
   "term": "KAI Scheduler",
@@ -95,34 +105,39 @@
   "meaning": "The EC2 network device that lets the nodes of one job exchange data without going through the operating system's network stack."
  },
  {
-  "term": "On-Demand",
+  "term": "Placement group",
   "expansion": null,
-  "meaning": "A machine with no commitment and no promise that one is free."
+  "meaning": "An EC2 setting that keeps the nodes of one job physically close together."
  },
  {
-  "term": "Spot",
+  "term": "On-Demand",
   "expansion": null,
-  "meaning": "Spare EC2 capacity sold at a discount that EC2 can take back."
+  "meaning": "The purchase option with no commitment. AWS makes no promise that an instance is available when you ask for one."
+ },
+ {
+  "term": "Spot Instances",
+  "expansion": null,
+  "meaning": "Spare EC2 capacity sold at a discount. EC2 can reclaim a Spot Instance in the middle of a job."
  },
  {
   "term": "Spot interruption",
   "expansion": null,
-  "meaning": "EC2 taking a Spot instance back, announced two minutes before on a best-effort basis."
+  "meaning": "The event in which EC2 reclaims a Spot Instance. EC2 announces it two minutes before, on a best-effort basis."
  },
  {
   "term": "Rebalance recommendation",
   "expansion": null,
-  "meaning": "An EC2 signal that a Spot instance is at elevated risk of interruption."
+  "meaning": "An EC2 signal that a Spot Instance is at elevated risk of interruption."
  },
  {
   "term": "ODCR",
   "expansion": "On-Demand Capacity Reservation",
-  "meaning": "Capacity held for a named instance type in one Availability Zone for any duration, charged at the On-Demand rate."
+  "meaning": "Capacity held for one instance type in one Availability Zone for as long as you keep it. You pay the On-Demand rate whether or not an instance runs in it."
  },
  {
-  "term": "Capacity Block for ML",
+  "term": "Capacity Blocks for ML",
   "expansion": null,
-  "meaning": "A reservation of GPU instances for a fixed window, booked ahead and paid up front."
+  "meaning": "A reservation of GPU instances for a fixed period, booked in advance and paid up front."
  },
  {
   "term": "SageMaker training plan",
@@ -132,7 +147,7 @@
  {
   "term": "Savings Plans",
   "expansion": null,
-  "meaning": "A billing discount applied to what an account runs."
+  "meaning": "A discount on the bill for the instances an account runs."
  },
  {
   "term": "Trainium",
@@ -142,42 +157,42 @@
  {
   "term": "G family",
   "expansion": null,
-  "meaning": "EC2 GPU instances whose GPUs carry ray-tracing cores, used for rendering and simulation."
+  "meaning": "EC2 GPU instances whose GPUs have ray-tracing cores. They are used for rendering and simulation."
  },
  {
   "term": "P family",
   "expansion": null,
-  "meaning": "EC2 GPU instances sized for training throughput."
+  "meaning": "EC2 GPU instances whose GPUs are sized for training throughput."
  },
  {
   "term": "Amazon EventBridge",
   "expansion": null,
-  "meaning": "The AWS event bus that routes events such as a new S3 object or a Spot notice to targets."
+  "meaning": "The AWS event bus. It routes events, such as a new S3 object or a Spot interruption notice, to the targets you choose."
  },
  {
   "term": "AWS Step Functions",
   "expansion": null,
-  "meaning": "The AWS workflow service that orders steps as states and can submit a Batch job and wait for it."
+  "meaning": "The AWS workflow service. It runs the steps of a workflow as states, and one state can submit an AWS Batch job and wait for it to finish."
  },
  {
   "term": "OSMO",
   "expansion": null,
-  "meaning": "NVIDIA's open-source workflow orchestrator for physical AI pipelines on Kubernetes clusters."
+  "meaning": "NVIDIA's open-source workflow orchestrator for physical AI pipelines. It runs on Kubernetes clusters."
  },
  {
   "term": "MLflow",
   "expansion": null,
-  "meaning": "An experiment tracking server and model registry, offered managed by SageMaker."
+  "meaning": "An experiment tracking server and model registry. SageMaker offers it as a managed service."
  },
  {
   "term": "Mountpoint for Amazon S3",
   "expansion": null,
-  "meaning": "A client that presents an S3 bucket as a local file system for reading and creating files."
+  "meaning": "A client that presents an S3 bucket as a local file system. It can read files and create new ones, but it cannot modify existing files."
  },
  {
   "term": "FSx for Lustre",
   "expansion": null,
-  "meaning": "A managed shared file system with full POSIX behaviour."
+  "meaning": "A managed shared file system with full POSIX file-system behaviour."
  },
  {
   "term": "Amazon DCV",
@@ -190,8 +205,13 @@
   "meaning": "Software on a device that receives versioned components from the cloud and runs them."
  },
  {
+  "term": "Greengrass component",
+  "expansion": null,
+  "meaning": "A software package that AWS IoT Greengrass receives from the cloud and runs on the device. Its recipe names its dependencies and the commands that install and run it."
+ },
+ {
   "term": "EKS Hybrid Nodes",
   "expansion": null,
-  "meaning": "A way to attach a machine outside AWS to an EKS cluster as a node."
+  "meaning": "A feature that attaches a machine outside AWS to an EKS cluster as a node."
  }
 ]
