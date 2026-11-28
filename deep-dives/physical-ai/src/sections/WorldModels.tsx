@@ -166,7 +166,7 @@ export function WorldModels() {
             candidates in each round. That video model was Cosmos 1, a 2025 model with 7B parameters, which the
             authors fine-tuned for the test. The comparison was run by the authors of the faster model.{' '}
             <Cite id="F03-25">V-JEPA 2 paper, section 4.2 and Table 3</Cite>{' '}
-            <Cite id="F03-118">our arithmetic, time per candidate</Cite>
+            <Cite id="F03-118">calculation, time per candidate</Cite>
           </Box>
           <Box variant="p">
             To compare the cost of a single prediction, divide each time by the number of futures that the search
@@ -174,7 +174,7 @@ export function WorldModels() {
             in 16 s, or 2 ms each. The video search tried 80 candidates in each of 10 rounds, which is 800 futures in
             240 s, or 300 ms each. So one predicted future cost 150 times as much with the video model.{' '}
             <Cite id="F03-24">V-JEPA 2 paper, section 4.2</Cite>{' '}
-            <Cite id="F03-118">our arithmetic, time per candidate</Cite>
+            <Cite id="F03-118">calculation, time per candidate</Cite>
           </Box>
           <Box variant="p">
             For any job you want to give a world model, ask two questions. How many predicted futures does the
@@ -680,14 +680,14 @@ export function WorldModels() {
               seconds per action on a single A100 with the same planner settings, which is 0.375 ms per candidate.
               Neither paper explains the difference from the 2 ms on the RTX 4090. So when you quote a time per
               candidate, always give its GPU and its paper with it.{' '}
-              <Cite id="F03-74">V-JEPA 2.1 paper, Table 6</Cite> <Cite id="F03-118">our arithmetic, time per candidate</Cite>
+              <Cite id="F03-74">V-JEPA 2.1 paper, Table 6</Cite> <Cite id="F03-118">calculation, time per candidate</Cite>
             </li>
             <li>
               <strong>A small latent model.</strong> The LeWorldModel authors report a full plan in 0.98 s, without
               saying which of their two planner settings they timed. One setting uses 45,000 candidate steps and the
               other 15,000. So, depending on the setting, one step of one candidate takes between 22 and 65
               microseconds.{' '}
-              <Cite id="F03-41">LeWorldModel paper, Figure 3</Cite> <Cite id="F03-118">our arithmetic, time per candidate</Cite>
+              <Cite id="F03-41">LeWorldModel paper, Figure 3</Cite> <Cite id="F03-118">calculation, time per candidate</Cite>
             </li>
           </ul>
         </SpaceBetween>
@@ -843,7 +843,7 @@ export function WorldModels() {
               <Box variant="p">
                 Parameter count alone does not separate the two families. RoboJEPA&apos;s largest predictor has 8B
                 parameters on a 2B encoder, and two of the pixel models have 2B.{' '}
-                <Cite id="F03-117">our reading of the parameter counts</Cite>
+                <Cite id="F03-117">analysis of the parameter counts</Cite>
               </Box>
               <div style={{ overflowX: 'auto' }}>
                 <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 560 }}>

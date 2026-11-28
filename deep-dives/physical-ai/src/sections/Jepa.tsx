@@ -980,7 +980,7 @@ export function Jepa() {
             authors report 16 seconds for this on one NVIDIA RTX 4090. That works out to 16 s / 8,000 = 2 ms per
             pass. <Cite id="F03-24">V-JEPA 2 paper, appendix B.2</Cite>{' '}
             <Cite id="F03-25">V-JEPA 2 paper, section 4.2 and Table 3</Cite>{' '}
-            <Cite id="F03-118">our arithmetic, time per candidate</Cite>
+            <Cite id="F03-118">calculation, time per candidate</Cite>
           </Box>
           <AnimatedFigure
             name="planning with the cross-entropy method"
@@ -1005,7 +1005,7 @@ export function Jepa() {
             object placed. They switch goals on a fixed schedule of 4, 10 and 4 time steps. That is 4 + 10 + 4 =
             18 planned actions, which take 18 x 8,000 = 144,000 predictor passes. At the authors&apos; RTX 4090
             rate, that is 18 x 16 s = 288 s, or 4.8 minutes of GPU time spent deciding what to do.{' '}
-            <Cite id="F03-27">V-JEPA 2 paper, section 4.2, and our arithmetic</Cite>{' '}
+            <Cite id="F03-27">V-JEPA 2 paper, section 4.2, and a calculation</Cite>{' '}
             <Cite id="F03-25">V-JEPA 2 paper, section 4.2 and Table 3</Cite>
           </Box>
           <Box variant="p">
@@ -1069,7 +1069,7 @@ export function Jepa() {
             comes from the size of one pass. V-JEPA 2-AC runs a 300M transformer over 258 tokens per frame, while LeWorldModel
             runs a 10M transformer over 1 to 3 tokens. So when you compare pass counts, also look at the
             predictor&apos;s size and the number of tokens it reads per step.{' '}
-            <Cite id="F03-115">our arithmetic, predictor passes per decision</Cite>{' '}
+            <Cite id="F03-115">calculation, predictor passes per decision</Cite>{' '}
             <Cite id="F03-40">LeWorldModel paper, appendix D</Cite>{' '}
             <Cite id="F03-41">LeWorldModel paper, Figure 3</Cite>
           </Box>
@@ -1104,7 +1104,7 @@ export function Jepa() {
                   <td style={TD}>
                     <Cite id="F03-73">V-JEPA 2.1 paper, Table 6</Cite>{' '}
                     <Cite id="F03-74">V-JEPA 2.1 paper, Table 6 caption</Cite>{' '}
-                    <Cite id="F03-115">our arithmetic, predictor passes per decision</Cite>
+                    <Cite id="F03-115">calculation, predictor passes per decision</Cite>
                   </td>
                 </tr>
                 <tr>
@@ -1120,8 +1120,8 @@ export function Jepa() {
                   <td style={TD}>
                     <Cite id="F03-40">LeWorldModel paper, appendix D</Cite>{' '}
                     <Cite id="F03-41">LeWorldModel paper, Figure 3</Cite>{' '}
-                    <Cite id="F03-115">our arithmetic, predictor passes per decision</Cite>{' '}
-                    <Cite id="F03-118">our arithmetic, time per candidate</Cite>
+                    <Cite id="F03-115">calculation, predictor passes per decision</Cite>{' '}
+                    <Cite id="F03-118">calculation, time per candidate</Cite>
                   </td>
                 </tr>
                 <tr>
@@ -1136,7 +1136,7 @@ export function Jepa() {
                   </td>
                   <td style={TD}>
                     <Cite id="F03-77">RoboJEPA paper, section 2.2 and Table 13</Cite>{' '}
-                    <Cite id="F03-115">our arithmetic, predictor passes per decision</Cite>
+                    <Cite id="F03-115">calculation, predictor passes per decision</Cite>
                   </td>
                 </tr>
               </tbody>
@@ -1163,7 +1163,7 @@ export function Jepa() {
             neither paper explains the difference.{' '}
             <Cite id="F03-25">V-JEPA 2 paper, section 4.2 and Table 3</Cite>{' '}
             <Cite id="F03-74">V-JEPA 2.1 paper, Table 6</Cite>{' '}
-            <Cite id="F03-118">our arithmetic, time per candidate</Cite>
+            <Cite id="F03-118">calculation, time per candidate</Cite>
           </Box>
           <Box variant="p">
             CEM has two limits that the LeWorldModel authors state: it has no guarantee of finding the global
@@ -1263,7 +1263,7 @@ export function Jepa() {
             predictor over 258 tokens per step, which take 16 seconds per action on one RTX 4090, as its authors
             report. <Cite id="F03-24">V-JEPA 2 paper, appendix B.2</Cite>{' '}
             <Cite id="F03-25">V-JEPA 2 paper, section 4.2 and Table 3</Cite>{' '}
-            <Cite id="F03-115">our arithmetic, predictor passes per decision</Cite>{' '}
+            <Cite id="F03-115">calculation, predictor passes per decision</Cite>{' '}
             <Cite id="F03-4">V-JEPA 2 paper, appendix A.3, Table 12</Cite>
           </Box>
         </SpaceBetween>
