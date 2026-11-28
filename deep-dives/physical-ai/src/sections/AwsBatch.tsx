@@ -1460,15 +1460,21 @@ export function AwsBatch() {
               <Cite id="F09-141">AWS Physical AI Blog, Isaac Lab in VAMS</Cite>
             </li>
             <li>
-              <strong>GR00T fine-tuning.</strong> The pipeline fine-tunes GR00T-N1.5-3B, with LoRA by default, on a
-              dataset in LeRobot v2.1 format. Its documentation estimates 60 to 120 minutes for 6000 training steps on
-              one GPU, a g6e.4xlarge, and 20 to 40 minutes on four GPUs, a g6e.12xlarge. The one-GPU estimate agrees
-              with the AWS post cited earlier in this section, which gives up to 2 hours for 6000 steps on a
-              g6e.4xlarge. The documentation of release 2.6.7 names only this model and this dataset format, which
-              are older than the GR00T N1.7 and the LeRobot v3.0 format that this dive uses. So check that the
-              pipeline accepts your model and dataset before you build on it.{' '}
+              <strong>GR00T fine-tuning.</strong> The pipeline fine-tunes GR00T-N1.5-3B on a dataset in LeRobot v2.1
+              format, as one Batch job on one GPU. Its default settings train the action head without LoRA and keep the
+              backbone frozen. VAMS estimates 60 to 120 minutes for 6000 training steps on a g6e.4xlarge, which agrees
+              with the up to 2 hours in the AWS post cited earlier in this section. This default fine-tune needs a GPU
+              with more than 24 GB of memory. So take the g5.12xlarge out of the instance list of release 2.6.7,
+              because VAMS found that its 24 GB GPUs run out of memory at the first step.{' '}
+              <Cite id="F09-144">VAMS v2.6.7, GR00T container and job definition code</Cite>{' '}
               <Cite id="F09-138">VAMS v2.6.7, GR00T fine-tuning pipeline docs</Cite>{' '}
-              <Cite id="F09-114">AWS Physical AI Blog, embodied AI series, part 1</Cite>
+              <Cite id="F09-114">AWS Physical AI Blog, embodied AI series, part 1</Cite>{' '}
+              <Cite id="F09-145">VAMS development branch, GR00T fine-tuning pipeline docs</Cite>{' '}
+              The container builds NVIDIA&apos;s Isaac-GR00T code at a commit of September 2025, and it loads the model
+              with that code&apos;s N1.5 class. So before the pipeline can fine-tune GR00T N1.7 on the LeRobot v3.0
+              datasets that this dive uses, you would rebuild the container with newer training code and test it.{' '}
+              <Cite id="F09-144">VAMS v2.6.7, GR00T container and job definition code</Cite>{' '}
+              <Cite id="F09-138">VAMS v2.6.7, GR00T fine-tuning pipeline docs</Cite>
             </li>
             <li>
               <strong>Cosmos world models.</strong> The Cosmos 3 pipeline runs Cosmos3-Nano split across the four L40S
@@ -1483,6 +1489,19 @@ export function AwsBatch() {
               <Cite id="F09-140">VAMS v2.6.7, Gaussian splatting pipeline docs</Cite>
             </li>
           </ul>
+          <ExpandableSection headerText="Where the GR00T documentation of release 2.6.7 differs from its code">
+            <Box variant="p">
+              The documentation of release 2.6.7 calls LoRA the default, and it gives 20 to 40 minutes for 6000 steps
+              on the four GPUs of a g6e.12xlarge. The code of the same release sets the default LoRA rank to 0, which
+              means no LoRA. Its job definition reserves one GPU, whatever number of training processes you set.
+              VAMS&apos;s newer documentation, on a branch that is not yet released, agrees with the code. An open VAMS
+              issue also reports that GR00T jobs on a multi-GPU instance can all run on the host&apos;s first GPU. So
+              plan on the one-GPU time, even on a g6e.12xlarge.{' '}
+              <Cite id="F09-138">VAMS v2.6.7, GR00T fine-tuning pipeline docs</Cite>{' '}
+              <Cite id="F09-144">VAMS v2.6.7, GR00T container and job definition code</Cite>{' '}
+              <Cite id="F09-145">VAMS development branch, GR00T fine-tuning pipeline docs</Cite>
+            </Box>
+          </ExpandableSection>
           <Box variant="p">The defaults of VAMS differ from the setup in this section in two ways.</Box>
           <ul style={LIST}>
             <li>

@@ -2605,6 +2605,17 @@
  },
  {
   "tier": 1,
+  "url": "https://github.com/awslabs/visual-asset-management-system/blob/973ea47b31147d4b9c0e6df8046f70f43d53093c/documentation/docusaurus-site/docs/pipelines/nvidia-gr00t-finetune.md",
+  "local": null,
+  "venue": null,
+  "title": "VAMS development branch, GR00T fine-tuning pipeline docs",
+  "sections": [
+   25
+  ],
+  "accessed": "2026-11-28"
+ },
+ {
+  "tier": 1,
   "url": "https://github.com/google-deepmind/mujoco",
   "local": null,
   "venue": null,
