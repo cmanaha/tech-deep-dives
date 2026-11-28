@@ -320,7 +320,7 @@
  {
   "term": "Back end",
   "expansion": null,
-  "meaning": "The part of a core that executes micro-operations in its arithmetic and memory units, out of program order where that is faster.",
+  "meaning": "The stages of a core's pipeline that execute micro-operations in the arithmetic and memory units, out of program order when that is faster.",
   "section": 21
  },
  {
@@ -356,7 +356,7 @@
  {
   "term": "Bad speculation",
   "expansion": null,
-  "meaning": "The share of slots that carried work thrown away after a wrong branch guess, plus, in the corrected formulas, slots lost while recovering from it.",
+  "meaning": "The share of slots that carried work thrown away after a wrong branch guess. In the corrected formulas, it also includes the slots lost while the core recovers from the wrong guess.",
   "section": 21
  },
  {
@@ -800,7 +800,7 @@
  {
   "term": "Core bound",
   "expansion": null,
-  "meaning": "The part of back-end bound in which execution units are busy or operations wait on each other's results; a faster core helps it, and faster memory does not.",
+  "meaning": "The share of back-end bound slots in which the execution units are busy or operations wait on each other's results. A faster core helps such a job, and faster memory does not.",
   "section": 21
  },
  {
@@ -1460,13 +1460,13 @@
  {
   "term": "Flush",
   "expansion": null,
-  "meaning": "Throwing away the micro-operations started after a wrong branch guess and restarting from the right place.",
+  "meaning": "Throwing away the micro-operations started after a wrong branch guess, and restarting from the right place.",
   "section": 21
  },
  {
   "term": "Flush correction",
   "expansion": null,
-  "meaning": "Arm's per-core adjustment that moves the slots lost while recovering from a flush from front-end bound to bad speculation.",
+  "meaning": "Arm's per-core adjustment that moves the slots lost while recovering from a flush out of front-end bound and into bad speculation.",
   "section": 21
  },
  {
@@ -1520,7 +1520,7 @@
  {
   "term": "Front end",
   "expansion": null,
-  "meaning": "The part of a core that predicts the next instructions, fetches them and decodes them into micro-operations.",
+  "meaning": "The stages of a core's pipeline that predict which instructions come next, fetch them and decode them into micro-operations.",
   "section": 21
  },
  {
@@ -1742,7 +1742,7 @@
  {
   "term": "Graviton",
   "expansion": null,
-  "meaning": "The Arm processors AWS designs for EC2; Graviton2, 3, 4 and 5 use the Neoverse N1, V1, V2 and V3 cores.",
+  "meaning": "The Arm processors that AWS designs for EC2. Graviton2, 3, 4 and 5 use the Neoverse N1, V1, V2 and V3 cores.",
   "section": 21
  },
  {
@@ -1982,7 +1982,7 @@
  {
   "term": "Instructions per cycle",
   "expansion": null,
-  "meaning": "Finished instructions divided by clock cycles: how much a core got done per cycle, with nothing on why the rest of its capacity went unused.",
+  "meaning": "The number of finished instructions divided by the number of clock cycles. It shows how much work a core did per cycle, but not why the rest of its capacity went unused.",
   "section": 21
  },
  {
@@ -2312,7 +2312,7 @@
  {
   "term": "Level 2 (top-down)",
   "expansion": null,
-  "meaning": "The second level of top-down analysis, which splits back-end bound into memory bound and core bound; Arm's files for the Neoverse V3, Cortex-X925 and Cortex-A725 define it with events of their own.",
+  "meaning": "The second level of top-down analysis, which splits back-end bound into memory bound and core bound. Arm's files for the Neoverse V3, Cortex-X925 and Cortex-A725 define it with events of their own.",
   "section": 21
  },
  {
@@ -2456,7 +2456,7 @@
  {
   "term": "Memory bound",
   "expansion": null,
-  "meaning": "The part of back-end bound in which the core is waiting for data to be loaded or stored; faster memory helps it: more bandwidth if the loads stream, lower latency if each load waits for the one before.",
+  "meaning": "The share of back-end bound slots in which the core waits for data to be loaded or stored. Faster memory helps such a job: more bandwidth if its loads stream through memory, and lower latency if each load waits for the one before.",
   "section": 21
  },
  {
@@ -2468,7 +2468,7 @@
  {
   "term": "Memory stall",
   "expansion": null,
-  "meaning": "A separate counter's share of cycles in which the back end waited on memory.",
+  "meaning": "The share of cycles in which the back end waited on memory, counted by a separate event.",
   "section": 21
  },
  {
@@ -2492,7 +2492,7 @@
  {
   "term": "Micro-operation",
   "expansion": null,
-  "meaning": "One of the smaller internal steps a core splits each program instruction into; Intel writes uOp.",
+  "meaning": "One of the smaller internal steps that a core splits each program instruction into. Intel writes it as uOp.",
   "section": 21
  },
  {
@@ -2660,7 +2660,7 @@
  {
   "term": "Multiplexing (perf)",
   "expansion": null,
-  "meaning": "What perf does when it cannot count every requested event at once: the events take turns, each count is scaled to the whole run, and perf reports the share of the measurement time each counter was running.",
+  "meaning": "What perf does when it cannot count every requested event at the same time. The events take turns, perf scales each count up to the whole run, and it reports the share of the measurement time during which each counter was running.",
   "section": 21
  },
  {
@@ -2744,13 +2744,13 @@
  {
   "term": "Nsight Compute",
   "expansion": null,
-  "meaning": "NVIDIA's profiler for one GPU kernel, reporting throughput against the GPU's maximum and a roofline chart.",
+  "meaning": "NVIDIA's profiler for a single GPU kernel. It reports the kernel's throughput against the GPU's maximum and draws a roofline chart.",
   "section": 21
  },
  {
   "term": "Nsight Systems",
   "expansion": null,
-  "meaning": "NVIDIA's profiler that puts CPU samples, GPU calls and kernels of one application on a single timeline.",
+  "meaning": "NVIDIA's profiler that puts the CPU samples, GPU calls and kernels of one application on a single timeline.",
   "section": 21
  },
  {
@@ -2792,7 +2792,7 @@
  {
   "term": "nvidia-smi utilisation",
   "expansion": null,
-  "meaning": "The percent of time in the sample period during which at least one kernel was running on the GPU; it says nothing about how much of the GPU the kernel used.",
+  "meaning": "The percent of time in the sample period during which at least one kernel was running on the GPU. It says nothing about how much of the GPU the kernel used.",
   "section": 21
  },
  {
@@ -2840,7 +2840,7 @@
  {
   "term": "OP_SPEC, OP_RETIRED",
   "expansion": null,
-  "meaning": "Arm events counting micro-operations dispatched through a slot (including those later thrown away) and micro-operations that retired.",
+  "meaning": "Two Arm events. OP_SPEC counts the micro-operations dispatched through a slot, including those later thrown away, and OP_RETIRED counts the micro-operations that retired.",
   "section": 21
  },
  {
@@ -3026,7 +3026,7 @@
  {
   "term": "perf",
   "expansion": null,
-  "meaning": "The Linux tool that reads the processor's counters; perf stat runs a program and prints the totals.",
+  "meaning": "The Linux tool that reads the processor's counters. The perf stat command runs a program and prints the counter totals.",
   "section": 21
  },
  {
@@ -3134,7 +3134,7 @@
  {
   "term": "PMU card",
   "expansion": null,
-  "meaning": "One page of readings for one workload on one machine: throughput, where the CPU's slots went, what lies behind the largest loss, the GPU readings where a GPU does the work, and how it was all counted.",
+  "meaning": "The record of one workload on one machine. It gives the throughput, where the CPU's slots went, what lies behind the largest loss, the GPU readings when a GPU does the work, and how everything was counted.",
   "section": 21
  },
  {
@@ -3458,7 +3458,7 @@
  {
   "term": "Rename unit",
   "expansion": null,
-  "meaning": "The stage that divides a core's front end from its back end; Arm counts slots there.",
+  "meaning": "The pipeline stage that separates a core's front end from its back end. Arm counts slots at this stage.",
   "section": 21
  },
  {
@@ -3524,13 +3524,13 @@
  {
   "term": "Retirement",
   "expansion": null,
-  "meaning": "The last pipeline stage, where the results of executed micro-operations are made final in program order.",
+  "meaning": "The last pipeline stage. It makes the results of executed micro-operations final, in program order.",
   "section": 21
  },
  {
   "term": "Retiring",
   "expansion": null,
-  "meaning": "The share of slots that carried a micro-operation which finished and was kept: the useful work.",
+  "meaning": "The share of slots that carried a micro-operation which finished and was kept. It measures the core's useful work.",
   "section": 21
  },
  {
@@ -3596,7 +3596,7 @@
  {
   "term": "Roofline chart",
   "expansion": null,
-  "meaning": "A chart of a kernel's achieved speed against arithmetic per byte of memory moved, under a roof whose sloped part is the memory bandwidth limit and whose flat part is the peak compute limit.",
+  "meaning": "A chart of a kernel's achieved speed against its arithmetic per byte of memory moved. The sloped part of the roof is the memory bandwidth limit, and the flat part is the peak compute limit.",
   "section": 21
  },
  {
@@ -3854,7 +3854,7 @@
  {
   "term": "SIMT path",
   "expansion": null,
-  "meaning": "The GPU's general floating-point path, as opposed to the tensor pipeline; a kernel whose name carries simt did its arithmetic there.",
+  "meaning": "The GPU's general floating-point path on the ordinary CUDA cores, as opposed to the tensor pipeline. SIMT stands for single instruction, multiple threads. We read a kernel name that contains simt as a kernel that did its arithmetic on this path.",
   "section": 21
  },
  {
@@ -3878,7 +3878,7 @@
  {
   "term": "Slot",
   "expansion": null,
-  "meaning": "One chance, in one clock cycle, to pass one micro-operation from the front end to the back end; a core has a fixed number per cycle.",
+  "meaning": "One chance, in one clock cycle, to pass one micro-operation from the front end to the back end. A core has a fixed number of slots per cycle.",
   "section": 21
  },
  {
@@ -3902,7 +3902,7 @@
  {
   "term": "SM activity",
   "expansion": null,
-  "meaning": "The fraction of time at least one group of threads was active on a GPU multiprocessor; threads waiting on memory count as active.",
+  "meaning": "The fraction of time during which at least one group of threads was active on a GPU's SMs, averaged over all SMs. Threads waiting on memory count as active.",
   "section": 21
  },
  {
@@ -3938,13 +3938,13 @@
  {
   "term": "Speculation",
   "expansion": null,
-  "meaning": "Fetching and running instructions after a branch before knowing which way the branch goes, on a guess.",
+  "meaning": "Fetching and executing the instructions after a branch on a guess, before the core knows which way the branch goes.",
   "section": 21
  },
  {
   "term": "SpeedOfLight (Nsight Compute)",
   "expansion": null,
-  "meaning": "The section of a kernel profile that reports compute and memory throughput; each figure is the highest of the percentages its constituent counters report, so it need not be a share of the chip's peak arithmetic rate or memory bandwidth.",
+  "meaning": "The section of a kernel profile that reports compute and memory throughput. Each figure is the highest of the percentages reported by the counters behind it, so it need not be a share of the chip's peak arithmetic rate or memory bandwidth.",
   "section": 21
  },
  {
@@ -4016,13 +4016,13 @@
  {
   "term": "STALL_FRONTEND_FLUSH",
   "expansion": null,
-  "meaning": "The Arm event that counts cycles the front end spent recovering from a flush, used by the Neoverse V3, Cortex-X925 and Cortex-A725 formulas.",
+  "meaning": "The Arm event that counts the cycles the front end spent recovering from a flush. The formulas for the Neoverse V3, Cortex-X925 and Cortex-A725 use it.",
   "section": 21
  },
  {
   "term": "STALL_SLOT",
   "expansion": null,
-  "meaning": "The Arm event counting empty slots; it is the sum of STALL_SLOT_FRONTEND and STALL_SLOT_BACKEND.",
+  "meaning": "The Arm event that counts empty slots. It is the sum of STALL_SLOT_FRONTEND and STALL_SLOT_BACKEND.",
   "section": 21
  },
  {
@@ -4208,7 +4208,7 @@
  {
   "term": "tegrastats",
   "expansion": null,
-  "meaning": "The Jetson's always-on monitor: GPU activation time, memory-controller bandwidth in use and power per rail.",
+  "meaning": "The Jetson's always-on monitor. It reports the GPU's activation time, the memory bandwidth in use at the memory controller and the power drawn on each power rail.",
   "section": 21
  },
  {
@@ -4232,7 +4232,7 @@
  {
   "term": "Tensor activity",
   "expansion": null,
-  "meaning": "The fraction of cycles the GPU's tensor pipeline was active.",
+  "meaning": "The fraction of cycles during which the GPU's tensor pipeline was active.",
   "section": 21
  },
  {
@@ -4244,7 +4244,7 @@
  {
   "term": "TensorFloat32",
   "expansion": null,
-  "meaning": "A number format that stores 10 mantissa bits where float32 stores 23; PyTorch may use it for a float32 matrix multiply when the precision setting is \"high\".",
+  "meaning": "A number format that stores 10 mantissa bits where float32 stores 23. PyTorch may use it for a float32 matrix multiply when the precision setting is \"high\".",
   "section": 21
  },
  {
@@ -4364,7 +4364,7 @@
  {
   "term": "Top-down analysis",
   "expansion": null,
-  "meaning": "A method, from a 2014 Intel paper, that sorts every slot of every cycle into one of four buckets to show where a core's capacity went.",
+  "meaning": "A method from a 2014 Intel paper. It sorts every slot of every cycle into one of four buckets to show how a core used its capacity.",
   "section": 21
  },
  {
@@ -4376,7 +4376,7 @@
  {
   "term": "torch.set_float32_matmul_precision",
   "expansion": null,
-  "meaning": "The PyTorch setting that decides whether a float32 matrix multiply may compute in a lower internal precision; \"highest\", the default, keeps float32, and \"high\" permits TensorFloat32.",
+  "meaning": "The PyTorch setting that decides whether a float32 matrix multiply may be computed in a narrower format. The default, \"highest\", keeps float32, and \"high\" allows TensorFloat32.",
   "section": 21
  },
  {
@@ -4676,7 +4676,7 @@
  {
   "term": "Width",
   "expansion": null,
-  "meaning": "A core's slots per cycle, for example 10 on the Cortex-X925 and Neoverse V3 and 5 on the Cortex-A725.",
+  "meaning": "A core's number of slots per cycle, for example 10 on the Cortex-X925 and Neoverse V3 and 5 on the Cortex-A725.",
   "section": 21
  },
  {

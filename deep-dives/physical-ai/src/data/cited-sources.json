@@ -2325,7 +2325,7 @@
   "url": "https://docs.nvidia.com/nsight-systems/ReleaseNotes/index.html",
   "local": null,
   "venue": null,
-  "title": "Nsight Systems release notes; the waiting-on-CPU limit is our reading",
+  "title": "Nsight Systems release notes",
   "sections": [
    21
   ]
@@ -3605,7 +3605,7 @@
   "url": "https://github.com/torvalds/linux/tree/c03c1a14507dfaf8b856c2608f9ac216021fc222/tools/perf/pmu-events/arch/arm64/arm",
   "local": null,
   "venue": null,
-  "title": "Linux v7.3 perf directories; the fallback is our reading",
+  "title": "Linux v7.3 perf directories",
   "sections": [
    21
   ]
@@ -3636,7 +3636,7 @@
   "url": "https://gitlab.arm.com/telemetry-solution/telemetry-solution/-/blob/ea533b733b9bad52223d16e768b7dab03cabb830/data/pmu/cpu/specifications/neoverse/neoverse_v2_r0p0_pmu.json",
   "local": null,
   "venue": null,
-  "title": "Arm Telemetry Solution, neoverse_v2 metrics; the uncorrected V2 error is our arithmetic",
+  "title": "Arm Telemetry Solution, neoverse_v2 metrics",
   "sections": [
    21
   ]
