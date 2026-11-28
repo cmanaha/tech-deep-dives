@@ -37,5 +37,7 @@
   { "term": "Slurm", "expansion": null, "meaning": "The scheduler that high-performance computing clusters commonly use. AWS offers it through AWS Parallel Computing Service." },
   { "term": "Episode", "expansion": null, "meaning": "One attempt by the policy at the task, from the start to success or failure." },
   { "term": "Evaluation sweep", "expansion": null, "meaning": "The 500 simulated episodes that test each new policy before it may drive the real arm. Batch runs them as one array job." },
-  { "term": "Quota share", "expansion": null, "meaning": "A virtual queue nested inside a Batch queue for SageMaker Training jobs. A queue can have up to 20, and they can lend idle capacity to each other and take it back." }
+  { "term": "Quota share", "expansion": null, "meaning": "A virtual queue nested inside a Batch queue for SageMaker Training jobs. A queue can have up to 20, and they can lend idle capacity to each other and take it back." },
+  { "term": "VAMS", "expansion": "Visual Asset Management System", "meaning": "An open-source AWS solution that you deploy in your own account. It stores robot models, scenes, datasets and other files in Amazon S3 as versioned assets, and it runs GPU pipelines on them as AWS Batch jobs." },
+  { "term": "CDK", "expansion": "Cloud Development Kit", "meaning": "The AWS framework that defines cloud resources in code and deploys them. VAMS is deployed with it." }
 ]

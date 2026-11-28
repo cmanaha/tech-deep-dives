@@ -515,6 +515,17 @@ export function Augmentation() {
             more.{' '}
             <Cite id="F08-45">EC2 accelerated computing specifications</Cite>
           </Box>
+          <Box variant="p">
+            You can also stay on 48 GB cards if you split the model across several of them in one instance. The
+            Visual Asset Management System (VAMS) is an open-source AWS solution that stores robot and 3D data and runs
+            GPU jobs on it with AWS Batch. Section 25, AWS Batch, describes it. Its Cosmos 3 pipeline needs at least
+            four GPUs for Nano. At 16-bit precision, Nano&apos;s weights alone take about 32 GB, which leaves too little
+            of one L40S&apos;s 48 GB for the working memory that generating a full-length video needs. So the pipeline
+            splits the parameters
+            across the GPUs of the job. The smallest instance it runs Nano on is the g6e.12xlarge, with four L40S
+            cards, and it runs Cosmos3-Super only on instances with eight 80 GB GPUs.{' '}
+            <Cite id="F09-139">VAMS v2.6.7, Cosmos 3 pipeline docs</Cite>
+          </Box>
           <ExpandableSection headerText="Cosmos 3 memory: lower minimums, framework estimates and measured peaks" variant="footer">
             <ul style={LIST}>
               <li>

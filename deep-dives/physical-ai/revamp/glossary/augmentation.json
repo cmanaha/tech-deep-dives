@@ -193,5 +193,10 @@
   "term": "Newton Warp",
   "expansion": null,
   "meaning": "The lightweight ray tracer in the base install of Isaac Lab 3.0. It draws direct lighting only and runs without Isaac Sim."
+ },
+ {
+  "term": "VAMS",
+  "expansion": "Visual Asset Management System",
+  "meaning": "An open-source AWS solution that you deploy in your own account. It stores robot models, scenes, datasets and other files in Amazon S3 as versioned assets, and it runs GPU pipelines on them as AWS Batch jobs."
  }
 ]

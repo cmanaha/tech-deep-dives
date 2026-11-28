@@ -857,6 +857,14 @@ export function SimToReal() {
             <Cite id="F06-73">PolaRiS paper, section 4.1</Cite>
           </Box>
           <Box variant="p">
+            VAMS is the open-source AWS solution for robot and 3D data that section 25, AWS Batch, describes. One of
+            its pipelines runs the first of these steps and the splat fitting of the second on AWS, in one AWS Batch
+            job on one GPU. It takes a set of photos or a video, recovers where the camera stood for each frame, fits
+            the splats and exports them as splat files. Its documentation names no mesh export, so the surface meshes
+            that PolaRiS imports into Isaac Sim come from another tool.{' '}
+            <Cite id="F09-140">VAMS v2.6.7, Gaussian splatting pipeline docs</Cite>
+          </Box>
+          <Box variant="p">
             A scan measures how a scene looks and the geometry of its surfaces. It measures nothing about how the
             surfaces push back when the arm touches them. In PolaRiS, the physical parameters of the objects are
             Isaac Sim&apos;s defaults, and those of the arm come from its manufacturer. So the motors still need

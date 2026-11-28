@@ -1154,6 +1154,17 @@ export function AwsOrchestration() {
               instead. FSx for Lustre is a managed shared file system. <Cite id="F09-106">S3 User Guide, Mountpoint for Amazon S3</Cite>
             </li>
             <li>
+              <strong>Keeping robot models, scenes and datasets as versioned assets.</strong> VAMS, the Visual Asset
+              Management System, is an open-source AWS solution that you deploy in your own account. It stores these
+              files in Amazon S3 as versioned assets and runs GPU pipelines on them, through Step Functions workflows
+              that submit AWS Batch jobs. A workflow can start when a file is uploaded, and its output, such as a
+              trained policy, is stored as a new version of the asset that it came from. Section 25, AWS Batch,
+              describes what VAMS runs and how its defaults compare with a Batch setup that you build yourself.{' '}
+              <Cite id="F09-142">AWS Physical AI Blog, VAMS 2.6 release</Cite>{' '}
+              <Cite id="F09-136">VAMS v2.6.7, pipelines overview</Cite>{' '}
+              <Cite id="F09-141">AWS Physical AI Blog, Isaac Lab in VAMS</Cite>
+            </li>
+            <li>
               <strong>Interactive workstations.</strong> A simulation workstation that a person uses interactively
               needs no orchestrator, because the person holds the instance while working on it. Amazon DCV is the
               remote-desktop protocol for such a workstation. <Cite id="F09-104">Amazon DCV product page</Cite>

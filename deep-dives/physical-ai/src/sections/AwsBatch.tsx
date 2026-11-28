@@ -1418,6 +1418,105 @@ export function AwsBatch() {
         header={
           <Header
             variant="h2"
+            description="VAMS is an open-source AWS solution that already runs Isaac Lab training, GR00T fine-tuning, Cosmos models and Gaussian splatting as Batch jobs. You will see how it runs them and how its defaults compare with the setup in this section, so that you can decide whether to start from it."
+          >
+            Running robot-learning jobs on Batch with VAMS
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            The Visual Asset Management System (VAMS) is an open-source solution from AWS. It stores robot models,
+            simulation scenes, datasets, videos and other files in Amazon S3 as versioned assets, and it runs
+            processing pipelines on them. You deploy it into your own AWS account with the AWS CDK (Cloud Development
+            Kit), which defines AWS resources in code. After that, you update and secure it yourself, as with any other
+            code in your account. Its README calls it &quot;near-production-grade at its default&quot; and asks you to
+            check with your security team before you use it in production.{' '}
+            <Cite id="F09-135">VAMS v2.6.7, README</Cite>
+          </Box>
+          <Box variant="p">
+            VAMS keeps the assets and runs the workflows, and other AWS services supply the compute. For the GPU
+            pipelines, that compute is AWS Batch. Each pipeline runs inside a workflow in AWS Step Functions. The
+            workflow submits a Batch job and then waits until the job reports that it has finished. VAMS then
+            registers the output as new files or new versions of the asset that the job read. So a trained policy
+            appears as a new version of the robot asset that it was trained from, and you can trace it back to that
+            asset.{' '}
+            <Cite id="F09-142">AWS Physical AI Blog, VAMS 2.6 release</Cite>{' '}
+            <Cite id="F09-136">VAMS v2.6.7, pipelines overview</Cite>{' '}
+            <Cite id="F09-141">AWS Physical AI Blog, Isaac Lab in VAMS</Cite>
+          </Box>
+          <Box variant="p">
+            Four of its pipelines cover jobs of the arm&apos;s learning loop, and all four run on Batch with GPU
+            instances. <Cite id="F09-136">VAMS v2.6.7, pipelines overview</Cite>
+          </Box>
+          <ul style={LIST}>
+            <li>
+              <strong>Isaac Lab training and evaluation.</strong> In release 2.6.7, each run is one Batch job on one
+              instance with one GPU, from the G6, G6e or G5 families. A training run gets 8 hours, including the wait
+              for an instance and the image pull, and an evaluation run gets 2 hours. Checkpoints go to Amazon EFS. An
+              AWS post from January 2026 describes multi-node training for this pipeline, but the job definition in
+              release 2.6.7 runs on a single node.{' '}
+              <Cite id="F09-137">VAMS v2.6.7, Isaac Lab pipeline docs and CDK code</Cite>{' '}
+              <Cite id="F09-141">AWS Physical AI Blog, Isaac Lab in VAMS</Cite>
+            </li>
+            <li>
+              <strong>GR00T fine-tuning.</strong> The pipeline fine-tunes GR00T-N1.5-3B, with LoRA by default, on a
+              dataset in LeRobot v2.1 format. Its documentation estimates 60 to 120 minutes for 6000 training steps on
+              one GPU, a g6e.4xlarge, and 20 to 40 minutes on four GPUs, a g6e.12xlarge. The one-GPU estimate agrees
+              with the AWS post cited earlier in this section, which gives up to 2 hours for 6000 steps on a
+              g6e.4xlarge. The documentation of release 2.6.7 names only this model and this dataset format, which
+              are older than the GR00T N1.7 and the LeRobot v3.0 format that this dive uses. So check that the
+              pipeline accepts your model and dataset before you build on it.{' '}
+              <Cite id="F09-138">VAMS v2.6.7, GR00T fine-tuning pipeline docs</Cite>{' '}
+              <Cite id="F09-114">AWS Physical AI Blog, embodied AI series, part 1</Cite>
+            </li>
+            <li>
+              <strong>Cosmos world models.</strong> The Cosmos 3 pipeline runs Cosmos3-Nano split across the four L40S
+              GPUs of a g6e.12xlarge, and Cosmos3-Super on instances with eight 80 GB GPUs. Section 11, Augmentation
+              and Synthetic Data, explains why Nano does not fit on one 48 GB card.{' '}
+              <Cite id="F09-139">VAMS v2.6.7, Cosmos 3 pipeline docs</Cite>
+            </li>
+            <li>
+              <strong>Gaussian splatting.</strong> The pipeline builds a splat model of a scene from a set of photos or
+              a video, in one Batch job with one GPU and a 12-hour timeout. Section 14, Sim-to-Real and Real-to-Sim,
+              explains what the splats are used for.{' '}
+              <Cite id="F09-140">VAMS v2.6.7, Gaussian splatting pipeline docs</Cite>
+            </li>
+          </ul>
+          <Box variant="p">The defaults of VAMS differ from the setup in this section in two ways.</Box>
+          <ul style={LIST}>
+            <li>
+              <strong>On-Demand Instances only.</strong> None of the GPU compute environments in release 2.6.7
+              requests Spot capacity, so the jobs run on On-Demand Instances. That matches the On-Demand option for a
+              fine-tune described earlier in this section. To run an evaluation sweep on Spot Instances, you would add
+              a Spot compute environment to the CDK code, and give the job definition the retry rule for a reclaimed
+              instance that this section describes.{' '}
+              <Cite id="F09-143">VAMS v2.6.7, CDK code of the compute environments</Cite>
+            </li>
+            <li>
+              <strong>A cold start for the first job.</strong> By default, the Isaac Lab and GR00T compute environments
+              scale to zero. So a job that finds no running instance first waits for one to launch, and then for its container image
+              to be pulled. The GR00T documentation gives 5 to 10 minutes for the launch and 5 to 8 minutes for the
+              pull, and the Isaac Lab image is about 10 GB. The Isaac Lab and GR00T pipelines each have an option that
+              keeps GPU instances running to skip this wait, and you pay for those instances while they are idle.{' '}
+              <Cite id="F09-138">VAMS v2.6.7, GR00T fine-tuning pipeline docs</Cite>{' '}
+              <Cite id="F09-137">VAMS v2.6.7, Isaac Lab pipeline docs and CDK code</Cite>{' '}
+              <Cite id="F09-141">AWS Physical AI Blog, Isaac Lab in VAMS</Cite>
+            </li>
+          </ul>
+          <Box variant="p">
+            VAMS fits a team that wants its robot models, datasets and trained policies in one versioned store with a
+            web interface, and whose models match the pipelines that VAMS ships. If you need newer model versions, an
+            evaluation sweep on Spot Instances or multi-node training, you either change the VAMS code or build the
+            setup that this section describes.
+          </Box>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
             description="Some work fits another AWS service better than Batch. You will know which service takes which job, and what to build first on Batch."
           >
             Where Batch hands off to other services

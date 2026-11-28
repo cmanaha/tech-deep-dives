@@ -4,7 +4,7 @@ Status: **PASS** (0 finding(s))
 
 | field | value |
 | --- | --- |
-| generated | 2026-11-28T00:22:52.001Z |
+| generated | 2026-11-28T10:20:14.675Z |
 | viewport | 390 x 844 |
 | base URL | http://127.0.0.1:4183/ |
 | sections visited | 30 |

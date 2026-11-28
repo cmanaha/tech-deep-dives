@@ -540,6 +540,12 @@
   "section": 13
  },
  {
+  "term": "CDK",
+  "expansion": "Cloud Development Kit",
+  "meaning": "The AWS framework that defines cloud resources in code and deploys them. VAMS is deployed with it.",
+  "section": 25
+ },
+ {
   "term": "CEM",
   "expansion": "cross-entropy method",
   "meaning": "A search method that samples candidate action sequences from a Gaussian, keeps the few with the lowest cost and refits the Gaussian to them. It repeats this for several rounds.",
@@ -4624,6 +4630,12 @@
   "expansion": null,
   "meaning": "A second model that looks at the current moment of an attempt and predicts how well the attempt will end.",
   "section": 8
+ },
+ {
+  "term": "VAMS",
+  "expansion": "Visual Asset Management System",
+  "meaning": "An open-source AWS solution that you deploy in your own account. It stores robot models, scenes, datasets and other files in Amazon S3 as versioned assets, and it runs GPU pipelines on them as AWS Batch jobs.",
+  "section": 11
  },
  {
   "term": "Variance (of a latent dimension)",
