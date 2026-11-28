@@ -1,143 +1,143 @@
 [
   {
-    "term": "Part (of a machine)",
+    "term": "Resource (of a machine)",
     "expansion": null,
-    "meaning": "A resource a program can run out of, such as a core's arithmetic, memory bandwidth or memory latency; the part a program runs out of first sets its speed."
+    "meaning": "Something a program can run out of, such as a core's arithmetic units, memory bandwidth or memory latency. The resource a program runs out of first is its bottleneck, and it sets the program's speed."
   },
   {
-    "term": "Stand-in",
+    "term": "Test program",
     "expansion": null,
-    "meaning": "A program run in place of the arm's real workload, useful as far as it runs out of the same part of the machine."
+    "meaning": "A small program that we ran in place of one of the arm's real jobs. Its results carry over to that job only if the job has the same bottleneck."
   },
   {
     "term": "MuJoCo",
     "expansion": null,
-    "meaning": "The physics engine that steps the simulated scenes of this dive; one step advances a scene by one timestep."
+    "meaning": "The physics engine that runs the simulated scenes in this dive. One step advances a scene by one timestep."
   },
   {
     "term": "PMU",
     "expansion": "performance monitoring unit",
-    "meaning": "The set of event counters inside a processor core, such as cycles, stalled slots and retired micro-operations."
+    "meaning": "The set of event counters inside a processor core. It counts events such as clock cycles, stalled slots and retired micro-operations."
   },
   {
     "term": "Card (PMU card)",
     "expansion": null,
-    "meaning": "The record of one program on one core: its rate, its four slot shares and its memory stall."
+    "meaning": "The record of one program on one core. It holds the program's rate, its four slot shares and its memory stall."
   },
   {
     "term": "perf stat",
     "expansion": null,
-    "meaning": "The Linux tool that reads the PMU counters around one run of a program."
+    "meaning": "The Linux tool that reads the PMU counters over one run of a program."
   },
   {
     "term": "TensorFloat32",
     "expansion": null,
-    "meaning": "A lower internal precision for float32 matrix multiplies on NVIDIA GPUs, with a float32 result; PyTorch allows it through torch.set_float32_matmul_precision(\"high\")."
+    "meaning": "A lower internal precision for float32 matrix multiplies on NVIDIA GPUs that still gives a float32 result. PyTorch allows it when you call torch.set_float32_matmul_precision(\"high\")."
   },
   {
     "term": "Multiplexing (perf)",
     "expansion": null,
-    "meaning": "What perf does when it cannot schedule every requested event at once: each event counts for part of the run and its total is scaled up, and a ratio of two events not counted together can lose accuracy."
+    "meaning": "What perf does when it cannot count every requested event at the same time. Each event is counted for part of the run and its total is scaled up, so a ratio of two events that were not counted together can lose accuracy."
   },
   {
     "term": "Top-down analysis",
     "expansion": null,
-    "meaning": "A method that finds a core's bottleneck from its event counters by sorting every slot into one of four shares: retiring, front-end bound, back-end bound and bad speculation."
+    "meaning": "A method that finds a core's bottleneck from its event counters. It sorts every slot into one of four categories, retiring, front-end bound, back-end bound and bad speculation, and reports each category as a share of all slots."
   },
   {
     "term": "Cache refill",
     "expansion": null,
-    "meaning": "A fetch of data into one of the core's caches (the first-level data cache or the second-level cache) from further out in the memory system; refills per thousand instructions show how hard a program leans on memory."
+    "meaning": "A fetch of data into one of the core's caches, the first-level data cache or the second-level cache, from further out in the memory system. The number of refills per thousand instructions shows how heavily a program depends on memory."
   },
   {
-    "term": "Finer events (Arm's second level)",
+    "term": "Second-level events (Arm)",
     "expansion": null,
-    "meaning": "Arm's counters that split a first-level share, for example back-end stalls into core causes and memory causes (STALL_BACKEND_MEMBOUND against STALL_BACKEND); not counted in these runs."
+    "meaning": "Arm's counters that split a top-down share into its causes. For example, STALL_BACKEND_MEMBOUND, counted together with STALL_BACKEND, separates back-end stalls caused by memory from those caused in the core. Our runs did not count them."
   },
   {
     "term": "Event source",
     "expansion": null,
-    "meaning": "The name under which Linux exposes one core type's PMU, such as armv8_pmuv3_1 for the Cortex-X925 on a DGX Spark; perf events are named through it."
+    "meaning": "The name under which Linux exposes the PMU of one core type, such as armv8_pmuv3_1 for the Cortex-X925 on a DGX Spark. You name perf events through it."
   },
   {
     "term": "taskset",
     "expansion": null,
-    "meaning": "The Linux command that pins a program to chosen cores, so its counters come from one known core type."
+    "meaning": "The Linux command that pins a program to chosen cores. Pinning makes sure the counters come from one known core type."
   },
   {
     "term": "Microbenchmark",
     "expansion": null,
-    "meaning": "A small loop built to load one part of a core, such as its multiply-add units or its memory."
+    "meaning": "A small loop built to exercise one resource of a core, such as its multiply-add units or its memory."
   },
   {
     "term": "Slot",
     "expansion": null,
-    "meaning": "One chance per clock cycle for a core to start one micro-operation; a core has a fixed number per cycle."
+    "meaning": "One chance, in one clock cycle, for a core to start one micro-operation. Each core has a fixed number of slots per cycle."
   },
   {
     "term": "Micro-operation",
     "expansion": null,
-    "meaning": "One of the small steps a core splits an instruction into; slots start them and the back end executes them."
+    "meaning": "One of the small steps a core splits an instruction into. Slots start micro-operations, and the back end executes them."
   },
   {
     "term": "Width",
     "expansion": null,
-    "meaning": "A core's slots per cycle: 10 on the Cortex-X925, 5 on the Cortex-A725, 6 (derived) on the Cortex-A78AE."
+    "meaning": "The number of slots a core has per cycle. It is 10 on the Cortex-X925 and 5 on the Cortex-A725. On the Cortex-A78AE it is 6, a figure we derived from the core's own counters."
   },
   {
     "term": "Retiring",
     "expansion": null,
-    "meaning": "The share of slots that started work the program kept."
+    "meaning": "The share of slots that started a micro-operation whose result the program kept."
   },
   {
     "term": "Speculation",
     "expansion": null,
-    "meaning": "A core predicting which way a branch goes and starting the instructions beyond it before the branch is resolved."
+    "meaning": "A core predicting which way a branch goes and starting the instructions beyond it before it knows the answer."
   },
   {
     "term": "Flush",
     "expansion": null,
-    "meaning": "Throwing away the work a core started on a wrong prediction and restarting on the right path."
+    "meaning": "Throwing away the work a core started after a wrong prediction, and restarting on the right path."
   },
   {
     "term": "Bad speculation",
     "expansion": null,
-    "meaning": "The share of slots spent on work thrown away after a wrong prediction, and on the restart after it."
+    "meaning": "The share of slots spent on work that the core threw away after a wrong prediction, and on the restart after it."
   },
   {
     "term": "Front-end bound",
     "expansion": null,
-    "meaning": "The share of slots left empty because the half of the core that fetches and decodes instructions had nothing ready."
+    "meaning": "The share of slots left empty because the front end of the core, which fetches and decodes instructions, had no micro-operation ready."
   },
   {
     "term": "Back-end bound",
     "expansion": null,
-    "meaning": "The share of slots left empty because the half of the core that executes instructions could take no more."
+    "meaning": "The share of slots left empty because the back end of the core, which executes micro-operations, could not accept another one."
   },
   {
     "term": "Memory stall",
     "expansion": null,
-    "meaning": "The share of cycles the back end spent waiting for data from memory, read from a separate counter in a second execution."
+    "meaning": "The share of clock cycles in which the back end waited for data from memory. It comes from a separate counter, read in a second execution of the program."
   },
   {
     "term": "Instructions per cycle",
     "expansion": null,
-    "meaning": "Finished instructions divided by clock cycles; with the clock and the instructions per unit of work it sets a core's throughput."
+    "meaning": "The number of instructions a core finishes, divided by the clock cycles it takes. A core's throughput equals its instructions per cycle times its clock rate, divided by the instructions one unit of work takes."
   },
   {
     "term": "Flush correction",
     "expansion": null,
-    "meaning": "Arm's adjustment that moves the cycles a core spends recovering from a flush from front-end bound to bad speculation."
+    "meaning": "Arm's adjustment that moves the cycles a core spends recovering from a flush out of front-end bound and into bad speculation."
   },
   {
     "term": "Arm telemetry files",
     "expansion": null,
-    "meaning": "The event and formula definitions Arm publishes for each core, including its top-down formulas and slots per cycle; there is no file for the Cortex-A78AE."
+    "meaning": "The event and formula definitions that Arm publishes for each core, including its top-down formulas and its slots per cycle. Arm publishes no file for the Cortex-A78AE."
   },
   {
     "term": "Memory bandwidth",
     "expansion": null,
-    "meaning": "The bytes per second that memory can stream to a core."
+    "meaning": "The number of bytes per second that memory can stream to a core."
   },
   {
     "term": "Memory latency",
@@ -147,22 +147,22 @@
   {
     "term": "Fused multiply-add",
     "expansion": null,
-    "meaning": "One instruction that computes a x b + c; a loop of independent scalar ones measures a core's multiply-add throughput, with the vector units left out."
+    "meaning": "One instruction that computes a x b + c. A loop of independent scalar fused multiply-adds measures a core's multiply-add throughput without its vector units."
   },
   {
     "term": "Triad",
     "expansion": null,
-    "meaning": "A loop that streams through arrays larger than the caches, used to measure memory bandwidth."
+    "meaning": "A loop that streams through arrays larger than the caches. It measures memory bandwidth."
   },
   {
     "term": "Pointer chase",
     "expansion": null,
-    "meaning": "A loop in which each read gives the address of the next, used to measure memory latency."
+    "meaning": "A loop in which each read gives the address of the next read. It measures memory latency."
   },
   {
     "term": "TLB",
     "expansion": "translation lookaside buffer",
-    "meaning": "The core's cache of address translations; a pointer chase over a large area also pays its misses."
+    "meaning": "The core's cache of address translations. A pointer chase over a large area also pays for its misses."
   },
   {
     "term": "NEON and SVE",
@@ -172,12 +172,12 @@
   {
     "term": "ReLU",
     "expansion": "rectified linear unit",
-    "meaning": "The function that sets negative values to zero, applied after a layer of a neural network."
+    "meaning": "The function that sets negative values to zero. It is applied after a layer of a neural network."
   },
   {
     "term": "EGL",
     "expansion": null,
-    "meaning": "The interface MuJoCo uses for hardware-accelerated rendering with no display."
+    "meaning": "The interface MuJoCo uses for hardware-accelerated rendering without a display."
   },
   {
     "term": "Kernel (GPU)",
@@ -187,17 +187,17 @@
   {
     "term": "Nsight Compute",
     "expansion": null,
-    "meaning": "NVIDIA's profiler for a single GPU kernel; it reports compute and memory throughput as shares of the GPU's maximum."
+    "meaning": "NVIDIA's profiler for a single GPU kernel. It reports compute throughput and memory throughput as shares of the GPU's maximum."
   },
   {
     "term": "SM",
     "expansion": "streaming multiprocessor",
-    "meaning": "One of the GPU's processing units, repeated many times across the chip."
+    "meaning": "One of the GPU's processing units. A GPU repeats it many times across the chip."
   },
   {
     "term": "SIMT",
     "expansion": "single instruction, multiple threads",
-    "meaning": "The GPU's general execution path, as opposed to its tensor cores."
+    "meaning": "The GPU's general execution path, which does not use the tensor cores."
   },
   {
     "term": "Tensor cores",
@@ -207,41 +207,41 @@
   {
     "term": "p50 and p99",
     "expansion": null,
-    "meaning": "The median time per call and the time only one call in a hundred exceeds."
+    "meaning": "The p50 is the median time per call. The p99 is the time that only one call in a hundred exceeds."
   },
   {
     "term": "Graviton",
     "expansion": null,
-    "meaning": "AWS's own Arm processors; their cores are Arm Neoverse designs."
+    "meaning": "AWS's own family of Arm processors. Their cores are Arm Neoverse designs."
   },
   {
     "term": "ACT",
     "expansion": "Action Chunking with Transformers",
-    "meaning": "The imitation-learning policy of section 4 that predicts a chunk of future actions."
+    "meaning": "The imitation-learning policy of section 4. It predicts a chunk of future actions."
   },
   {
     "term": "SmolVLA",
     "expansion": null,
-    "meaning": "A small vision-language-action model, the policy family of section 5."
+    "meaning": "A small vision-language-action model, from the policy family covered in section 5."
   },
   {
     "term": "LeWorldModel",
     "expansion": null,
-    "meaning": "The latent world model of section 7."
+    "meaning": "The latent world model covered in section 7."
   },
   {
     "term": "DCGM",
     "expansion": "Data Center GPU Manager",
-    "meaning": "NVIDIA's GPU telemetry tool, which samples activity of the GPU's parts over time."
+    "meaning": "NVIDIA's GPU telemetry tool. It samples the activity of the GPU's units over time."
   },
   {
     "term": "tegrastats",
     "expansion": null,
-    "meaning": "The Jetson's built-in monitor, which reports processor, GPU, memory and power readings, including the GPU clock."
+    "meaning": "The Jetson's built-in monitor. It reports processor, GPU, memory and power readings, including the GPU clock."
   },
   {
     "term": "Nsight Systems",
     "expansion": null,
-    "meaning": "NVIDIA's timeline profiler, which shows when the GPU works and when it waits."
+    "meaning": "NVIDIA's timeline profiler. It shows when the GPU works and when it waits."
   }
 ]

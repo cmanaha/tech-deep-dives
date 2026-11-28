@@ -148,10 +148,11 @@ function CardStack({ cards }: { cards: Card[] }) {
 function PhysicsCards() {
   return (
     <svg viewBox="0 0 340 790" role="img" aria-labelledby="measurements-physics-title" style={{ width: '100%', height: 'auto' }} fontFamily="sans-serif">
-      <title id="measurements-physics-title">Three cards for the physics step stand-in, one per core type</title>
+      <title id="measurements-physics-title">Three cards for the physics step test program, one per core type</title>
       <desc>
-        Each card names the machine, the core, the software and the run count, then gives steps per second, a stacked
-        bar of the four top-down categories with each value written out, and the memory stall share of cycles.
+        Each card names the machine, the core and the software, and states that the figures come from a single run. It
+        then gives the steps per second, a stacked bar of the four top-down shares with each value written out, and the
+        memory stall as a share of cycles.
       </desc>
       <rect x="0" y="0" width="340" height="790" fill="#fbfbfd" />
       <CardStack cards={PHYSICS} />
@@ -162,10 +163,11 @@ function PhysicsCards() {
 function PolicyCards() {
   return (
     <svg viewBox="0 0 340 790" role="img" aria-labelledby="measurements-policy-title" style={{ width: '100%', height: 'auto' }} fontFamily="sans-serif">
-      <title id="measurements-policy-title">Three cards for the policy inference stand-in, one per core type</title>
+      <title id="measurements-policy-title">Three cards for the policy inference test program, one per core type</title>
       <desc>
-        Each card names the machine, the core, the software and the run count, then gives inferences per second, a
-        stacked bar of the four top-down categories with each value written out, and the memory stall share of cycles.
+        Each card names the machine, the core and the software, and states that the figures come from a single run. It
+        then gives the inferences per second, a stacked bar of the four top-down shares with each value written out, and
+        the memory stall as a share of cycles.
       </desc>
       <rect x="0" y="0" width="340" height="790" fill="#fbfbfd" />
       <CardStack cards={POLICY} />
@@ -176,10 +178,11 @@ function PolicyCards() {
 function RenderCards() {
   return (
     <svg viewBox="0 0 340 790" role="img" aria-labelledby="measurements-render-title" style={{ width: '100%', height: 'auto' }} fontFamily="sans-serif">
-      <title id="measurements-render-title">Three cards for the camera render stand-in, one per core type</title>
+      <title id="measurements-render-title">Three cards for the camera render test program, one per core type</title>
       <desc>
-        Each card names the machine, the core, the software and the run count, then gives frames per second, a stacked
-        bar of the four top-down categories with each value written out, and the memory stall share of cycles.
+        Each card names the machine, the core and the software, and states that the figures come from a single run. It
+        then gives the frames per second, a stacked bar of the four top-down shares with each value written out, and the
+        memory stall as a share of cycles.
       </desc>
       <rect x="0" y="0" width="340" height="790" fill="#fbfbfd" />
       <CardStack cards={RENDER} />
@@ -206,7 +209,7 @@ export function Measurements() {
         header={
           <Header
             variant="h1"
-            description="Find a program's bottleneck before you trust a speed-up: the large core of a desktop machine beats a robot computer's core 6.5 times on scalar arithmetic, 3.8 times on streaming memory and 2.4 times on a single memory read (our single runs, results read 2026-11-20)"
+            description="We ran small benchmark loops and three test programs on single CPU cores of two NVIDIA edge computers, a DGX Spark and a Jetson Orin Nano Super. The Spark's large Cortex-X925 core was 6.5 times as fast as the Jetson's Cortex-A78AE core on scalar arithmetic, 3.8 times as fast at streaming memory, and returned a single memory read 2.4 times sooner. This section shows how to find a program's bottleneck from the core's hardware counters, so that you can tell which of these ratios, if any, predicts the speed-up of your own program."
           >
             22. Our Measurements: Three Test Programs on Two Edge Computers
           </Header>
@@ -214,37 +217,63 @@ export function Measurements() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            How much faster a desktop machine runs a program than a robot computer depends on its bottleneck, the
-            part of the machine it runs out of first. One Cortex-X925 core of an NVIDIA DGX Spark, a desktop machine,
-            does scalar multiply-adds 6.5 times as fast as one Cortex-A78AE core of an NVIDIA Jetson Orin Nano Super,
-            a small robot computer. Scalar means one number per instruction, so the vector instructions, which
-            work on several numbers at once, are not used. The X925 core streams data from memory 3.8 times as fast, and a
-            single read comes back 2.4 times sooner. Each ratio carries over only to a program that the same part limits on both machines. A
-            program limited by the core as a whole gains its own ratio, found only by measuring that program, and the
-            multiply-add ratio can overstate it, because the loop behind that ratio loads one unit of the core.{' '}
-            <Cite id="F08-65">our profiling report, FMA row</Cite>{' '}
-            <Cite id="F08-66">our profiling report, triad row</Cite>{' '}
-            <Cite id="F08-67">our profiling report, latency row</Cite>
+            This section compares two NVIDIA edge computers, one CPU core at a time. The DGX Spark is a desktop
+            machine. The Jetson Orin Nano Super is a small computer for robots. All the measurements in this section
+            are ours, and each one comes from a single run on one of these two machines. A single run is enough to
+            show the method and the size of each gap, but not enough to choose an EC2 instance.{' '}
+            <Cite id="F08-60">our run script and experiment notes</Cite>{' '}
+            <Cite id="F08-73">limits of our measurements</Cite>
           </Box>
           <Box variant="p">
-            A simulated humanoid bears the rule out. The Spark also carries smaller Cortex-A725 cores, which share its
-            software and its memory. In MuJoCo, the physics engine of section 12, one X925 core stepped the humanoid{' '}
-            <Derived>2.0</Derived> times as fast as one A725 while doing multiply-adds <Derived>4.0</Derived> times as
-            fast. The step is limited by the core as a whole, and the multiply-add
-            ratio overstates its gain twofold. Against the Jetson, one X925 core stepped it 57,240 times a second to
-            one Jetson core&apos;s 14,507, <Derived>3.9</Derived> times as fast, a ratio that mixes hardware with
-            software because the Jetson ran MuJoCo 3.17.0 and the Spark 4.0.1.{' '}
+            How much faster the Spark runs a program depends on the program&apos;s bottleneck, the resource it runs out
+            of first. We measured three basic ratios between one Cortex-X925 core of the Spark and one Cortex-A78AE
+            core of the Jetson:
+          </Box>
+          <ul style={{ margin: 0 }}>
+            <li>
+              <strong>Arithmetic.</strong> The X925 core computes scalar multiply-adds (a x b + c) 6.5 times as fast as
+              the A78AE core. Scalar means one number per instruction, so this figure does not use the vector instructions, which
+              work on several numbers at once. <Cite id="F08-65">our profiling report, FMA row</Cite>
+            </li>
+            <li>
+              <strong>Memory bandwidth.</strong> The X925 core streams data from memory 3.8 times as fast as the A78AE
+              core.{' '}
+              <Cite id="F08-66">our profiling report, triad row</Cite>
+            </li>
+            <li>
+              <strong>Memory latency.</strong> A single read from memory comes back 2.4 times sooner on the X925 core than
+              on the A78AE core. <Cite id="F08-67">our profiling report, latency row</Cite>
+            </li>
+          </ul>
+          <Box variant="p">
+            Each ratio predicts the speed-up only for a program that has the same bottleneck on both machines. For
+            example, the memory bandwidth ratio applies to a program that waits on streaming memory on both. Some
+            programs are limited not by one unit of the core but by many of its units working together. For such a
+            program, you have to measure the program itself. The arithmetic ratio can overstate its speed-up, because
+            the loop behind that ratio exercises only one unit of the core.
+          </Box>
+          <Box variant="p">
+            A physics simulation shows how far the arithmetic ratio can be from a program&apos;s real speed-up. The
+            Spark also has smaller Cortex-A725 cores, which use the same software and the same memory as its X925
+            cores. MuJoCo is the physics engine covered in section 12, Physics Simulation. We ran it on a simulated
+            humanoid. One X925 core ran <Derived>2.0</Derived> times as many
+            physics steps per second as one A725 core, although it computes multiply-adds <Derived>4.0</Derived> times
+            as fast as the A725. The physics step is limited by the core in general, so the multiply-add ratio overstates its
+            speed-up by a factor of two. Against the Jetson, one X925 core ran 57,240 steps per second and one Jetson
+            core ran 14,507, which is <Derived>3.9</Derived> times as fast. That ratio mixes hardware and software,
+            because the Jetson ran MuJoCo 3.17.0 and the Spark ran MuJoCo 4.0.1.{' '}
             <Cite id="F08-61">our profiling report, physics step table</Cite>{' '}
             <Cite id="F08-65">our profiling report, FMA row</Cite>{' '}
             <Cite id="F07-47">DGX Spark user guide, hardware</Cite>{' '}
             <Cite id="F08-73">limits of our measurements</Cite>
           </Box>
           <Box variant="p">
-            All our CPU figures are single runs of one program pinned to one core: a benchmark loop, or one of three
-            stand-ins for the workloads around the {ARM}, a six-motor desktop arm whose task is to {TASK_STORY}. That
-            is enough to show the method and the size of each gap, and too little to choose an EC2 instance. The
-            method carries to your own job: find the bottleneck in a core&apos;s counters, count what one unit of work
-            asks of it, and compare machines on that part.{' '}
+            Each CPU run pinned one program to one core, which means that the operating system ran the program only
+            on that core. Each program is either a microbenchmark or one of three test programs. A microbenchmark is a
+            small loop built to exercise one resource of the core. A test program stands in for one of the jobs around
+            the {ARM}. The {ARM} is a six-motor desktop arm, and its task is to {TASK_STORY}. To apply the same method
+            to your own job, first find the bottleneck from the event counters built into the core. Next, calculate how much of that resource one unit of work needs. Then
+            compare machines on that resource.{' '}
             <Cite id="F08-73">limits of our measurements</Cite>{' '}
             <Cite id="F08-60">our run script and experiment notes</Cite>{' '}
             <Cite id="F01-8">LeRobot so_follower.py, motor list</Cite>
@@ -256,118 +285,160 @@ export function Measurements() {
         header={
           <Header
             variant="h2"
-            description="Tell from a core's counters whether a program waits on the core, on memory, or on work the CPU cannot see"
+            description="Top-down analysis is a method that uses a core's hardware counters to show whether a program waits on the core, on memory, or on work the CPU cannot see, such as the GPU's. Here you learn to read its results. Applied to our three test programs, they show that the core limits the physics step on all three cores, that memory limits the policy test program on the Jetson, and that the CPU counters cannot find the camera render's bottleneck."
           >
-            Physics runs out of the core, the policy stand-in out of memory on the Jetson
+            Finding each test program&apos;s bottleneck from the CPU counters
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The verdicts come from top-down analysis, the method that finds a core&apos;s bottleneck in its event
-            counters. The counters sit in the core&apos;s PMU (performance monitoring unit), and <code>perf stat</code>,
-            the Linux tool, reads them around one run of a program. <Cite id="F08-9">Linux v7.3, perf stat documentation</Cite>{' '}
+            To find each program&apos;s bottleneck, we used top-down analysis. Top-down analysis finds what limits a
+            program on a core from the core&apos;s event counters. These counters are part of the
+            core&apos;s PMU (performance monitoring unit). The Linux tool <code>perf stat</code> reads the counters
+            over one run of a program. <Cite id="F08-9">Linux v7.3, perf stat documentation</Cite>{' '}
             <Cite id="F08-60">our run script and experiment notes</Cite>
           </Box>
           <Box variant="p">
-            Top-down analysis counts slots. A slot is one chance, in one clock cycle, for the core to start a
-            micro-operation, one of the small steps an instruction is split into. A core&apos;s width is its slots
-            per cycle: 6 on the Jetson&apos;s Cortex-A78AE (derived from its own counters, since neither the Jetson&apos;s
-            kernel nor Arm&apos;s files give it), and on the Spark, which carries two kinds of core, 10 on
-            the wide Cortex-X925 and 5 on the narrow Cortex-A725.{' '}
+            Top-down analysis counts slots. A core splits each instruction into small steps called micro-operations.
+            A slot is one chance, in one clock cycle, for the core to start one micro-operation. The number of slots
+            per cycle is the core&apos;s width. On the Spark, the wide Cortex-X925 core has 10 slots per cycle and the
+            narrow Cortex-A725 core has 5. The Jetson&apos;s Cortex-A78AE core has 6 slots per cycle. Neither the Jetson&apos;s Linux
+            kernel nor Arm&apos;s published files give that figure, so we derived it from the core&apos;s own
+            counters, as described further down.{' '}
             <Cite id="F08-14">Arm Neoverse V1 performance analysis white paper, section 3.2</Cite>{' '}
             <Cite id="F08-68">our profiling report, slots self check</Cite>{' '}
             <Cite id="F07-47">DGX Spark user guide, hardware</Cite>
           </Box>
           <Box variant="p">
-            Each slot lands in one of four shares. Retiring is a slot that started work the program kept. Front-end
-            bound is a slot left empty because the part of the core that fetches and decodes instructions had
-            nothing ready. Back-end bound is a slot left empty because the part that executes them could take no
-            more.{' '}
+            Top-down analysis sorts every slot into one of four categories and reports each category as a share of
+            all slots.{' '}
             <Cite id="F08-3">Intel VTune cookbook, the classification paragraphs</Cite>
           </Box>
+          <ul style={{ margin: 0 }}>
+            <li>
+              <strong>Retiring.</strong> A slot counts as retiring when it started a micro-operation and the program
+              kept the result.
+            </li>
+            <li>
+              <strong>Front-end bound.</strong> The front end of the core fetches and decodes instructions. A slot is
+              front-end bound when it stays empty because the front end had no micro-operation ready.{' '}
+              <Cite id="F08-4">Intel TMA metrics file, row Frontend_Bound</Cite>
+            </li>
+            <li>
+              <strong>Back-end bound.</strong> The back end of the core executes micro-operations. A slot is back-end
+              bound when it stays empty because the back end could not accept another one.
+            </li>
+            <li>
+              <strong>Bad speculation.</strong> A core does not wait to learn which way a branch goes. It predicts the
+              direction and starts the instructions beyond the branch, and this is called speculation. When a
+              prediction is wrong, the core throws that work away and restarts on the right path. Throwing the work
+              away is called a flush. Bad speculation is the share of slots lost to the discarded work and to the
+              restart. <Cite id="F08-7">Intel TMA metrics file, row Bad_Speculation</Cite>
+            </li>
+          </ul>
           <Box variant="p">
-            The fourth share comes from speculation. A core does not wait to learn which way a branch goes: it
-            predicts, and starts the instructions beyond it. On a wrong prediction it flushes that work and restarts
-            on the right path, and bad speculation is the share of slots lost to the discarded work and the restart.
-            One more figure sits outside the four shares, memory stall: the share of cycles the back end spent
-            waiting for data from memory, counted in a second execution of the same program. A card is the record of one program on one core: its rate, its four shares
-            and its memory stall. <Cite id="F08-4">Intel TMA metrics file, row Frontend_Bound</Cite>{' '}
+            We also recorded one figure outside the four shares, the memory stall. The memory stall is the share of
+            clock cycles in which the back end waited for data from memory. It comes from a separate counter, which we
+            counted in a second execution of the same program. We call the record of one program on one core a card.
+            A card holds the program&apos;s rate, its four shares and its memory stall.{' '}
             <Cite id="F08-15">Arm Cortex-X925 specification file, events</Cite>{' '}
-            <Cite id="F08-7">Intel TMA metrics file, row Bad_Speculation</Cite>{' '}
             <Cite id="F08-60">our run script and experiment notes</Cite>
           </Box>
           <Box variant="p">
-            The 6.5, 3.8 and 2.4 come from three of the 14 microbenchmarks we ran on each core type, small loops
-            that each load one part of a core at its best. Arithmetic is the rate of fused multiply-adds, single instructions that compute a x b + c,
-            over 24 independent chains held in registers, so nothing waits on memory or on another chain. The chains
-            are scalar, so the figure leaves out the vector units and Arm&apos;s vector instructions, NEON and SVE.
-            Memory bandwidth is the rate of the triad, a loop that streams arrays larger than the caches.{' '}
+            The three ratios at the top of this section, 6.5, 3.8 and 2.4, come from three of the 14 microbenchmarks
+            we ran on each core type. Each of the three drives one resource of the core as hard as it can:{' '}
             <Cite id="F08-60">our run script and experiment notes</Cite>{' '}
             <Cite id="F08-65">our profiling report, FMA row</Cite>{' '}
             <Cite id="F08-66">our profiling report, triad row</Cite>{' '}
             <Cite id="F08-67">our profiling report, latency row</Cite>
           </Box>
+          <ul style={{ margin: 0 }}>
+            <li>
+              <strong>Arithmetic.</strong> A fused multiply-add is a single instruction that computes a x b + c. The
+              arithmetic loop runs 24 independent chains of fused multiply-adds held in registers, so no instruction
+              waits on memory or on another chain. The chains are scalar, so the figure leaves out the vector units
+              and Arm&apos;s vector instructions, NEON and SVE.{' '}
+              <Cite id="F08-60">our run script and experiment notes</Cite>{' '}
+              <Cite id="F08-65">our profiling report, FMA row</Cite>
+            </li>
+            <li>
+              <strong>Memory bandwidth.</strong> The triad is a loop that streams through arrays larger than the
+              caches. Its rate is the memory bandwidth one core can get.{' '}
+              <Cite id="F08-66">our profiling report, triad row</Cite>
+            </li>
+            <li>
+              <strong>Memory latency.</strong> A pointer chase is a loop in which each read gives the address of the
+              next read. So only one read is in flight at a time, and each read pays the full trip to memory. The
+              reads land at random over a large area, so the figure also includes misses in the TLB (translation
+              lookaside buffer). The TLB is the core&apos;s cache of address translations. The figure can depend on
+              the memory page size, and we did not record which page size the system used.{' '}
+              <Cite id="F08-67">our profiling report, latency row</Cite>
+            </li>
+          </ul>
           <Box variant="p">
-            Memory latency comes from a pointer chase, in which each read supplies the address of the next, so one
-            read is in flight at a time and each pays the full trip to memory. The reads land at random over a large
-            area, so the figure also carries misses in the TLB (translation lookaside buffer, the core&apos;s cache of
-            address translations), at whatever page size the system used (the memory hierarchy behind both figures
-            is built in the{' '}
-            <Link href="../silicon-memory-inference/">Silicon, Memory &amp; Inference dive</Link>).{' '}
-            <Cite id="F08-67">our profiling report, latency row</Cite>
+            The memory hierarchy behind the bandwidth and latency figures is explained in the{' '}
+            <Link href="../silicon-memory-inference/">Silicon, Memory &amp; Inference dive</Link>.
           </Box>
           <Box variant="p">
-            Each stand-in replaces one job around the {ARM}, and a verdict carries over to that job only as far as
-            the job has the same bottleneck.
+            Each test program stands in for one job around the {ARM}. Its result carries over to that job only if the
+            job has the same bottleneck. The table lists the three test programs, the bottleneck we found for each,
+            and what each one leaves out of the real job.
           </Box>
           <div style={{ overflowX: 'auto' }}>
             <table style={TABLE}>
               <thead>
                 <tr>
-                  <th style={TH}>The arm&apos;s job</th>
-                  <th style={TH}>The stand-in we ran</th>
-                  <th style={TH}>Its bottleneck</th>
-                  <th style={TH}>What it leaves out</th>
+                  <th style={TH}>Job around the arm</th>
+                  <th style={TH}>Test program we ran</th>
+                  <th style={TH}>Bottleneck we found</th>
+                  <th style={TH}>What the test program leaves out</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td style={TD}>Physics simulation of the arm, one scene on one core (section 12)</td>
-                  <td style={TD}>One MuJoCo step of a humanoid model with random controls, in a loop</td>
-                  <td style={TD}>The core, on all three cores</td>
                   <td style={TD}>
-                    The {ARM} model, its block and its contacts.{' '}
+                    Physics simulation of the arm, one scene on one core (section 12, Physics Simulation)
+                  </td>
+                  <td style={TD}>A loop of MuJoCo physics steps on a humanoid model with random controls</td>
+                  <td style={TD}>The core, on all three core types</td>
+                  <td style={TD}>
+                    The {ARM} model, the block and their contacts.{' '}
                     <Cite id="F08-61">our profiling report, physics step table</Cite>
                   </td>
                 </tr>
                 <tr>
-                  <td style={TD}>Running the policy, the trained model that picks the arm&apos;s actions (section 17)</td>
                   <td style={TD}>
-                    Six 1024x1024 float32 matrix-vector products, each followed by ReLU (which sets negative values to
-                    zero), in NumPy on one core; each pass reads all 25.2 MB of weights, more than any cache on either
-                    machine
+                    Running the policy, the trained model that chooses the arm&apos;s actions (section 17, Running on
+                    the Robot)
                   </td>
-                  <td style={TD}>Memory bandwidth on the Jetson; not settled on the Spark</td>
                   <td style={TD}>
-                    Convolutions, attention and the GPU: it stands for a small dense model run one input at a time on
-                    a CPU core, where the arm&apos;s policy runs on its GPU.{' '}
+                    Six matrix-vector products with 1024x1024 float32 matrices, in NumPy on one core. Each product is
+                    followed by a ReLU (rectified linear unit) step, which sets negative values to zero. Each pass reads
+                    all 25.2 MB of weights, which is more than any cache on either machine holds.
+                  </td>
+                  <td style={TD}>
+                    Memory bandwidth on the Jetson. On the Spark, the counters do not point to a single bottleneck.
+                  </td>
+                  <td style={TD}>
+                    Convolutions, attention and the GPU. The test program represents a small dense model that
+                    processes one input at a time on a CPU core, while the arm&apos;s real policy runs on a GPU.{' '}
                     <Cite id="F08-62">our profiling report, policy inference table</Cite>{' '}
-                    <Cite id="F08-63">our arithmetic on the policy stand-in</Cite>
+                    <Cite id="F08-63">calculation for the policy test program</Cite>
                   </td>
                 </tr>
                 <tr>
-                  <td style={TD}>A simulated camera (section 13)</td>
+                  <td style={TD}>A simulated camera (section 13, Rendering and Ray Tracing)</td>
                   <td style={TD}>
-                    A MuJoCo offscreen render at 640x480 through EGL, MuJoCo&apos;s interface for hardware-accelerated
-                    rendering with no display, with one physics step per frame
+                    MuJoCo renders a 640x480 image offscreen through EGL, with one physics step per frame. EGL is the
+                    interface MuJoCo uses for hardware-accelerated rendering without a display.
                   </td>
                   <td style={TD}>
-                    Not known: the counters see only the CPU thread that drives MuJoCo&apos;s renderer through EGL,
-                    and the GPU&apos;s share of the work was not established
+                    Unknown. The CPU counters see only the CPU thread that drives MuJoCo&apos;s renderer, and we did
+                    not establish how much of the work the GPU did.
                   </td>
                   <td style={TD}>
-                    Ray tracing, and any record of how much of each frame the GPU did.{' '}
+                    Ray tracing, and any measurement of how much of each frame the GPU did.{' '}
                     <Cite id="F08-64">our profiling report, camera render table</Cite>{' '}
                     <Cite id="F06-61">MuJoCo docs, rendering</Cite>{' '}
                     <Cite id="F08-73">limits of our measurements</Cite>
@@ -379,24 +450,28 @@ export function Measurements() {
           <Placeholder
             what={
               <>
-                cards for the arm&apos;s real workloads on the Jetson Orin Nano Super and the DGX Spark, in place of
-                the stand-ins: recording and encoding two camera streams, decoding the episodes, the {ARM} MuJoCo
-                step, fine-tuning ACT (Action Chunking with Transformers, the imitation policy of section 4) and
-                SmolVLA (the small vision-language-action model of section 5), training LeWorldModel (the latent world
-                model of section 7), and ACT or SmolVLA inference at the arm&apos;s control rate. Each card carries its
-                unit of work, such as environment steps per second, or actions per second with p50 and p99 latency per
-                call (the median, and the time only one call in a hundred exceeds).
+                cards for the arm&apos;s real workloads, measured on the Jetson Orin Nano Super and the DGX Spark in
+                place of the test programs. The workloads are: recording and encoding two camera streams; decoding
+                the recorded episodes; the MuJoCo physics step of the {ARM} model; fine-tuning ACT and SmolVLA;
+                training LeWorldModel; and running ACT or SmolVLA inference at the arm&apos;s control rate. ACT
+                (Action Chunking with Transformers) is the imitation-learning policy of section 4, Learning From
+                Demonstrations. SmolVLA is the small vision-language-action model of section 5, Vision-Language-Action
+                Models. LeWorldModel is the latent world model of section 7, JEPA. Each card will state its unit of
+                work, such as environment steps per second, or actions per second with the p50 and p99 latency per
+                call. The p50 is the median time per call, and the p99 is the time that only one call in a hundred
+                exceeds.
               </>
             }
-            source={<>{PROJECT}, on the same two machines; not yet run.</>}
+            source={<>{PROJECT}, on the same two machines. These runs have not been done yet.</>}
           />
           <ColumnLayout columns={3}>
             <Figure
               cites="F08-61 F08-68 F08-73"
               caption={
                 <>
-                  <strong>Physics step.</strong> Retiring leads on every core and memory stall stays at or under 2.2%
-                  of cycles. The X925 loses most of its other slots in the back end, the A78AE in the front end.
+                  <strong>Physics step.</strong> Retiring is the largest share on every core, and the memory stall is
+                  at most 2.2% of cycles. The X925 loses most of its other slots in the back end, and the A78AE loses
+                  most of them in the front end.
                 </>
               }
             >
@@ -406,8 +481,9 @@ export function Measurements() {
               cites="F08-62 F08-68 F08-73"
               caption={
                 <>
-                  <strong>Policy stand-in.</strong> The Jetson core stalls on memory for 62.3% of its cycles, the
-                  Spark&apos;s cores for 22.8% and 22.4%, so memory limits the Jetson far more than either Spark core.
+                  <strong>Policy test program.</strong> The Jetson core stalls on memory for 62.3% of its cycles, and
+                  the Spark&apos;s two cores for 22.8% and 22.4%. So memory limits the Jetson far more than either
+                  Spark core.
                 </>
               }
             >
@@ -417,8 +493,8 @@ export function Measurements() {
               cites="F08-64 F08-68 F08-73"
               caption={
                 <>
-                  <strong>Camera render.</strong> The counters cover the CPU thread only, so a large back-end share here
-                  can be time spent waiting on the GPU.
+                  <strong>Camera render.</strong> The counters cover only the CPU thread. A large back-end share here
+                  can be time the thread spent waiting for the GPU.
                 </>
               }
             >
@@ -426,116 +502,153 @@ export function Measurements() {
             </Figure>
           </ColumnLayout>
 
-          <Box variant="h3">The physics step: the core sets the rate</Box>
+          <Box variant="h3">The physics step is limited by the core</Box>
           <Box variant="p">
-            Retiring is the largest share on all three cores (43.2%, 61.0% and 45.7%), and at most 2.2% of cycles
-            wait on memory. On the A78AE a low memory stall alone does not rule memory out: the triad, which streams
-            memory by construction, read only 2.6% in one of two runs of the benchmark set, and its split did not
-            repeat in the other. Two other counts do rule it out for the step. Per thousand instructions on the
-            Jetson, the step refills the core&apos;s first-level data cache 5.22 times and its second-level cache 4.57
-            times, each refill a fetch from further out. The policy stand-in, which does wait on memory, refills them
-            34.23 and 41.82 times.{' '}
+            Retiring is the largest share on all three cores: 43.2% on the A78AE, 61.0% on the A725 and 45.7% on the
+            X925. On all three cores, at most 2.2% of cycles wait on memory. On the A78AE, though, a low memory stall
+            does not prove on its own that memory is not the bottleneck, because the counter can read low even for a
+            program that waits on memory. The triad streams memory by design, yet in one of our two passes over the
+            benchmark set it showed a memory stall of only 2.6% on this core. Its split of slots also did not repeat
+            in the other pass.{' '}
             <Cite id="F08-61">our profiling report, physics step table</Cite>{' '}
-            <Cite id="F08-62">our profiling report, policy inference table</Cite>{' '}
             <Cite id="F08-66">our profiling report, triad row</Cite>{' '}
             <Cite id="F08-73">limits of our measurements</Cite>
           </Box>
           <Box variant="p">
-            The two Spark cores share one memory and tie on the triad (a ratio of <Derived>1.0</Derived>), yet the
-            X925 steps twice as fast, so the step&apos;s rate comes from the core and more memory bandwidth would not
-            raise it.{' '}
+            Cache refill counts show that memory is not the bottleneck of the physics step on the Jetson. A cache
+            refill is a fetch of data into one of the core&apos;s caches from further out in the memory system. Per
+            thousand instructions on the Jetson, the physics step refills the first-level data cache 5.22 times and
+            the second-level cache 4.57 times. The policy test program, which does wait on memory, refills them 34.23
+            and 41.82 times per thousand instructions.{' '}
+            <Cite id="F08-61">our profiling report, physics step table</Cite>{' '}
+            <Cite id="F08-62">our profiling report, policy inference table</Cite>
+          </Box>
+          <Box variant="p">
+            The two Spark cores share one memory and reach nearly the same triad bandwidth, a ratio of{' '}
+            <Derived>1.0</Derived>. Yet the X925 runs the physics step twice as fast as the A725. So the speed of the
+            step depends on the core, and more memory bandwidth would not make it faster.{' '}
             <Cite id="F08-61">our profiling report, physics step table</Cite>{' '}
             <Cite id="F08-66">our profiling report, triad row</Cite>
           </Box>
           <Box variant="p">
-            The cores lose their other slots in different places. The X925 loses 36.5% to the back end with 0.4% of
-            cycles on memory, which points at its execution units. The A78AE loses 31.0% to the front end, slots the
-            fetch and decode part left empty, so more execution units would not recover them; whether part of that
-            share is recovery after a wrong prediction cannot be checked on this core.{' '}
+            The cores lose their remaining slots in different places. The X925 loses 36.5% of its slots in the back
+            end, while only 0.4% of its cycles wait on memory. That pattern points to the X925&apos;s execution
+            units rather than to memory. The A78AE loses
+            31.0% of its slots in the front end. Those slots stay empty because instruction fetch and decode had
+            nothing ready, so more execution units would not recover them. On this core, we cannot check whether part
+            of that share is really recovery after wrong predictions, for a reason explained further down.{' '}
             <Cite id="F08-61">our profiling report, physics step table</Cite>{' '}
             <Cite id="F08-4">Intel TMA metrics file, row Frontend_Bound</Cite>
           </Box>
 
-          <Box variant="h3">The policy stand-in: memory sets the rate on the Jetson</Box>
+          <Box variant="h3">The policy test program is limited by memory on the Jetson</Box>
           <Box variant="p">
-            The Jetson core spends 63.9% of its slots back-end bound and 62.3% of its cycles stalled on memory: it is
-            waiting for weights. A count gives the same answer from the other side. Each pass reads all six matrices,
-            6 x 1024 x 1024 x 4 bytes = 25.2 MB, so 390 passes a second ask memory for 390 x 25.2 MB = 9.8 GB/s,{' '}
-            <Derived>84%</Derived> of the 11.71 GB/s the same core reached on the triad. With demand that close to the
-            triad figure and most cycles waiting on memory, more arithmetic would buy nothing. Where both signs
-            hold on both machines, compare them by the GB/s one core streams; for this stand-in they hold on the
-            Jetson only.{' '}
+            On the Jetson, the core spends 63.9% of its slots back-end bound and 62.3% of its cycles stalled on
+            memory, which means it is waiting for the weights to arrive. A simple calculation confirms this from the
+            other side. Each pass reads all six matrices, which is 6 x 1024 x 1024 x 4 bytes = 25.2 MB. At 390 passes
+            per second, the program asks memory for 390 x 25.2 MB = 9.8 GB/s. That is <Derived>84%</Derived> of the
+            11.71 GB/s the same core reached on the triad. Demand is close to the triad figure and most cycles wait on
+            memory, so faster arithmetic would not help. You can compare two machines by the memory bandwidth of one
+            core only when both of these signs hold on both machines: demand close to the triad figure, and most
+            cycles stalled on memory. For this test program, both signs hold only on the Jetson.{' '}
             <Cite id="F08-62">our profiling report, policy inference table</Cite>{' '}
-            <Cite id="F08-63">our arithmetic on the policy stand-in</Cite>{' '}
+            <Cite id="F08-63">calculation for the policy test program</Cite>{' '}
             <Cite id="F08-66">our profiling report, triad row</Cite>
           </Box>
           <Box variant="p">
-            On the Spark the counters do not name one bottleneck. Demand points at memory: the A725 asks for 35.3
-            GB/s, <Derived>80%</Derived> of its 43.95 GB/s triad figure, and the X925 for more than its own triad
-            figure. The stalls point away from it: both cores wait on memory for about a fifth of their
-            cycles (22.8% and 22.4%). And the X925 ran the stand-in 1,968 / 1,404 = <Derived>1.4</Derived> times as
-            fast as the A725 at nearly equal instructions per cycle (3.07 on the X925, 2.96 on the A725), although
-            the two tie on the triad.{' '}
-            <Cite id="F08-63">our arithmetic on the policy stand-in</Cite>{' '}
-            <Cite id="F08-62">our profiling report, policy inference table</Cite>{' '}
-            <Cite id="F08-66">our profiling report, triad row</Cite>
+            On the Spark, the counters do not point to a single bottleneck, because the signs disagree:
+          </Box>
+          <ul style={{ margin: 0 }}>
+            <li>
+              <strong>Memory demand points to memory.</strong> The A725 asks for 35.3 GB/s, which is{' '}
+              <Derived>80%</Derived> of its triad figure of 43.95 GB/s. The X925 asks for more than its own triad
+              figure. <Cite id="F08-63">calculation for the policy test program</Cite>{' '}
+              <Cite id="F08-66">our profiling report, triad row</Cite>
+            </li>
+            <li>
+              <strong>The memory stalls point away from memory.</strong> Both cores wait on memory for about a fifth
+              of their cycles, 22.8% on the A725 and 22.4% on the X925, against 62.3% on the Jetson.{' '}
+              <Cite id="F08-62">our profiling report, policy inference table</Cite>
+            </li>
+            <li>
+              <strong>The speed-up points away from memory.</strong> Instructions per cycle is the number of
+              instructions a core finishes, divided by the clock cycles it takes. The X925 ran the test program 1,968
+              / 1,404 = <Derived>1.4</Derived> times as fast as the A725, at nearly equal instructions per cycle: 3.07
+              on the X925 and 2.96 on the A725. If memory bandwidth limited the program, the two cores would run it
+              at about the same speed, because they reach nearly the same triad bandwidth.{' '}
+              <Cite id="F08-62">our profiling report, policy inference table</Cite>{' '}
+              <Cite id="F08-63">calculation for the policy test program</Cite>{' '}
+              <Cite id="F08-66">our profiling report, triad row</Cite>
+            </li>
+          </ul>
+          <Box variant="p">
+            To find the bottleneck on the Spark, you need a finer split of the back-end stalls. For the X925 and
+            the A725, Arm defines second-level events that split back-end stalls into stalls caused in the core and
+            stalls caused by memory. Counting <code>STALL_BACKEND_MEMBOUND</code> together with{' '}
+            <code>STALL_BACKEND</code> would show how much of the back-end stall comes from memory. Our runs did not
+            count these events.{' '}
+            <Cite id="F08-24">Arm Cortex-X925 specification file, second-level metrics</Cite>
           </Box>
           <Box variant="p">
-            Arm&apos;s finer events for these two cores split back-end stalls into core and memory causes, and
-            counting <code>STALL_BACKEND_MEMBOUND</code> beside <code>STALL_BACKEND</code> would settle it.{' '}
-            <Cite id="F08-24">Arm Cortex-X925 specification file, second-level metrics</Cite> Whether the
-            triad&apos;s 44.38 GB/s is the X925&apos;s ceiling is also open. The stand-in asked for 49.5 GB/s
-            (passes a second times 25.2 MB), so if every pass read its weights from DRAM and none from a cache, it
-            drew more than the triad reached. The benchmark offers no higher figure for that core: its loop that only
-            reads memory was held back by its own instructions (28.94 GB/s, 82.9% front-end bound).{' '}
-            <Cite id="F08-63">our arithmetic on the policy stand-in</Cite>{' '}
+            It is also an open question whether the triad&apos;s 44.38 GB/s is the most memory bandwidth the X925 can
+            get. The test program asked for 49.5 GB/s, which is its passes per second times 25.2 MB. If every pass
+            read its weights from main memory (DRAM) and none from a cache, the program drew more bandwidth than the
+            triad reached. Our benchmark set gives no higher figure for that core. The set&apos;s loop that only reads
+            memory was limited by its own instructions: on the X925, it reached 28.94 GB/s and was 82.9% front-end
+            bound.{' '}
+            <Cite id="F08-63">calculation for the policy test program</Cite>{' '}
             <Cite id="F08-66">our profiling report, triad row</Cite>
           </Box>
 
-          <Box variant="h3">The camera render: the CPU counters cannot decide it</Box>
+          <Box variant="h3">The camera render cannot be diagnosed from CPU counters alone</Box>
           <Box variant="p">
-            The CPU counters cannot name this program&apos;s bottleneck. On the X925, 69.2% of slots are back-end
-            bound with only 3.4% of cycles stalled on memory, the pattern that pointed at the execution units in the
-            physics step. But a thread waiting for the GPU can also read as back-end bound or as idle, and
-            perf&apos;s documentation limits the four shares to a workload bound by the CPU. The frame rates, 209, 937
-            and 1,191 per second, hold for this program; to compare rendering hardware, sample the GPU&apos;s activity beside the CPU counters.{' '}
+            The CPU counters cannot identify this program&apos;s bottleneck. On the X925, 69.2% of slots are back-end
+            bound, while only 3.4% of cycles stall on memory. In the physics step, the same pattern pointed to the
+            execution units. But a CPU thread that waits for the GPU can also appear as back-end bound or as idle.
+            The four shares describe the bottleneck only when the workload is bound by the CPU. The frame rates, 209 frames per second
+            on the A78AE, 937 on the A725 and 1,191 on the X925, describe this program on these machines and do not
+            rank their rendering hardware. To compare rendering hardware, sample the GPU&apos;s activity at the same
+            time as the CPU counters.{' '}
             <Cite id="F08-64">our profiling report, camera render table</Cite>{' '}
             <Cite id="F08-9">Linux v7.3, perf stat documentation</Cite>
           </Box>
 
-          <ExpandableSection headerText="How the slot shares were counted, and how to compute one yourself">
+          <ExpandableSection headerText="How we counted the slot shares, and how to compute them yourself">
             <SpaceBetween size="s">
               <Box variant="p">
-                Each program ran pinned to one core under <code>perf stat</code> in two executions, one per set of
-                events. The first counted the six events of the slot split (<code>stall_slot</code>,{' '}
-                <code>stall_slot_frontend</code>, <code>stall_slot_backend</code>, <code>op_retired</code>,{' '}
-                <code>op_spec</code> and <code>cpu_cycles</code>). The second counted eight detail events, among them
-                instructions finished, memory stall and the cache refills. A figure that mixes the two sets, such as
-                memory stall set against a slot share, compares two executions. Each core type ran this way for 14
-                single-thread microbenchmarks and the three stand-ins.{' '}
-                <Cite id="F08-60">our run script and experiment notes</Cite>
+                We ran each program pinned to one core under <code>perf stat</code>, twice, with a different set of
+                events each time. The first execution counted the six events of the slot split:{' '}
+                <code>stall_slot</code>, <code>stall_slot_frontend</code>, <code>stall_slot_backend</code>,{' '}
+                <code>op_retired</code>, <code>op_spec</code> and <code>cpu_cycles</code>. The second execution
+                counted eight detail events, including instructions finished, the memory stall and the cache
+                refills. So a comparison that uses both sets, such as the memory stall against a slot share, compares
+                two different executions. We ran the 14 single-thread microbenchmarks and the three test programs
+                this way on each core type. <Cite id="F08-60">our run script and experiment notes</Cite>
               </Box>
               <Box variant="p">
-                Check that no count was scaled. When perf cannot schedule every requested event at once it
-                multiplexes them: each event runs for part of the measurement and its count is scaled up, and a ratio
-                of two events not counted at the same time, such as instructions per cycle, can lose accuracy. perf
-                prints the share of the measurement each counter was running; below 100% means the count was scaled.{' '}
+                To trust a ratio of two counters, first check that perf did not scale any count. When perf cannot
+                count every requested event at the same time, it multiplexes them. Each event is then counted for
+                part of the run, and perf scales its total up. A ratio of two events that were not counted at the
+                same time, such as instructions per cycle, can lose accuracy. The perf tool prints the share of the
+                run during which each counter was running, and a share below 100% means the count was scaled.{' '}
                 <Cite id="F08-87">Linux v7.3, perf stat documentation, multiplexing</Cite>
               </Box>
               <Box variant="p">
-                Where no document gives a core&apos;s width, compute it. In every cycle each slot either stalls or
-                starts a micro-operation, so <code>stall_slot</code> plus <code>op_spec</code>, divided by{' '}
-                <code>cpu_cycles</code>, is the width. The sum returns the 10 and 5 that Arm&apos;s telemetry files, its published event and
-                formula definitions, give for the X925 and the A725, and 6.000 on three programs for the A78AE, a core for which neither the
-                Jetson&apos;s Linux kernel nor Arm&apos;s files give a figure.{' '}
+                If no document gives a core&apos;s width, you can compute it. In every cycle, each slot either stalls
+                or starts a micro-operation. So <code>stall_slot</code> plus <code>op_spec</code>, divided by{' '}
+                <code>cpu_cycles</code>, gives the width. Arm&apos;s telemetry files are the event and formula
+                definitions that Arm publishes for each core. For the X925 and the A725, this calculation returns the
+                10 and 5 slots that those files give. For the A78AE, it returns 6.000 on three programs. Neither the
+                Jetson&apos;s Linux kernel nor Arm&apos;s files give a width for that core.{' '}
                 <Cite id="F08-68">our profiling report, slots self check</Cite>{' '}
                 <Cite id="F08-16">Arm telemetry files, slots per core</Cite>{' '}
                 <Cite id="F08-15">Arm Cortex-X925 specification file, events</Cite>
               </Box>
               <Box variant="p">
-                A share is a count over slots, where <i>slots</i> = <code>cpu_cycles</code> x width. The two stall
-                shares divide a stall count by the slots; the other two split the slots that started a micro-operation
-                by the fraction of those kept, <code>op_retired</code> / <code>op_spec</code>:{' '}
+                Each share is a count divided by the total number of slots, where <i>slots</i> ={' '}
+                <code>cpu_cycles</code> x width. The two stall shares divide a stall count by the slots. The other two
+                shares take the slots that started a micro-operation and split them by the fraction of
+                micro-operations kept, <code>op_retired</code> / <code>op_spec</code>:{' '}
                 <Cite id="F08-20">Linux v7.3, generic Arm top-down metrics</Cite>
               </Box>
               <ul style={{ margin: 0 }}>
@@ -555,9 +668,10 @@ export function Measurements() {
                 </li>
               </ul>
               <Box variant="p">
-                The X925&apos;s physics step had 72,922,813,391 back-end stalled slots over 19,958,256,358 cycles x 10
-                slots, which is 36.54%. On the Jetson&apos;s policy card <Derived>27.1%</Derived> of slots started a
-                micro-operation and <Derived>98.8%</Derived> of those were kept, so retiring is 26.8%.{' '}
+                As a worked example, the X925&apos;s physics step had 72,922,813,391 back-end stalled slots over
+                19,958,256,358 cycles x 10 slots, so back-end bound is 36.54%. On the Jetson&apos;s policy card,{' '}
+                <Derived>27.1%</Derived> of slots started a micro-operation and <Derived>98.8%</Derived> of those were
+                kept, so retiring is <Derived>27.1%</Derived> x <Derived>98.8%</Derived> = 26.8%.{' '}
                 <Cite id="F08-70">our recomputation from the raw counters</Cite>{' '}
                 <Cite id="F08-62">our profiling report, policy inference table</Cite>
               </Box>
@@ -570,28 +684,29 @@ export function Measurements() {
         header={
           <Header
             variant="h2"
-            description="Find which measured ratio carries over to your program, and what to measure when none does"
+            description="A measured ratio between two machines applies to your program only if the program has the same bottleneck as the loop that produced the ratio. Here you can see which ratio applies to each test program, and what to measure when none of them does."
           >
-            A ratio predicts a program only through its bottleneck
+            When a ratio between two machines predicts a program&apos;s speed-up
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            A program&apos;s ratio between two machines measures the hardware only when the same program, at the
-            same version, has the same bottleneck on both.
+            A program&apos;s speed ratio between two machines measures the hardware only when three conditions hold.
+            The program is the same, it runs at the same software version, and it has the same bottleneck on both
+            machines.
           </Box>
           <div style={{ overflowX: 'auto' }}>
             <table style={{ ...TABLE, minWidth: 760 }}>
               <thead>
                 <tr>
-                  <th style={TH}>Part, or program, on one core</th>
+                  <th style={TH}>Resource or program, measured on one core</th>
                   <th style={TH}>Jetson, Cortex-A78AE</th>
                   <th style={TH}>Spark, Cortex-A725</th>
                   <th style={TH}>Spark, Cortex-X925</th>
-                  <th style={TH}>X925 against A78AE, times</th>
-                  <th style={TH}>X925 against A725, times</th>
-                  <th style={TH}>Source (our measurement, single run)</th>
+                  <th style={TH}>X925 speed-up over A78AE (times)</th>
+                  <th style={TH}>X925 speed-up over A725 (times)</th>
+                  <th style={TH}>Source</th>
                 </tr>
               </thead>
               <tbody>
@@ -650,7 +765,7 @@ export function Measurements() {
                   </td>
                 </tr>
                 <tr>
-                  <td style={TD}>Policy stand-in, inferences per second</td>
+                  <td style={TD}>Policy test program, inferences per second</td>
                   <td style={TD}>390</td>
                   <td style={TD}>1,404</td>
                   <td style={TD}>1,968</td>
@@ -683,66 +798,77 @@ export function Measurements() {
             </table>
           </div>
           <Box variant="p">
-            Across the Jetson and the Spark none of the three stand-ins meets those conditions. The render&apos;s{' '}
-            <Derived>5.7</Derived> includes the GPU&apos;s share of each frame, which is unknown. The policy stand-in&apos;s
-            bottleneck shifts between the machines: memory limits the Jetson&apos;s rate far more than the
-            X925&apos;s (62.3% of cycles stalled on memory against 22.4%). With the bottleneck moving, its 1,968 / 390
-            = <Derived>5.0</Derived> runs past the streaming ratio of 3.8. <Cite id="F08-64">our profiling report, camera render table</Cite>{' '}
+            Between the Jetson and the Spark, none of the three test programs meets those conditions. The camera
+            render&apos;s ratio of <Derived>5.7</Derived> includes the GPU&apos;s share of each frame, which we did not
+            measure. The policy test program&apos;s bottleneck changes between the machines. Memory limits the
+            Jetson&apos;s rate far more than the X925&apos;s: 62.3% of cycles stall on memory on the Jetson, against
+            22.4% on the X925. Because the bottleneck moves, the program&apos;s ratio of 1,968 / 390 ={' '}
+            <Derived>5.0</Derived> is higher than the streaming ratio of 3.8.{' '}
+            <Cite id="F08-64">our profiling report, camera render table</Cite>{' '}
             <Cite id="F08-62">our profiling report, policy inference table</Cite>{' '}
-            <Cite id="F08-63">our arithmetic on the policy stand-in</Cite>{' '}
+            <Cite id="F08-63">calculation for the policy test program</Cite>{' '}
             <Cite id="F08-66">our profiling report, triad row</Cite>
           </Box>
           <Box variant="p">
-            The physics step has a core bottleneck on all three cores, but its <Derived>3.9</Derived> across the
-            machines spans two MuJoCo versions, and a new version can change the instructions a
-            step takes. The counters explain part of that ratio. A core&apos;s steps per second are its instructions
-            finished per clock cycle, times its clock rate, divided by the instructions one step takes. The counters
-            give instructions per cycle over the whole program, start-up included; taken as the loop&apos;s, they are
-            4.37 on the X925 and 2.48 on the A78AE, a factor of <Derived>1.76</Derived>. The
-            remaining <Derived>3.9</Derived> / <Derived>1.76</Derived> = <Derived>2.2</Derived> is clock rate and
-            instructions per step together. <Cite id="F08-61">our profiling report, physics step table</Cite>{' '}
+            The physics step is limited by the core on all three cores. But its ratio of <Derived>3.9</Derived>{' '}
+            between the machines spans two MuJoCo versions, and a new version can change the number of instructions a
+            step takes. The counters explain part of that ratio. A core&apos;s steps per second equal its instructions
+            per cycle, times its clock rate, divided by the number of instructions one step takes. The counters give
+            instructions per cycle over the whole program, including start-up. If we take those figures as the
+            loop&apos;s, they are 4.37 on the X925 and 2.48 on the A78AE, a factor of <Derived>1.76</Derived>. The
+            remaining <Derived>3.9</Derived> / <Derived>1.76</Derived> = <Derived>2.2</Derived> comes from the clock
+            rate and the instructions per step together.{' '}
+            <Cite id="F08-61">our profiling report, physics step table</Cite>{' '}
             <Cite id="F08-60">our run script and experiment notes</Cite>{' '}
             <Cite id="F08-73">limits of our measurements</Cite>
           </Box>
           <Box variant="p">
-            Inside the Spark the physics step meets all three conditions, and the arithmetic ratio still misses:
-            57,240 / 28,662 = <Derived>2.0</Derived> against 22.242 / 5.595 = <Derived>4.0</Derived>. The multiply-add loop measures one unit of the core, its floating-point multiply-add pipes fed
-            by chains that never wait on each other, and on it the X925 finished 6.18 instructions per cycle. A physics
-            step runs MuJoCo&apos;s whole pipeline of kinematics, collision detection, constraint solving and
-            integration, and on it the X925 finished 4.37. <Cite id="F08-61">our profiling report, physics step table</Cite>{' '}
+            Between the two cores inside the Spark, the physics step meets all three conditions, yet the arithmetic
+            ratio still does not predict it. The physics step ran 57,240 / 28,662 = <Derived>2.0</Derived> times as
+            fast on the X925, while the arithmetic ratio is 22.242 / 5.595 = <Derived>4.0</Derived>. The reason is
+            that the multiply-add loop exercises only one unit of the core: its floating-point multiply-add
+            pipelines, fed by chains that never wait on each other. On that loop, the X925 finished 6.18 instructions
+            per cycle. A physics step runs MuJoCo&apos;s whole pipeline of kinematics, collision detection,
+            constraint solving and integration. On the physics step, the X925 finished 4.37 instructions per cycle.{' '}
+            <Cite id="F08-61">our profiling report, physics step table</Cite>{' '}
             <Cite id="F08-65">our profiling report, FMA row</Cite>{' '}
             <Cite id="F06-9">MuJoCo docs, Computation chapter, simulation pipeline</Cite>
           </Box>
           <Box variant="p">
-            A microbenchmark&apos;s ratio predicts a program only when the program is limited by the unit the loop
-            measures. For a program limited by the core as a whole no loop stands in: measure the program on both
-            machines, and its instructions per cycle times the clock take the ratio apart.
+            So a microbenchmark&apos;s ratio predicts a program only when the program is limited by the same unit that
+            the loop measures. For a program that is limited by the core in general, no single microbenchmark gives
+            the right ratio, so measure the program itself on both machines. Then use its instructions per cycle and
+            the clock rate to break the ratio down.
           </Box>
           <Box variant="p">
-            On the physics step the X925 finished 4.37 instructions per cycle against the A725&apos;s 3.01,{' '}
-            <Derived>1.45</Derived> times as many though it has twice the slots, because it kept a smaller share of
-            them working (45.7% of 10 against 61.0% of 5). If a step takes the same instructions on
-            both cores, and the whole-program figures again stand for the loop&apos;s, the remaining{' '}
-            <Derived>2.0</Derived> / <Derived>1.45</Derived> = <Derived>1.4</Derived> is the ratio of their clocks.
-            The cards carry cycle counts and no clock rate, so this clock ratio is inferred.{' '}
+            Here is that breakdown for the physics step on the Spark. The X925 finished 4.37 instructions per cycle
+            and the A725 finished 3.01, so the X925 finished <Derived>1.45</Derived> times as many. The X925 has twice
+            as many slots, but it kept a smaller share of them working: 45.7% of 10 slots, against 61.0% of 5 slots on
+            the A725. Assume that a step takes the same number of instructions on both cores, and that the
+            whole-program figures again represent the loop. Then the remaining <Derived>2.0</Derived> /{' '}
+            <Derived>1.45</Derived> = <Derived>1.4</Derived> is the ratio of the two clock rates. The cards record
+            cycle counts but no clock rate, so this clock ratio is inferred, not measured.{' '}
             <Cite id="F08-61">our profiling report, physics step table</Cite>{' '}
             <Cite id="F08-68">our profiling report, slots self check</Cite>
           </Box>
           <Box variant="p">
-            The policy stand-in&apos;s <Derived>1.4</Derived> on the Spark, at nearly equal instructions per cycle
-            (3.07 on the X925, 2.96 on the A725), matches that clock ratio: it sped up with the clock and not with the triad, which
-            tied. The open question of its bottleneck on the Spark therefore
-            leans toward the core.{' '}
+            The policy test program ran <Derived>1.4</Derived> times as fast on the X925 as on the A725, at nearly
+            equal instructions per cycle (3.07 on the X925 and 2.96 on the A725). That speed-up matches the inferred
+            clock ratio of <Derived>1.4</Derived>. So the program sped up with the clock rate and not with the memory
+            bandwidth, which was nearly the same on both cores. For the open question of this program&apos;s bottleneck on the Spark, the evidence therefore
+            points more toward the core than toward memory.{' '}
             <Cite id="F08-62">our profiling report, policy inference table</Cite>{' '}
             <Cite id="F08-61">our profiling report, physics step table</Cite>{' '}
             <Cite id="F08-66">our profiling report, triad row</Cite>
           </Box>
           <Box variant="p">
-            Every ratio in the table is one core against one core, and the ratio of single cores does not predict the ratio of
-            whole machines. NVIDIA gives the Jetson 102 GB/s of memory bandwidth and the Spark 273 GB/s, a ratio of{' '}
-            <Derived>2.7</Derived> where one core of each showed 3.8. Each total is shared by all the CPU cores and the
-            GPU, and one core streamed 11.71 and 44.38 GB/s of it. Sizing a machine takes cards from several cores
-            running at once, and a measure of the GPU&apos;s share of memory, which a counter inside a core cannot see.{' '}
+            Every ratio in the table compares one core with one core, and a ratio between single cores does not
+            predict the ratio between whole machines. NVIDIA specifies 102 GB/s of memory bandwidth for the Jetson and
+            273 GB/s for the Spark, a ratio of <Derived>2.7</Derived>, while one core of each showed a ratio of 3.8.
+            Each machine&apos;s total bandwidth is shared by all its CPU cores and its GPU, and one core streamed 11.71
+            GB/s of it on the Jetson and 44.38 GB/s on the Spark. To size a whole machine, you need cards from several
+            cores running at the same time. You also need a measurement of the GPU&apos;s share of memory bandwidth,
+            which a counter inside a CPU core cannot see.{' '}
             <Cite id="F07-36">Jetson Orin Nano Super specifications</Cite>{' '}
             <Cite id="F07-47">DGX Spark user guide, hardware</Cite>{' '}
             <Cite id="F08-66">our profiling report, triad row</Cite>{' '}
@@ -756,28 +882,30 @@ export function Measurements() {
         header={
           <Header
             variant="h2"
-            description="Read the two throughput shares Nsight Compute gives for one matrix multiply, and record the GPU clock before you trust a duration from a Jetson"
+            description="We profiled one matrix multiply on each machine's GPU with Nsight Compute. The results show how to read the two throughput figures that Nsight Compute reports, and why you should record the GPU clock with every profile on a Jetson before you trust a duration."
           >
-            One GPU kernel per machine: record the clock with the profile
+            Profiling one GPU kernel on each machine
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Each machine&apos;s GPU was profiled on one kernel, one function launched on the GPU: a multiply of two
-            square float32 matrices, under Nsight Compute, NVIDIA&apos;s profiler for a single kernel. It reports two throughput figures, each a share of the GPU&apos;s maximum: one for compute
-            in the SMs (streaming multiprocessors, the GPU&apos;s processing units) and one for memory. Each figure is
-            the highest reading among the counters it summarises. The Spark&apos;s 70.49% compute says its busiest SM
-            counter ran at 70.49% of that counter&apos;s maximum, a different quantity from the share of the
-            GPU&apos;s peak floating-point rate the kernel reached. <Cite id="F08-34">Nsight Compute profiling guide, sections</Cite>{' '}
+            A kernel is one function launched on the GPU. On each machine, we profiled one kernel, a multiply of two
+            square float32 matrices, with Nsight Compute. Nsight Compute is NVIDIA&apos;s profiler for single GPU
+            kernels. It reports two throughput figures, each as a share of the GPU&apos;s maximum. The first is for
+            compute in the SMs (streaming multiprocessors), which are the GPU&apos;s processing units. The second is
+            for memory. Each figure is the highest reading among the counters it summarises. For example, the
+            Spark&apos;s compute figure of 70.49% means that its busiest SM counter ran at 70.49% of that
+            counter&apos;s maximum. That is a different quantity from the share of the GPU&apos;s peak floating-point
+            rate that the kernel reached. <Cite id="F08-34">Nsight Compute profiling guide, sections</Cite>{' '}
             <Cite id="F08-71">our DGX Spark card, GPU kernel</Cite>
           </Box>
           <Figure
             cites="F08-71 F08-72"
             caption={
               <>
-                Our measurement: one kernel, one pass per machine, not tuned. Matrix size, GPU clock and profiler
-                version differ between the columns, so the two durations do not compare.{' '}
+                Neither kernel was tuned. The matrix size, the GPU clock and the profiler version differ between the
+                two columns, so the two durations cannot be compared.{' '}
                 <Cite id="F08-71">our DGX Spark card, GPU kernel</Cite>{' '}
                 <Cite id="F08-72">our Jetson card, GPU kernel</Cite>
               </>
@@ -835,44 +963,49 @@ export function Measurements() {
             </table>
           </Figure>
           <Box variant="p">
-            On both GPUs the busiest compute counter ran nearer its maximum than the busiest memory counter (70.49%
-            and 74.49% against 50.47% and 48.27%), so this multiply pressed on the SMs harder than on memory, and no
-            counter reached its maximum. <Cite id="F08-71">our DGX Spark card, GPU kernel</Cite>{' '}
+            On both GPUs, the busiest compute counter ran closer to its maximum than the busiest memory counter:
+            70.49% and 74.49% for compute, against 50.47% and 48.27% for memory. So this multiply loaded the SMs more
+            heavily than memory, and no counter reached its maximum.{' '}
+            <Cite id="F08-71">our DGX Spark card, GPU kernel</Cite>{' '}
             <Cite id="F08-72">our Jetson card, GPU kernel</Cite>{' '}
             <Cite id="F08-34">Nsight Compute profiling guide, sections</Cite>
           </Box>
           <Box variant="p">
-            Neither card records a figure for the tensor cores, the GPU units built for the matrix
-            arithmetic of neural networks, so they went unmeasured on both machines. Going by its name, the
-            Spark&apos;s kernel did not use them at all: simt (single instruction, multiple threads) marks the
-            GPU&apos;s general path. Read the two profiles as one large float32 multiply per GPU, not as the
-            load a policy puts on it. <Cite id="F08-71">our DGX Spark card, GPU kernel</Cite>{' '}
+            Tensor cores are the GPU units built for the matrix arithmetic of neural networks. Neither card records a
+            tensor-core figure, so we have no measurement of tensor-core use on either machine. The{' '}
+            <code>simt</code> in the Spark kernel&apos;s name stands for SIMT (single instruction, multiple threads).
+            SIMT is the GPU&apos;s general execution path. Judging by that name, the Spark&apos;s kernel did not use
+            the tensor cores at all. So read the two profiles as one large float32 multiply per GPU, and not as the
+            load that a policy puts on the GPU.{' '}
+            <Cite id="F08-71">our DGX Spark card, GPU kernel</Cite>{' '}
             <Cite id="F08-72">our Jetson card, GPU kernel</Cite>{' '}
             <Cite id="F08-42">NVIDIA Tensor Cores page; Nsight Compute pipeline glossary</Cite>
           </Box>
           <Box variant="p">
-            The Spark&apos;s multiply ran in PyTorch, at a version and precision setting our run did not record. In
-            PyTorch v2.15.0 a float32 matrix multiply computes in float32 by default, and
-            calling <code>torch.set_float32_matmul_precision(&quot;high&quot;)</code> lets it use TensorFloat32, a
-            lower internal precision with a float32 result, where a fast kernel exists. Profile a policy at the
-            precision it will run at, since the setting can change which kernel runs.{' '}
+            The Spark&apos;s multiply ran in PyTorch, but our run did not record the PyTorch version or the precision
+            setting. In PyTorch v2.15.0, a float32 matrix multiply computes in float32 by default. TensorFloat32 is a
+            lower internal precision for float32 matrix multiplies that still gives a float32 result. Calling{' '}
+            <code>torch.set_float32_matmul_precision(&quot;high&quot;)</code> lets PyTorch use it where a fast kernel
+            exists. Because this setting can change which kernel runs, profile a policy at the precision it will run
+            at.{' '}
             <Cite id="F08-71">our DGX Spark card, GPU kernel</Cite>{' '}
             <Cite id="F08-88">PyTorch v2.15.0, set_float32_matmul_precision</Cite>
           </Box>
           <Box variant="p">
-            The Jetson&apos;s SM clock was 306 MHz during its profile against the Spark&apos;s 2.13 GHz, and on a
-            Jetson the GPU clock moves with load. Record the clock with every GPU profile on a Jetson (tegrastats, the
-            Jetson&apos;s built-in monitor, prints it) or pin it, and compare two GPUs only on the same matrix size
-            under the same profiler version.{' '}
+            During its profile, the Jetson&apos;s SM clock was 306 MHz, against 2.13 GHz on the Spark. On a Jetson,
+            the GPU clock changes with load. To make a Jetson GPU profile comparable, record the clock with every
+            profile, or pin the clock. The Jetson&apos;s built-in monitor, tegrastats, prints the clock. Compare two
+            GPUs only on the same matrix size and under the same profiler version.{' '}
             <Cite id="F08-72">our Jetson card, GPU kernel</Cite>{' '}
             <Cite id="F08-71">our DGX Spark card, GPU kernel</Cite>
           </Box>
-          <ExpandableSection headerText="The two durations as rates, and why they do not compare">
+          <ExpandableSection headerText="The two durations as rates, and why they cannot be compared">
             <Box variant="p">
-              The Spark multiplied 4096x4096 matrices in 8.35 ms and the Jetson 2048x2048 matrices in 42.31 ms, an
-              eighth of the work. As rates, 2 x 4096^3 operations in 8.35 ms is about 16,460 billion floating-point
-              operations a second and 2 x 2048^3 in 42.31 ms is 406 billion. Each figure carries its own clock and
-              matrix size, so the gap between them does not rank the two GPUs.{' '}
+              The Spark multiplied 4096x4096 matrices in 8.35 ms. The Jetson multiplied 2048x2048 matrices in 42.31
+              ms, which is an eighth of the work. As rates, 2 x 4096^3 operations in 8.35 ms is about 16,460 billion
+              floating-point operations per second, and 2 x 2048^3 operations in 42.31 ms is 406 billion. Each rate
+              depends on its own clock and matrix size, so the gap between them does not tell you which GPU is
+              faster.{' '}
               <Cite id="F08-71">our DGX Spark card, GPU kernel</Cite>{' '}
               <Cite id="F08-72">our Jetson card, GPU kernel</Cite>
             </Box>
@@ -880,14 +1013,16 @@ export function Measurements() {
           <Placeholder
             what={
               <>
-                GPU counters for each workload, which the current cards lack: activity of the compute cores, the
-                tensor cores, the memory, the video decoder and the video encoder, with power, sampled once per
-                second by DCGM (Data Center GPU Manager, NVIDIA&apos;s GPU telemetry tool) or by tegrastats on the
-                Jetson; Nsight Compute per-kernel profiles of the two or three hottest kernels; and an Nsight Systems
-                timeline that shows the share of time the GPU waits for data between batches.
+                GPU counters for each workload, which the current cards do not have. There will be three kinds of
+                measurement. The first is the activity of the compute cores, the tensor cores, the memory, the video
+                decoder and the video encoder, together with power, sampled once per second. DCGM (Data Center GPU
+                Manager) will take these samples, and tegrastats will take them on the Jetson. DCGM is NVIDIA&apos;s
+                GPU telemetry tool. The second is Nsight Compute profiles of the two or three kernels that take the most time.
+                The third is an Nsight Systems timeline that shows the share of time the GPU waits for data between
+                batches. Nsight Systems is NVIDIA&apos;s timeline profiler.
               </>
             }
-            source={<>{PROJECT}, run on EC2 and on the same two machines; not yet run.</>}
+            source={<>{PROJECT}, on EC2 and on the same two machines. These runs have not been done yet.</>}
           />
         </SpaceBetween>
       </Container>
@@ -896,89 +1031,94 @@ export function Measurements() {
         header={
           <Header
             variant="h2"
-            description="Before you act on a card's four shares, run the program twice and run a program whose answer you know"
+            description="Before you act on a card's four shares, check them in two ways: run the program a second time, and run a program whose bottleneck you already know. A known bias in the generic Arm formula that ships with Linux perf also makes the front-end share too high and the bad speculation share too low on the Spark's cores."
           >
-            A split you can trust repeats and puts known programs in the right share
+            Checking that the slot split can be trusted
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The four shares always add to 100% because the formula makes them, so the sum proves nothing about the
-            split. A program with a known answer does. The pointer chase, which waits on memory by construction, reads
-            97.6% to 99.0% back-end bound on all three cores, and the multiply-add loop, which keeps its data in
-            registers, reads 0.0% front-end bound on the X925.{' '}
-            <Cite id="F08-69">our check of the counter identity</Cite>{' '}
+            The four shares always add up to 100%, because the formula is built that way, so the sum tells you
+            nothing about whether the split is right. To test the split, run a program whose bottleneck you already
+            know. The pointer chase waits on memory by design, and it shows 97.6% to 99.0% back-end bound on all
+            three cores. The multiply-add loop keeps its data in registers, and it shows 0.0% front-end bound on the
+            X925. <Cite id="F08-69">our check of the counter identity</Cite>{' '}
             <Cite id="F08-67">our profiling report, latency row</Cite>{' '}
             <Cite id="F08-65">our profiling report, FMA row</Cite>
           </Box>
           <Box variant="p">
-            Two passes over the whole set, from two builds of the benchmark, agree on the three workloads: throughput
-            within 2.5% and every share within <Derived>0.7</Derived> points. On the triad and a memory-write loop they agree on throughput and
-            not on the split. <Cite id="F08-73">limits of our measurements</Cite>
+            We ran the whole set twice, from two different builds of the benchmark. For the three test programs, the
+            two passes agree: throughput is within 2.5%, and every share is within <Derived>0.7</Derived> percentage
+            points. On the triad and on a loop that writes memory, the two passes agree on throughput but not on the
+            split. <Cite id="F08-73">limits of our measurements</Cite>
           </Box>
           <Box variant="p">
-            The Jetson&apos;s triad ran at 11.66 GB/s with 5.9% of slots front-end bound and 76.9%
-            back-end bound in pass 1, and at 11.71 GB/s with 78.1% front-end bound, 7.9% back-end bound and 2.6% of
-            cycles stalled on memory in pass 2. A split that changes sides at the same speed cannot say where the
-            time went. The two passes came from different builds, so they do not show whether one unchanged program
-            flips the same way; until a repeat does, run a new program at least twice before acting on its shares.{' '}
+            On the Jetson, the triad ran at 11.66 GB/s in pass 1, with 5.9% of slots front-end bound and 76.9%
+            back-end bound. In pass 2, it ran at 11.71 GB/s, with 78.1% front-end bound, 7.9% back-end bound and 2.6%
+            of cycles stalled on memory. The speed stayed nearly the same while the split moved from the back end to
+            the front end, so this split cannot tell you where the time went. The two passes came from different builds,
+            so they do not show whether an unchanged program would flip in the same way. Until a repeated run answers
+            that, run a new program at least twice before you act on its shares.{' '}
             <Cite id="F08-73">limits of our measurements</Cite>{' '}
             <Cite id="F08-66">our profiling report, triad row</Cite>
           </Box>
           <Box variant="p">
-            The triad&apos;s rate still serves as the memory ruler: the rate is what reproduced across the two
-            builds, and on the Spark two cores of different width reached the same figure (43.95 and 44.38 GB/s), so
-            the core&apos;s width does not set it. The policy stand-in&apos;s memory verdict on the Jetson rests on
-            its own 62.3% memory stall and on demand at <Derived>84%</Derived> of the triad figure, and the physics
-            verdict on the refill counts.{' '}
+            The triad&apos;s rate is still a good measure of memory bandwidth, because the rate came out nearly the
+            same from both builds. On the Spark, two cores of different width reached nearly the same triad figure, 43.95
+            and 44.38 GB/s, so the core&apos;s width does not set the rate. The conclusion that memory limits the policy test
+            program on the Jetson does not depend on the triad&apos;s split. It rests on the program&apos;s own memory
+            stall of 62.3% and on its demand of <Derived>84%</Derived> of the triad figure. The conclusion that the
+            core limits the physics step rests on the cache refill counts.{' '}
             <Cite id="F08-73">limits of our measurements</Cite>{' '}
             <Cite id="F08-66">our profiling report, triad row</Cite>{' '}
             <Cite id="F08-62">our profiling report, policy inference table</Cite>{' '}
-            <Cite id="F08-63">our arithmetic on the policy stand-in</Cite>
+            <Cite id="F08-63">calculation for the policy test program</Cite>
           </Box>
           <Box variant="p">
-            One bias is known in advance. Every card uses the generic Arm formula that Linux perf ships, which has no
-            term for the cycles a core spends recovering from a flush.{' '}
+            The cards also carry one known bias. Every card uses the generic Arm formula that ships with Linux
+            perf, and that formula has no term for the cycles a core spends recovering from a flush.{' '}
             <Cite id="F08-20">Linux v7.3, generic Arm top-down metrics</Cite> Arm&apos;s own formulas for the X925 and
-            the A725 count those cycles with the event <code>STALL_FRONTEND_FLUSH</code>, subtract them from
-            front-end bound and add them to bad speculation.{' '}
-            <Cite id="F08-19">Arm telemetry file for the Cortex-X925</Cite> So on those two cores the cards&apos;
-            front-end bound reads too high and bad speculation too low by the same unknown amount, while back-end
-            bound and retiring are the same under both formulas.{' '}
+            the A725 count those cycles with the event <code>STALL_FRONTEND_FLUSH</code>. They subtract the cycles
+            from front-end bound and add them to bad speculation.{' '}
+            <Cite id="F08-19">Arm telemetry file for the Cortex-X925</Cite> So on those two cores, the cards show
+            front-end bound too high and bad speculation too low, by the same unknown amount. Back-end bound and
+            retiring are the same under both formulas.{' '}
             <Cite id="F08-22">our comparison of the run script with Arm&apos;s formulas</Cite>
           </Box>
           <Box variant="p">
-            Arm&apos;s telemetry files include none for the A78AE. Whether the Jetson&apos;s front-end shares carry
-            the same bias, the physics step&apos;s 31.0% included, cannot be checked. Read the Spark cores&apos;
-            front-end shares as upper bounds, or count <code>STALL_FRONTEND_FLUSH</code> with the six slot events.{' '}
+            Arm&apos;s telemetry files do not include a file for the A78AE. So we cannot check whether the
+            Jetson&apos;s front-end shares, including the physics step&apos;s 31.0%, carry the same bias. On the
+            Spark, treat the cores&apos; front-end shares as upper bounds, or count{' '}
+            <code>STALL_FRONTEND_FLUSH</code> together with the six slot events.{' '}
             <Cite id="F08-16">Arm telemetry files, slots per core</Cite>{' '}
             <Cite id="F08-61">our profiling report, physics step table</Cite>{' '}
             <Cite id="F08-22">our comparison of the run script with Arm&apos;s formulas</Cite>
           </Box>
           <ExpandableSection headerText="How far the flush bias can move a card's front-end share">
             <Box variant="p">
-              Arm&apos;s formulas for its Neoverse V1 and V2 server cores charge a fixed 4 cycles per mispredicted branch.
-              Borrowing that constant for the X925, the physics card would move 1.6 points from front end (12.2% to
-              about 10.6%) to bad speculation (5.6% to about 7.2%). The microbenchmark built to exercise branches would move 13.2
-              points, and the policy and memory programs under 0.5 points. The constant comes from other cores, so
-              these figures measure nothing on the X925. They rank which cards are sensitive, and code full of
-              branches is the most sensitive.{' '}
-              <Cite id="F08-23">our arithmetic on the missing flush correction</Cite>
+              Arm&apos;s formulas for its Neoverse V1 and V2 server cores charge a fixed 4 cycles for each
+              mispredicted branch. If we borrow that constant for the X925, the physics card would move 1.6 points
+              from front-end bound (12.2% to about 10.6%) to bad speculation (5.6% to about 7.2%). The microbenchmark
+              built to exercise branches would move 13.2 points, and the policy test program and the memory
+              microbenchmarks would move less than 0.5 points. The constant comes from other cores, so these figures are not measurements of the
+              X925. They only show which cards are most sensitive to the bias, and code with many branches is the
+              most sensitive. <Cite id="F08-23">calculation of the missing flush correction</Cite>
             </Box>
           </ExpandableSection>
           <Placeholder
             what={
               <>
-                repeats and corrections of the current cards, so each figure carries a run count above one: the
-                triad and memory-write microbenchmarks repeated with one unchanged program over several runs, with
-                throughput and all four categories per run and their spread; the workload cards captured again with
-                the flush-recovery event, so front-end bound and bad speculation follow Arm&apos;s formula; and the
-                render stand-in run with software rendering against EGL, with GPU activity sampled, to establish the
-                GPU&apos;s share of a frame.
+                repeated and corrected versions of the current cards, so that each figure comes from more than one
+                run. There will be three kinds of measurement. The first is the triad and memory-write
+                microbenchmarks, repeated over several runs of one unchanged program, with the throughput and all four
+                shares for each run and their spread. The second is the test program cards captured again with the
+                flush-recovery event, so that front-end bound and bad speculation follow Arm&apos;s formula. The third
+                is the camera render test program, run once with software rendering and once through EGL, with GPU
+                activity sampled, to establish the GPU&apos;s share of each frame.
               </>
             }
-            source={<>{PROJECT}, on the same two machines; not yet run.</>}
+            source={<>{PROJECT}, on the same two machines. These runs have not been done yet.</>}
           />
         </SpaceBetween>
       </Container>
@@ -987,18 +1127,19 @@ export function Measurements() {
         header={
           <Header
             variant="h2"
-            description="Count one program's slots on one core today, and know before you compare two machines whether the comparison will hold"
+            description="These steps show how to count the slot shares of your own program on one core, and how to check, before you compare two machines, whether the comparison will hold."
           >
-            Make the card for your own workload
+            Making a card for your own workload
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Pin the program to one core and count the six slot events in one execution, the way our runs did. Each
-            core type has its own event source: on a DGX Spark, <code>armv8_pmuv3_1</code> for the X925 and{' '}
-            <code>armv8_pmuv3_0</code> for the A725. Set <code>CPU</code> to the number of one core of that type;
-            look up which numbers those are on your own system.{' '}
+            To get the slot shares for one program, pin it to one core and count the six slot events in one
+            execution, as our runs did. Linux exposes the PMU of each core type under its own event source name. On a
+            DGX Spark, the event source is <code>armv8_pmuv3_1</code> for the X925 and <code>armv8_pmuv3_0</code> for
+            the A725. Set <code>CPU</code> to the number of one core of the type you want to measure. Look up which
+            core numbers belong to that type on your own system.{' '}
             <Cite id="F08-60">our run script and experiment notes</Cite>{' '}
             <Cite id="F08-68">our profiling report, slots self check</Cite>
           </Box>
@@ -1010,11 +1151,11 @@ export function Measurements() {
             {PERF_SNIPPET}
           </Snippet>
           <Box variant="p">
-            On EC2 the instance size decides whether such a card can be made at all. Graviton cores are Arm Neoverse
-            designs, and AWS&apos;s Graviton performance runbook lists full PMU event support on c9g at 12xlarge,
-            24xlarge and 48xlarge and on c8g at 24xlarge and 48xlarge. Smaller sizes of both get a reduced set of
-            events, and the runbook, as read on 2026-11-20, does not list which, so whether the six slot events are
-            among them is unknown.{' '}
+            On EC2, the instance size determines whether you can make such a card at all. Graviton is AWS&apos;s own
+            family of Arm processors. Its cores are Arm Neoverse designs. AWS&apos;s Graviton performance runbook
+            lists full PMU event support on c9g at 12xlarge, 24xlarge and 48xlarge, and on c8g at 24xlarge and
+            48xlarge. Smaller sizes of both get a reduced set of events. As of November 2026, the runbook does not
+            list which events those are, so we do not know whether the six slot events are among them.{' '}
             <Cite id="F08-56">AWS Graviton guide, processor table</Cite>{' '}
             <Cite id="F08-25">AWS Graviton guide, PMU counters</Cite>{' '}
             <Cite id="F08-26">AWS Graviton guide, PMU support table</Cite>
@@ -1022,29 +1163,31 @@ export function Measurements() {
           <Placeholder
             what={
               <>
-                the same workloads on Amazon EC2: Graviton sizes (c9g, c8g) for decode and CPU physics; G-family
-                sizes (g6, g6e, g7, g7e) for decode with embedding, augmentation, simulation, training and
-                evaluation; and one P5 or P6 size for training. First, a capability check: the PMU events that{' '}
-                <code>perf list</code> shows on c9g.2xlarge, c9g.12xlarge, g6e.xlarge, g6e.48xlarge, g7.48xlarge and
-                p5.48xlarge, which decides where a top-down card can be made at all.
+                the same workloads on Amazon EC2. Graviton sizes (c9g, c8g) will run decoding and CPU physics.
+                G-family sizes (g6, g6e, g7, g7e) will run decoding with embedding, augmentation, simulation, training
+                and evaluation. One P5 or P6 size will run training. Before that, a capability check will record the
+                PMU events that <code>perf list</code> shows on c9g.2xlarge, c9g.12xlarge, g6e.xlarge, g6e.48xlarge,
+                g7.48xlarge and p5.48xlarge. That check will show on which instances you can make a top-down card at
+                all.
               </>
             }
-            source={<>{PROJECT}, run on EC2; not yet run.</>}
+            source={<>{PROJECT}, on EC2. These runs have not been done yet.</>}
           />
           <Box variant="p">
-            For the memory stall, run the program a second time with <code>stall_backend_mem</code> and{' '}
+            To get the memory stall, run the program a second time with <code>stall_backend_mem</code> and{' '}
             <code>cpu_cycles</code> in the event list, as our runs did. Write down the rate, the four shares and the
-            memory stall, run the program again, and keep the split only if it holds.
-            Then count what one unit of work asks of the part the shares point at, as 390 x 25.2 MB = 9.8 GB/s did
-            against the Jetson core&apos;s 11.71 GB/s.{' '}
-            <Cite id="F08-63">our arithmetic on the policy stand-in</Cite>
+            memory stall. Then run the program again, and keep the split only if it repeats. Next, calculate how much
+            one unit of work needs from the resource that the shares point to. For the policy test program on the
+            Jetson, that was 390 x 25.2 MB = 9.8 GB/s, compared with the 11.71 GB/s that the core reached on the
+            triad. <Cite id="F08-63">calculation for the policy test program</Cite>
           </Box>
           <Box variant="p">
             Compare two machines on that program only when the same version runs on both and the bottleneck is the
-            same. If the program waits on memory with demand near the triad figure, the streaming ratio is the one to
-            read. If the core limits it, measure the program itself on both machines: inside the Spark the
-            multiply-add ratio said <Derived>4.0</Derived>, and the physics step ran <Derived>2.0</Derived> times
-            faster. <Cite id="F08-65">our profiling report, FMA row</Cite>{' '}
+            same on both. If the program waits on memory and its demand is near the triad figure, use the memory
+            bandwidth ratio. If the core limits the program, a microbenchmark ratio can mislead you. Inside the
+            Spark, the multiply-add ratio between the two cores was <Derived>4.0</Derived>, but the physics step ran
+            only <Derived>2.0</Derived> times as fast. In that case, measure the program itself on both machines.{' '}
+            <Cite id="F08-65">our profiling report, FMA row</Cite>{' '}
             <Cite id="F08-61">our profiling report, physics step table</Cite>
           </Box>
         </SpaceBetween>

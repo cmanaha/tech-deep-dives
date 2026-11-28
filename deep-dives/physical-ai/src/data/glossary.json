@@ -176,7 +176,7 @@
  {
   "term": "Arm telemetry files",
   "expansion": null,
-  "meaning": "The event and formula definitions Arm publishes for each core, including its top-down formulas and slots per cycle; there is no file for the Cortex-A78AE.",
+  "meaning": "The event and formula definitions that Arm publishes for each core, including its top-down formulas and its slots per cycle. Arm publishes no file for the Cortex-A78AE.",
   "section": 22
  },
  {
@@ -452,7 +452,7 @@
  {
   "term": "Cache refill",
   "expansion": null,
-  "meaning": "A fetch of data into one of the core's caches (the first-level data cache or the second-level cache) from further out in the memory system; refills per thousand instructions show how hard a program leans on memory.",
+  "meaning": "A fetch of data into one of the core's caches, the first-level data cache or the second-level cache, from further out in the memory system. The number of refills per thousand instructions shows how heavily a program depends on memory.",
   "section": 22
  },
  {
@@ -524,7 +524,7 @@
  {
   "term": "Card (PMU card)",
   "expansion": null,
-  "meaning": "The record of one program on one core: its rate, its four slot shares and its memory stall.",
+  "meaning": "The record of one program on one core. It holds the program's rate, its four slot shares and its memory stall.",
   "section": 22
  },
  {
@@ -1208,7 +1208,7 @@
  {
   "term": "EGL",
   "expansion": null,
-  "meaning": "The interface MuJoCo uses for hardware-accelerated rendering with no display.",
+  "meaning": "The interface MuJoCo uses for hardware-accelerated rendering without a display.",
   "section": 22
  },
  {
@@ -1352,7 +1352,7 @@
  {
   "term": "Event source",
   "expansion": null,
-  "meaning": "The name under which Linux exposes one core type's PMU, such as armv8_pmuv3_1 for the Cortex-X925 on a DGX Spark; perf events are named through it.",
+  "meaning": "The name under which Linux exposes the PMU of one core type, such as armv8_pmuv3_1 for the Cortex-X925 on a DGX Spark. You name perf events through it.",
   "section": 22
  },
  {
@@ -1420,12 +1420,6 @@
   "expansion": null,
   "meaning": "Training a pretrained model further on new data, such as recorded episodes of one task.",
   "section": 2
- },
- {
-  "term": "Finer events (Arm's second level)",
-  "expansion": null,
-  "meaning": "Arm's counters that split a first-level share, for example back-end stalls into core causes and memory causes (STALL_BACKEND_MEMBOUND against STALL_BACKEND); not counted in these runs.",
-  "section": 22
  },
  {
   "term": "Fisher's exact test",
@@ -1586,7 +1580,7 @@
  {
   "term": "Fused multiply-add",
   "expansion": null,
-  "meaning": "One instruction that computes a x b + c; a loop of independent scalar ones measures a core's multiply-add throughput, with the vector units left out.",
+  "meaning": "One instruction that computes a x b + c. A loop of independent scalar fused multiply-adds measures a core's multiply-add throughput without its vector units.",
   "section": 22
  },
  {
@@ -2504,7 +2498,7 @@
  {
   "term": "Microbenchmark",
   "expansion": null,
-  "meaning": "A small loop built to load one part of a core, such as its multiply-add units or its memory.",
+  "meaning": "A small loop built to exercise one resource of a core, such as its multiply-add units or its memory.",
   "section": 22
  },
  {
@@ -2936,7 +2930,7 @@
  {
   "term": "p50 and p99",
   "expansion": null,
-  "meaning": "The median time per call and the time only one call in a hundred exceeds.",
+  "meaning": "The p50 is the median time per call. The p99 is the time that only one call in a hundred exceeds.",
   "section": 22
  },
  {
@@ -2962,12 +2956,6 @@
   "expansion": null,
   "meaning": "A compressed table file format that stores data column by column. LeRobot stores the table rows, one for each time step, in Parquet files.",
   "section": 9
- },
- {
-  "term": "Part (of a machine)",
-  "expansion": null,
-  "meaning": "A resource a program can run out of, such as a core's arithmetic, memory bandwidth or memory latency; the part a program runs out of first sets its speed.",
-  "section": 22
  },
  {
   "term": "Partition",
@@ -3044,7 +3032,7 @@
  {
   "term": "perf stat",
   "expansion": null,
-  "meaning": "The Linux tool that reads the PMU counters around one run of a program.",
+  "meaning": "The Linux tool that reads the PMU counters over one run of a program.",
   "section": 22
  },
  {
@@ -3158,7 +3146,7 @@
  {
   "term": "Pointer chase",
   "expansion": null,
-  "meaning": "A loop in which each read gives the address of the next, used to measure memory latency.",
+  "meaning": "A loop in which each read gives the address of the next read. It measures memory latency.",
   "section": 22
  },
  {
@@ -3458,7 +3446,7 @@
  {
   "term": "ReLU",
   "expansion": "rectified linear unit",
-  "meaning": "The function that sets negative values to zero, applied after a layer of a neural network.",
+  "meaning": "The function that sets negative values to zero. It is applied after a layer of a neural network.",
   "section": 22
  },
  {
@@ -3520,6 +3508,12 @@
   "expansion": null,
   "meaning": "A standard image network. ACT in LeRobot uses it to turn each camera image into feature vectors.",
   "section": 4
+ },
+ {
+  "term": "Resource (of a machine)",
+  "expansion": null,
+  "meaning": "Something a program can run out of, such as a core's arithmetic units, memory bandwidth or memory latency. The resource a program runs out of first is its bottleneck, and it sets the program's speed.",
+  "section": 22
  },
  {
   "term": "ResourceFlavor",
@@ -3750,6 +3744,12 @@
   "section": 19
  },
  {
+  "term": "Second-level events (Arm)",
+  "expansion": null,
+  "meaning": "Arm's counters that split a top-down share into its causes. For example, STALL_BACKEND_MEMBOUND, counted together with STALL_BACKEND, separates back-end stalls caused by memory from those caused in the core. Our runs did not count them.",
+  "section": 22
+ },
+ {
   "term": "Semi-implicit Euler",
   "expansion": null,
   "meaning": "The integration rule that updates the speed first and then moves the position with the new speed.",
@@ -3848,7 +3848,7 @@
  {
   "term": "SIMT",
   "expansion": "single instruction, multiple threads",
-  "meaning": "The GPU's general execution path, as opposed to its tensor cores.",
+  "meaning": "The GPU's general execution path, which does not use the tensor cores.",
   "section": 22
  },
  {
@@ -3908,7 +3908,7 @@
  {
   "term": "SmolVLA",
   "expansion": null,
-  "meaning": "A small vision-language-action model, the policy family of section 5.",
+  "meaning": "A small vision-language-action model, from the policy family covered in section 5.",
   "section": 22
  },
  {
@@ -4024,12 +4024,6 @@
   "expansion": null,
   "meaning": "The Arm event counting empty slots; it is the sum of STALL_SLOT_FRONTEND and STALL_SLOT_BACKEND.",
   "section": 21
- },
- {
-  "term": "Stand-in",
-  "expansion": null,
-  "meaning": "A program run in place of the arm's real workload, useful as far as it runs out of the same part of the machine.",
-  "section": 22
  },
  {
   "term": "Stand-in workload",
@@ -4202,7 +4196,7 @@
  {
   "term": "taskset",
   "expansion": null,
-  "meaning": "The Linux command that pins a program to chosen cores, so its counters come from one known core type.",
+  "meaning": "The Linux command that pins a program to chosen cores. Pinning makes sure the counters come from one known core type.",
   "section": 22
  },
  {
@@ -4340,7 +4334,7 @@
  {
   "term": "TLB",
   "expansion": "translation lookaside buffer",
-  "meaning": "The core's cache of address translations; a pointer chase over a large area also pays its misses.",
+  "meaning": "The core's cache of address translations. A pointer chase over a large area also pays for its misses.",
   "section": 22
  },
  {
@@ -4472,7 +4466,7 @@
  {
   "term": "Triad",
   "expansion": null,
-  "meaning": "A loop that streams through arrays larger than the caches, used to measure memory bandwidth.",
+  "meaning": "A loop that streams through arrays larger than the caches. It measures memory bandwidth.",
   "section": 22
  },
  {
