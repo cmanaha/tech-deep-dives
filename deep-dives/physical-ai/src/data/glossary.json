@@ -254,7 +254,7 @@
  {
   "term": "Auto-resume",
   "expansion": null,
-  "meaning": "The mechanism that restarts a job after its node was replaced: annotations on a Kubernetes job, or a flag on a Slurm step.",
+  "meaning": "The mechanism that restarts a job after its node was replaced. On Kubernetes it is two annotations on the job; on Slurm it is a flag on a job step.",
   "section": 27
  },
  {
@@ -422,7 +422,7 @@
  {
   "term": "Borrow limit",
   "expansion": null,
-  "meaning": "How much idle quota beyond its own allocation a team may use, in percent of that allocation.",
+  "meaning": "How much idle quota a team may use beyond its own allocation, as a percentage of that allocation.",
   "section": 27
  },
  {
@@ -596,7 +596,7 @@
  {
   "term": "Cluster policy",
   "expansion": null,
-  "meaning": "The one task governance object per cluster that holds priority classes and how idle compute is shared.",
+  "meaning": "The single task governance object for a cluster. It holds the priority classes and the rule for sharing idle compute.",
   "section": 27
  },
  {
@@ -668,7 +668,7 @@
  {
   "term": "Compute allocation",
   "expansion": null,
-  "meaning": "A team's quota: resources, a sharing strategy, a borrow limit and a preemption rule.",
+  "meaning": "One team's quota: its resources, a sharing strategy, a borrow limit and a preemption rule.",
   "section": 27
  },
  {
@@ -704,7 +704,7 @@
  {
   "term": "consolidateAfter",
   "expansion": null,
-  "meaning": "The NodePool setting for how long Karpenter waits before removing a node it no longer needs.",
+  "meaning": "The NodePool setting for how long Karpenter waits before it removes a node it no longer needs.",
   "section": 27
  },
  {
@@ -752,7 +752,7 @@
  {
   "term": "Continuous provisioning",
   "expansion": null,
-  "meaning": "HyperPod's default way of filling groups: it records a target count, retries failed launches in the background and lets jobs start on the capacity that has arrived.",
+  "meaning": "HyperPod's default way of filling instance groups. It records a target count, retries failed launches in the background and lets jobs start on the capacity that has already arrived.",
   "section": 27
  },
  {
@@ -974,7 +974,7 @@
  {
   "term": "Deep health check",
   "expansion": null,
-  "meaning": "An optional stress test HyperPod runs on a new or replaced instance before work lands on it.",
+  "meaning": "An optional stress test that HyperPod runs on a new or replaced instance before work lands on it.",
   "section": 27
  },
  {
@@ -1238,7 +1238,7 @@
  {
   "term": "Elastic training",
   "expansion": null,
-  "meaning": "A HyperPod feature that grows and shrinks a training job by checkpointing and resuming with a different number of workers.",
+  "meaning": "A HyperPod feature that grows and shrinks a training job by saving a checkpoint and resuming with a different number of workers.",
   "section": 27
  },
  {
@@ -1442,7 +1442,7 @@
  {
   "term": "Flexible instance group",
   "expansion": null,
-  "meaning": "An instance group that lists up to 20 instance types in priority order and falls back down the list when capacity is missing.",
+  "meaning": "An instance group that lists up to 20 instance types in priority order. HyperPod moves down the list when capacity for a type is missing.",
   "section": 27
  },
  {
@@ -1814,7 +1814,7 @@
  {
   "term": "Helm chart",
   "expansion": null,
-  "meaning": "A Kubernetes package; HyperPod's chart installs its health agent, device plug-ins and training operators on the EKS cluster.",
+  "meaning": "A Kubernetes package. HyperPod's chart installs its health monitoring agent, device plug-ins and training operators on the EKS cluster.",
   "section": 27
  },
  {
@@ -1880,13 +1880,13 @@
  {
   "term": "HyperpodNodeClass",
   "expansion": null,
-  "meaning": "The object that lists which instance groups Karpenter may raise.",
+  "meaning": "The object that lists which instance groups Karpenter may scale.",
   "section": 27
  },
  {
   "term": "HyperPodPyTorchJob",
   "expansion": null,
-  "meaning": "The HyperPod training operator's job object, whose runPolicy carries retry counts and rules that detect a hung job.",
+  "meaning": "The HyperPod training operator's job object. Its runPolicy holds a retry count and log rules that detect a hung job.",
   "section": 27
  },
  {
@@ -1970,7 +1970,7 @@
  {
   "term": "Instance group",
   "expansion": null,
-  "meaning": "HyperPod's unit of capacity: a named set of instances of one type (or a flexible list of types) with a count and one capacity market.",
+  "meaning": "HyperPod's unit of capacity: a named set of instances of one type, or of a flexible list of types, with a count and one purchase option.",
   "section": 27
  },
  {
@@ -2216,7 +2216,7 @@
  {
   "term": "Kubeflow Training Operator",
   "expansion": null,
-  "meaning": "The Kubernetes controller that turns a training job description such as a PyTorchJob into pods.",
+  "meaning": "The Kubernetes controller that turns a training job description, such as a PyTorchJob, into pods.",
   "section": 27
  },
  {
@@ -2348,7 +2348,7 @@
  {
   "term": "Lifecycle script",
   "expansion": null,
-  "meaning": "A set-up script HyperPod runs once on each new node.",
+  "meaning": "A set-up script that HyperPod runs once on each new node.",
   "section": 27
  },
  {
@@ -2366,7 +2366,7 @@
  {
   "term": "LocalQueue",
   "expansion": null,
-  "meaning": "Kueue's per-namespace queue, the one a team's jobs name in their label.",
+  "meaning": "Kueue's queue for one namespace. A team's jobs name it in a label.",
   "section": 27
  },
  {
@@ -2586,6 +2586,12 @@
   "section": 7
  },
  {
+  "term": "MPI",
+  "expansion": "Message Passing Interface",
+  "meaning": "A standard library interface for sending messages between the processes of a parallel program. HyperPod's Helm chart installs the Kubeflow MPI operator for jobs that use it.",
+  "section": 27
+ },
+ {
   "term": "MPS",
   "expansion": "Multi-Process Service",
   "meaning": "An NVIDIA feature that runs several processes on one GPU at the same moment.",
@@ -2720,7 +2726,7 @@
  {
   "term": "Node recovery",
   "expansion": null,
-  "meaning": "The cluster setting that lets HyperPod reboot or replace a faulty node without being asked.",
+  "meaning": "The cluster setting that lets HyperPod reboot or replace a faulty node without anyone asking it to.",
   "section": 27
  },
  {
@@ -4190,7 +4196,7 @@
  {
   "term": "Task governance",
   "expansion": null,
-  "meaning": "HyperPod's multi-team layer on EKS: an add-on that installs Kueue and adds a cluster policy and per-team compute allocations.",
+  "meaning": "HyperPod's add-on for sharing an EKS-orchestrated cluster between teams. It installs Kueue and adds a cluster policy and a compute allocation for each team.",
   "section": 27
  },
  {
@@ -4262,7 +4268,7 @@
  {
   "term": "terminationGracePeriodSeconds",
   "expansion": null,
-  "meaning": "The time Kubernetes gives a pod to stop after it is told to; the window in which a training script can write a last checkpoint.",
+  "meaning": "The time Kubernetes gives a pod to stop after it is told to. A training script can write a last checkpoint during that time.",
   "section": 27
  },
  {
