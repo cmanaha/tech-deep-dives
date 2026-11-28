@@ -4,10 +4,8 @@ Written with Carlos on 2026-11-27 over three passes, with his own rewrites of th
 hardware paragraph and the two questions. It is the model for every other section of this dive. The rules it
 follows are in `docs/standards/plain-technical-english.md`.
 
-Status: text only. It is not yet applied to `src/sections/OneLoop.tsx`. When it is, every citation that the live
-text carries attaches to the same fact here. Two facts are new and need a pinned first-party source and a register
-entry before they ship: what Savings Plans are (a lower price for a usage commitment, with no capacity reserved), and
-that Capacity Blocks let a run start on a known date.
+Status: applied to `src/sections/OneLoop.tsx` on 2026-11-27. The two facts that were new here are sourced:
+what Savings Plans are (F09-134) and that a Capacity Block starts on a date you choose in advance (F09-90).
 
 ## Terms: from the dive's coined words to the standard ones
 
