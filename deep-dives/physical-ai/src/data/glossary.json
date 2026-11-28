@@ -132,6 +132,12 @@
   "section": 19
  },
  {
+  "term": "AL2023",
+  "expansion": "Amazon Linux 2023",
+  "meaning": "An operating system for EKS nodes. The EKS-optimized accelerated AL2023 image leaves the NVIDIA device plugin for you to install.",
+  "section": 28
+ },
+ {
   "term": "Aligned merge",
   "expansion": null,
   "meaning": "The default merge in LeRobot remote inference. It drops incoming actions whose time has passed and replaces only the future part of the queue.",
@@ -284,7 +290,7 @@
  {
   "term": "AWS Deadline Cloud",
   "expansion": null,
-  "meaning": "AWS's managed render farm.",
+  "meaning": "The AWS managed render farm.",
   "section": 29
  },
  {
@@ -300,6 +306,12 @@
   "section": 1
  },
  {
+  "term": "AWS Node Termination Handler",
+  "expansion": null,
+  "meaning": "A separate AWS tool that also reacts to EC2 events such as the Spot interruption warning. The EKS best-practices guide advises against running it alongside Karpenter's interruption handling.",
+  "section": 28
+ },
+ {
   "term": "AWS ParallelCluster",
   "expansion": null,
   "meaning": "AWS's other way to build a Slurm cluster. Its boot hooks map onto PCS node lifecycle actions.",
@@ -308,7 +320,7 @@
  {
   "term": "AWS PCS",
   "expansion": "AWS Parallel Computing Service",
-  "meaning": "Managed Slurm: AWS runs the controller, and compute node groups start instances for waiting jobs and can scale back to zero.",
+  "meaning": "A managed Slurm service. AWS runs the Slurm controller, and the compute node groups start instances for waiting jobs and can scale back to zero.",
   "section": 29
  },
  {
@@ -510,15 +522,9 @@
   "section": 1
  },
  {
-  "term": "Capacity market",
-  "expansion": null,
-  "meaning": "The way an instance is paid for and what AWS promises in return.",
-  "section": 29
- },
- {
   "term": "Capacity type",
   "expansion": null,
-  "meaning": "The purchase option a NodePool allows: spot, on-demand or reserved (capacity reservations).",
+  "meaning": "The purchase option that a NodePool allows: spot, on-demand or reserved, which means capacity reservations.",
   "section": 28
  },
  {
@@ -602,7 +608,7 @@
  {
   "term": "ClusterQueue",
   "expansion": null,
-  "meaning": "The Kueue object that holds a quota per flavor for the whole cluster.",
+  "meaning": "The Kueue object that holds a quota for each flavor for the whole cluster.",
   "section": 28
  },
  {
@@ -632,7 +638,7 @@
  {
   "term": "Cohort",
   "expansion": null,
-  "meaning": "A group of ClusterQueues that lend each other unused quota.",
+  "meaning": "A group of Kueue ClusterQueues that lend each other unused quota.",
   "section": 28
  },
  {
@@ -860,7 +866,7 @@
  {
   "term": "CSI",
   "expansion": "Container Storage Interface",
-  "meaning": "The plug-in form in which Kubernetes mounts storage into pods as volumes.",
+  "meaning": "The plug-in interface through which Kubernetes mounts a storage system into pods as volumes.",
   "section": 28
  },
  {
@@ -1022,7 +1028,7 @@
  {
   "term": "Device plugin",
   "expansion": null,
-  "meaning": "A DaemonSet that advertises a node's devices to Kubernetes; the NVIDIA one advertises GPUs as nvidia.com/gpu.",
+  "meaning": "A DaemonSet that advertises a node's devices to Kubernetes. The NVIDIA device plugin advertises GPUs as nvidia.com/gpu.",
   "section": 28
  },
  {
@@ -1106,7 +1112,7 @@
  {
   "term": "DRA",
   "expansion": "Dynamic Resource Allocation",
-  "meaning": "The Kubernetes API in which a driver publishes devices with attributes and a pod claims one by description.",
+  "meaning": "A Kubernetes API in which a driver publishes each device with its attributes and a pod claims a device by describing what it needs.",
   "section": 28
  },
  {
@@ -1136,7 +1142,7 @@
  {
   "term": "Drift",
   "expansion": null,
-  "meaning": "A node no longer matching its NodePool or image, which makes Karpenter replace it.",
+  "meaning": "The state of a node that no longer matches its NodePool or its image. Karpenter replaces such a node.",
   "section": 28
  },
  {
@@ -1172,7 +1178,7 @@
  {
   "term": "EC2NodeClass",
   "expansion": null,
-  "meaning": "The Karpenter object holding the AWS settings for nodes: image, role, subnets, security groups, disks, reservations.",
+  "meaning": "The Karpenter object that holds the AWS settings for a NodePool's nodes: the image, the IAM role, the subnets, the security groups, the disks and the reservations.",
   "section": 28
  },
  {
@@ -1388,7 +1394,7 @@
  {
   "term": "Extended resource",
   "expansion": null,
-  "meaning": "A countable thing beyond CPU and memory that a node advertises and a pod claims in whole units, such as nvidia.com/gpu.",
+  "meaning": "A countable resource beyond CPU and memory that a node advertises and a pod claims in whole units, such as nvidia.com/gpu.",
   "section": 28
  },
  {
@@ -1616,7 +1622,7 @@
  {
   "term": "Gang scheduling",
   "expansion": null,
-  "meaning": "Scheduling all of a job's pods together or none of them.",
+  "meaning": "Scheduling all of a job's pods together, or none of them.",
   "section": 28
  },
  {
@@ -1676,7 +1682,7 @@
  {
   "term": "GPU Operator",
   "expansion": null,
-  "meaning": "NVIDIA's package that installs the driver, toolkit, device plugin, node labelling and monitoring together.",
+  "meaning": "NVIDIA's package that installs the GPU driver, the toolkit, the device plugin, node labelling and monitoring together.",
   "section": 28
  },
  {
@@ -1886,7 +1892,7 @@
  {
   "term": "Hybrid node",
   "expansion": null,
-  "meaning": "A machine outside AWS, such as a lab workstation, joined to an EKS cluster as a node.",
+  "meaning": "A machine outside AWS, such as a lab workstation, that joins an EKS cluster as one of its nodes.",
   "section": 29
  },
  {
@@ -2012,7 +2018,7 @@
  {
   "term": "Interruption queue",
   "expansion": null,
-  "meaning": "The Amazon SQS queue through which Karpenter receives EC2 events such as the Spot interruption warning.",
+  "meaning": "The Amazon SQS queue through which Karpenter receives EC2 events, such as the Spot interruption warning.",
   "section": 28
  },
  {
@@ -2588,7 +2594,7 @@
  {
   "term": "Mountpoint for Amazon S3 CSI driver",
   "expansion": null,
-  "meaning": "The driver that presents an S3 bucket as a volume in a pod.",
+  "meaning": "The CSI driver that presents an S3 bucket as a volume in a pod.",
   "section": 28
  },
  {
@@ -2724,6 +2730,12 @@
   "section": 15
  },
  {
+  "term": "Node auto repair",
+  "expansion": null,
+  "meaning": "The EKS feature that acts on unhealthy node conditions. For GPUs, it acts on a double-bit memory error, an NVLink error and a critical XID error.",
+  "section": 28
+ },
+ {
   "term": "Node lifecycle action",
   "expansion": null,
   "meaning": "A script that PCS runs on a node at one of two boot stages: nodeBootstrapped, before slurmd starts, or nodeReady, after it starts.",
@@ -2744,7 +2756,7 @@
  {
   "term": "NodeClaim",
   "expansion": null,
-  "meaning": "Karpenter's record of one instance on its way to being a node: Launched, Registered, Initialized.",
+  "meaning": "Karpenter's record of one instance on its way to becoming a node. It passes through the stages Launched, Registered and Initialized.",
   "section": 28
  },
  {
@@ -3026,7 +3038,7 @@
  {
   "term": "Pending",
   "expansion": null,
-  "meaning": "The state of a pod that no node can hold yet; on a cluster that scales from zero it is the request for a machine.",
+  "meaning": "The state of a pod that no node can hold yet. On a cluster that scales from zero, a pending pod is in effect the request for a new machine.",
   "section": 28
  },
  {
@@ -3278,7 +3290,7 @@
  {
   "term": "Price-capacity-optimized",
   "expansion": null,
-  "meaning": "The Spot allocation strategy that takes the lowest-priced pools among those with the most spare capacity.",
+  "meaning": "The Spot allocation strategy that takes the lowest-priced Spot pools among those with the most spare capacity.",
   "section": 28
  },
  {
@@ -3292,6 +3304,12 @@
   "expansion": null,
   "meaning": "The robot's built-in safety halt.",
   "section": 17
+ },
+ {
+  "term": "ProvisioningRequest admission check",
+  "expansion": null,
+  "meaning": "A Kueue admission check that waits for capacity before it admits a Job. It is written for the Kubernetes cluster-autoscaler.",
+  "section": 28
  },
  {
   "term": "Pseudo-actions",
@@ -3554,7 +3572,7 @@
  {
   "term": "ResourceFlavor",
   "expansion": null,
-  "meaning": "The Kueue object that describes one kind of node through node labels and tolerations.",
+  "meaning": "The Kueue object that describes one kind of node, such as Spot nodes, through node labels and tolerations.",
   "section": 28
  },
  {
@@ -3828,12 +3846,6 @@
   "section": 13
  },
  {
-  "term": "Shape",
-  "expansion": null,
-  "meaning": "A job described by its duration, coupling and interruptibility (section 20).",
-  "section": 29
- },
- {
   "term": "Share identifier",
   "expansion": null,
   "meaning": "A label on a job that says whose work it is. Fair-share scheduling uses it to divide the capacity.",
@@ -3854,7 +3866,7 @@
  {
   "term": "SIGTERM",
   "expansion": null,
-  "meaning": "The signal that asks a process to stop; a pod receives it when it is evicted and has its grace period to finish.",
+  "meaning": "The signal that asks a process to stop. A pod receives it when it is evicted, and it then has its grace period to finish.",
   "section": 28
  },
  {
@@ -4010,7 +4022,7 @@
  {
   "term": "Spot placement score",
   "expansion": null,
-  "meaning": "A number from 1 to 10 for how likely a Spot request is to succeed in a Region or zone.",
+  "meaning": "A number from 1 to 10 that says how likely a Spot request is to succeed in a Region or an Availability Zone.",
   "section": 28
  },
  {
@@ -4096,6 +4108,12 @@
   "expansion": null,
   "meaning": "A simulated environment that steps the physics and gives the policy the joint and object states directly, with no simulated camera. It is the cheapest kind of environment to run.",
   "section": 16
+ },
+ {
+  "term": "Static provisioning",
+  "expansion": null,
+  "meaning": "A way of providing volumes in which you write the volume definition for each existing storage resource, such as an S3 bucket, yourself.",
+  "section": 28
  },
  {
   "term": "Station",
@@ -4214,7 +4232,7 @@
  {
   "term": "Taint and toleration",
   "expansion": null,
-  "meaning": "A taint marks a node so that only pods declaring a matching toleration may be scheduled on it.",
+  "meaning": "A taint is a mark on a node. Only pods that declare a matching toleration can be scheduled on a node that carries it.",
   "section": 28
  },
  {
@@ -4358,7 +4376,7 @@
  {
   "term": "Time-slicing",
   "expansion": null,
-  "meaning": "Several pods taking turns on one GPU, with no memory or compute isolation.",
+  "meaning": "A way to share a GPU in which several pods take turns on the whole GPU, with no memory or compute isolation.",
   "section": 28
  },
  {
@@ -4472,7 +4490,7 @@
  {
   "term": "TrainJob",
   "expansion": null,
-  "meaning": "The Kubeflow Trainer object a user submits; it points at an administrator's runtime template.",
+  "meaning": "The Kubeflow Trainer object that a user submits. It points at a runtime template that an administrator provides.",
   "section": 28
  },
  {

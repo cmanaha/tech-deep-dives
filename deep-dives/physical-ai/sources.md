@@ -207,7 +207,7 @@ Tier ladder (repository standard): Tier 0 our experiments; Tier 1 code, official
 - SageMaker HyperPod documentation, orchestrators: https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod.html (accessed 2026-11-20) (sections 29)
 - SageMaker Developer Guide, HyperPod storage: https://docs.aws.amazon.com/sagemaker/latest/dg/smcluster-getting-started-slurm-cli.html (accessed 2026-11-20) (sections 27)
 - SageMaker Developer Guide, training plans in HyperPod: https://docs.aws.amazon.com/sagemaker/latest/dg/training-plan-utilization-for-hyperpod.html (accessed 2026-11-20) (sections 24, 27)
-- Savings Plans User Guide, What are Savings Plans?: https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html (accessed 2026-11-27) (sections 1)
+- Savings Plans User Guide, What are Savings Plans?: https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html (accessed 2026-11-27) (sections 1, 29)
 - AWS Guidance for Physical AI for Robotics: https://docs.aws.amazon.com/solutions/physical-ai-for-robotics-on-aws/ (accessed 2026-11-20) (sections 24)
 - AWS Guidance for Physical AI Simulation Platform: https://docs.aws.amazon.com/solutions/physical-ai-simulation-platform-on-aws/ (accessed 2026-11-20) (sections 29)
 - Step Functions Developer Guide, AWS Batch integration: https://docs.aws.amazon.com/step-functions/latest/dg/connect-batch.html (accessed 2026-11-20) (sections 24, 29)
