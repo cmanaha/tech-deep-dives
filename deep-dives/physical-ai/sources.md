@@ -148,7 +148,7 @@ Tier ladder (repository standard): Tier 0 our experiments; Tier 1 code, official
 - AWS IoT developer guide, Jobs key concepts: https://docs.aws.amazon.com/iot/latest/developerguide/key-concepts-jobs.html (accessed 2026-11-20) (sections 18)
 - AWS IoT developer guide, Device communication protocols: https://docs.aws.amazon.com/iot/latest/developerguide/protocols.html (accessed 2026-11-20) (sections 18)
 - AWS IoT developer guide, Secure tunneling: https://docs.aws.amazon.com/iot/latest/developerguide/secure-tunneling.html (accessed 2026-11-20) (sections 18)
-- AWS PCS API Reference, scaleDownIdleTimeInSeconds: https://docs.aws.amazon.com/pcs/latest/APIReference/API_ClusterSlurmConfigurationRequest.html (accessed 2026-11-20) (sections 26)
+- AWS PCS User Guide, Creating a cluster in AWS PCS: https://docs.aws.amazon.com/pcs/latest/APIReference/API_ClusterSlurmConfigurationRequest.html (accessed 2026-11-20) (sections 26)
 - AWS PCS API Reference, CreateCluster: https://docs.aws.amazon.com/pcs/latest/APIReference/API_CreateCluster.html (accessed 2026-11-20) (sections 26)
 - AWS PCS queues: https://docs.aws.amazon.com/pcs/latest/APIReference/API_CreateComputeNodeGroup.html (accessed 2026-11-20) (sections 24, 26, 29)
 - AWS PCS API Reference, SpotOptions: https://docs.aws.amazon.com/pcs/latest/APIReference/API_SpotOptions.html (accessed 2026-11-20) (sections 26)

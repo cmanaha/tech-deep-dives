@@ -170,7 +170,7 @@
  {
   "term": "AMI",
   "expansion": "Amazon Machine Image",
-  "meaning": "The disk image an EC2 instance boots from.",
+  "meaning": "The disk image that an EC2 instance boots from.",
   "section": 26
  },
  {
@@ -302,7 +302,7 @@
  {
   "term": "AWS ParallelCluster",
   "expansion": null,
-  "meaning": "AWS's other route to a Slurm cluster; its boot hooks map onto PCS node lifecycle actions.",
+  "meaning": "AWS's other way to build a Slurm cluster. Its boot hooks map onto PCS node lifecycle actions.",
   "section": 26
  },
  {
@@ -686,13 +686,13 @@
  {
   "term": "Compute node",
   "expansion": null,
-  "meaning": "A machine that runs jobs; in PCS, one EC2 instance running slurmd and the PCS agent.",
+  "meaning": "A machine that runs jobs. In PCS, each compute node is one EC2 instance that runs slurmd and the PCS agent.",
   "section": 26
  },
  {
   "term": "Compute node group",
   "expansion": null,
-  "meaning": "The PCS object that says how nodes are created: instance types, minimum and maximum count, subnets, image and one purchase option.",
+  "meaning": "The PCS object that describes how nodes are created: the instance types, the minimum and maximum instance count, the subnets, the image and one purchase option.",
   "section": 26
  },
  {
@@ -1400,7 +1400,7 @@
  {
   "term": "Feature and constraint",
   "expansion": null,
-  "meaning": "A label on a group's nodes and the job option that asks for nodes carrying it; how a job picks a group inside a shared queue.",
+  "meaning": "A feature is a label on a group's nodes, and a constraint is the job option that asks for nodes with that label. A job uses them to choose a group when several groups serve one queue.",
   "section": 26
  },
  {
@@ -1748,7 +1748,7 @@
  {
   "term": "GRES",
   "expansion": "generic resources",
-  "meaning": "How Slurm counts resources that are neither CPU cores nor memory, GPUs above all.",
+  "meaning": "How Slurm counts resources that are neither CPU cores nor memory. GPUs are the main example.",
   "section": 26
  },
  {
@@ -1922,7 +1922,7 @@
  {
   "term": "IMEX",
   "expansion": "Internode Memory Exchange",
-  "meaning": "The NVIDIA service that lets GPUs in different nodes share memory; on PCS it needs a dedicated domain per job.",
+  "meaning": "The NVIDIA service that lets GPUs in different nodes share memory. On PCS, each job needs an IMEX domain of its own.",
   "section": 26
  },
  {
@@ -2120,7 +2120,7 @@
  {
   "term": "Job array",
   "expansion": null,
-  "meaning": "One Slurm submission that expands into many numbered copies of the same script, each scheduled on its own.",
+  "meaning": "One Slurm submission that expands into many numbered copies of the same script. Slurm schedules each copy as its own job.",
   "section": 26
  },
  {
@@ -2276,7 +2276,7 @@
  {
   "term": "Launch template",
   "expansion": null,
-  "meaning": "An EC2 object holding instance settings a compute node group cannot express: EFA interfaces, placement group, reservations, user data.",
+  "meaning": "An EC2 object that holds the instance settings a compute node group cannot express itself, such as EFA interfaces, the placement group, capacity reservations and user data.",
   "section": 26
  },
  {
@@ -2372,7 +2372,7 @@
  {
   "term": "Login node",
   "expansion": null,
-  "meaning": "The always-on machine where users type Slurm commands; in PCS, a static compute node group attached to no queue.",
+  "meaning": "The always-on machine where users type Slurm commands. In PCS, it is a static compute node group that is attached to no queue.",
   "section": 26
  },
  {
@@ -2708,7 +2708,7 @@
  {
   "term": "Node lifecycle action",
   "expansion": null,
-  "meaning": "A script PCS runs on a node at one of two boot stages: nodeBootstrapped, before slurmd starts, or nodeReady, after.",
+  "meaning": "A script that PCS runs on a node at one of two boot stages: nodeBootstrapped, before slurmd starts, or nodeReady, after it starts.",
   "section": 26
  },
  {
@@ -2798,7 +2798,7 @@
  {
   "term": "NVLink",
   "expansion": null,
-  "meaning": "NVIDIA's direct GPU-to-GPU connection.",
+  "meaning": "NVIDIA's direct connection between GPUs.",
   "section": 26
  },
  {
@@ -2960,7 +2960,7 @@
  {
   "term": "Partition",
   "expansion": null,
-  "meaning": "A named Slurm queue in front of a set of nodes; a PCS queue is one partition.",
+  "meaning": "A named Slurm queue in front of a set of nodes. Each PCS queue is one partition.",
   "section": 26
  },
  {
@@ -2990,7 +2990,7 @@
  {
   "term": "PD, CF, R",
   "expansion": "pending, configuring, running",
-  "meaning": "The states squeue shows for a job: waiting, waiting for its nodes to come up, and running.",
+  "meaning": "The job states that squeue shows: PD while the job waits, CF while its nodes are being brought up, and R while it runs.",
   "section": 26
  },
  {
@@ -3326,7 +3326,7 @@
  {
   "term": "Queue (PCS)",
   "expansion": null,
-  "meaning": "The PCS object users submit jobs to; it is one Slurm partition and points at one or more compute node groups.",
+  "meaning": "The PCS object that users submit jobs to. It is one Slurm partition, and it points at one or more compute node groups.",
   "section": 26
  },
  {
@@ -3494,7 +3494,7 @@
  {
   "term": "Requeue",
   "expansion": null,
-  "meaning": "Slurm putting a job that lost its node back in the queue, to start again from the top of its script.",
+  "meaning": "Putting a job that lost its node back in the queue. The job then starts again from the first line of its script.",
   "section": 26
  },
  {
@@ -3716,13 +3716,13 @@
  {
   "term": "scaleDownIdleTimeInSeconds",
   "expansion": null,
-  "meaning": "How long a node may sit idle before PCS removes it; 600 seconds by default.",
+  "meaning": "The PCS setting for how long a node may sit idle before PCS removes it. The default is 600 seconds.",
   "section": 26
  },
  {
   "term": "Scaling log",
   "expansion": null,
-  "meaning": "The opt-in PCS log that records each node as LAUNCHED, REGISTERED, ACTIVE or TERMINATED, with a reason.",
+  "meaning": "An optional PCS log that records each node as LAUNCHED, REGISTERED, ACTIVE or TERMINATED, together with a reason.",
   "section": 26
  },
  {
@@ -3890,7 +3890,7 @@
  {
   "term": "slurmd",
   "expansion": null,
-  "meaning": "The Slurm daemon on each compute node that takes orders from the controller.",
+  "meaning": "The Slurm daemon that runs on each compute node and takes orders from the controller.",
   "section": 26
  },
  {
@@ -3980,13 +3980,13 @@
  {
   "term": "squeue",
   "expansion": null,
-  "meaning": "The Slurm command that lists jobs and their states.",
+  "meaning": "The Slurm command that lists jobs and shows the state of each one.",
   "section": 26
  },
  {
   "term": "srun",
   "expansion": null,
-  "meaning": "The Slurm command that starts a program on every node a job was given.",
+  "meaning": "The Slurm command that starts a program on every node that a job was given.",
   "section": 26
  },
  {
@@ -4526,7 +4526,7 @@
  {
   "term": "User data",
   "expansion": null,
-  "meaning": "The script an EC2 instance runs at boot; here it mounts the shared file system.",
+  "meaning": "The script that an EC2 instance runs when it boots. In this section, it mounts the shared file system.",
   "section": 26
  },
  {

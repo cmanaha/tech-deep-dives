@@ -1490,7 +1490,7 @@
   "url": "https://docs.aws.amazon.com/pcs/latest/APIReference/API_ClusterSlurmConfigurationRequest.html",
   "local": null,
   "venue": null,
-  "title": "AWS PCS API Reference, scaleDownIdleTimeInSeconds",
+  "title": "AWS PCS User Guide, Creating a cluster in AWS PCS",
   "sections": [
    26
   ]
