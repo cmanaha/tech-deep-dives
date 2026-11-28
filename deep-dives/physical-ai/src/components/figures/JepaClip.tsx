@@ -238,7 +238,7 @@ function Wide() {
 
       <line x1="24" y1="428" x2="1216" y2="428" stroke="#d5dbdb" strokeWidth="1" />
       <Heading x={24} y={456}>
-        Numbers in, numbers out (our arithmetic)
+        Numbers in, numbers out (calculated)
       </Heading>
       <T x={24} y={488} num="derived">
         in: 16 x 256 x 256 pixels x 3 colours
@@ -319,7 +319,7 @@ function Narrow() {
         Numbers in, numbers out
       </Heading>
       <T x={16} y={1108}>
-        (our arithmetic)
+        (calculated)
       </T>
       <T x={16} y={1134} num="derived">
         in: 16 x 256 x 256 pixels x 3 colours

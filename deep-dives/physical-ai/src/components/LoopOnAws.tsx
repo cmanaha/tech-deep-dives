@@ -55,7 +55,7 @@ const STAGES: Stage[] = [
     name: 'Collect',
     picture: 'collect',
     does: ['A person guides the arm.', 'Cameras and joint angles', 'are recorded as episodes.'],
-    loads: ['CPU cores beside the robot', '(video encoding)'],
+    loads: ['CPU cores next to the robot', '(video encoding)'],
     tone: 'cpu',
     runs: ["The robot's own computer,", 'then an Amazon S3 bucket'],
     hands: 'episodes (video and joints)',

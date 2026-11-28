@@ -60,7 +60,7 @@ export const ENGINES_BY_WORKLOAD: Record<GpuWorkload, WorkloadEngines> = {
     label: 'physics batches',
     engines: ['general', 'memory'],
     reason:
-      'Thousands of copies of the scene are stepped by ordinary GPU code on the general compute cores. By our reading of what those kernels compute, the tensor cores are not involved.',
+      'Thousands of copies of the scene are stepped by ordinary GPU code on the general compute cores. We infer from what those kernels compute that the tensor cores are not involved.',
     cites: 'F06-100 F08-42 F08-76',
   },
   'rtx-rendering': {
@@ -74,7 +74,7 @@ export const ENGINES_BY_WORKLOAD: Record<GpuWorkload, WorkloadEngines> = {
     label: 'ray tracing as GPU code',
     engines: ['general', 'memory'],
     reason:
-      'A ray tracer can also be written as ordinary GPU code. The search then runs on the general compute cores and asks for no RT cores (our reading of the renderers documented this way).',
+      'A ray tracer can also be written as ordinary GPU code. The search then runs on the general compute cores and asks for no RT cores (we infer this for the renderers documented this way).',
     cites: 'F06-24 F06-62 F06-101',
   },
   'video-decode': {

@@ -87,7 +87,7 @@ const PLACEMENTS: Placement[] = [
     c: 'none',
     family: "the robot's own computer",
     orchestrator: 'no job for recording, the uploads land in S3',
-    market: 'no market, it runs on the device',
+    market: 'none, it runs on the device',
   },
   {
     name: 'Decode and filter',
@@ -130,7 +130,7 @@ const PLACEMENTS: Placement[] = [
     c: 'none',
     family: "the training instance's own CPU cores",
     orchestrator: 'no job of its own, it runs inside the training job',
-    market: 'the same market as the training job',
+    market: 'the same purchase option as the training job',
   },
   {
     name: 'CPU physics step',
@@ -229,7 +229,7 @@ const PLACEMENTS: Placement[] = [
     c: 'none',
     family: 'the target device itself',
     orchestrator: 'no cloud job, the cloud only delivers the build',
-    market: 'no market, it runs on the device',
+    market: 'none, it runs on the device',
   },
   {
     name: 'On-robot inference',
@@ -242,7 +242,7 @@ const PLACEMENTS: Placement[] = [
     c: 'none',
     family: "the robot's computer",
     orchestrator: 'no cloud job, the cloud only delivers the policy',
-    market: 'no market, it runs on the device',
+    market: 'none, it runs on the device',
   },
   {
     name: 'Generative augmentation',
@@ -479,7 +479,7 @@ function Wide({ ctx, q }: { ctx: Ctx; q: Questions }) {
       <Marker stage="train" tone="tensor" x={22} y={20} r={10} />
       <Txt x={40} y={24.5}>Filled: a published count or duration puts it there</Txt>
       <Marker stage="curate" tone="cpu" x={442} y={20} r={10} hollow />
-      <Txt x={460} y={24.5}>Hollow: placed by shape, no published count</Txt>
+      <Txt x={460} y={24.5}>Hollow: placed by workload type, no published count</Txt>
       <circle cx={822} cy={20} r={14.5} fill="none" stroke={EMPHASIS} strokeWidth="3" />
       <Marker stage="train" tone="tensor" x={822} y={20} r={10} />
       <Txt x={846} y={24.5}>Ring: the selected workload, in all three panels</Txt>
@@ -490,7 +490,7 @@ function Wide({ ctx, q }: { ctx: Ctx; q: Questions }) {
           <Txt x={250 + i * 140} y={54.5}>{s.label}</Txt>
         </g>
       ))}
-      <Txt x={10} y={84.5} fill={MUTED}>Colour, the part that fills first:</Txt>
+      <Txt x={10} y={84.5} fill={MUTED}>Colour, the bottleneck:</Txt>
       {(Object.keys(TONES) as Tone[]).map((t, i) => (
         <g key={t}>
           <circle cx={232 + i * 210} cy={80} r="10" fill={TONES[t].ink} />
@@ -501,14 +501,14 @@ function Wide({ ctx, q }: { ctx: Ctx; q: Questions }) {
       {/* Panel A */}
       <Txt x={10} y={124} bold size={16}>A. Machine family</Txt>
       <Txt x={ax} y={124} bold fill={EMPHASIS}>{q[0]}</Txt>
-      <Lines x={10} y={146} lines={['2. Is there a deadline', 'per unit?']} bold fill={EMPHASIS} />
+      <Lines x={10} y={146} lines={['2. Does each unit of', 'work have a deadline?']} bold fill={EMPHASIS} />
       {A_CELLS.map((c, i) => (
         <g key={c.cell}>
           <Txt x={colX(i) + 10} y={146} bold fill={TONES[c.tone].ink}>{c.head}</Txt>
           {c.sub ? <Txt x={colX(i) + 10} y={162} fill={MUTED}>{c.sub}</Txt> : null}
         </g>
       ))}
-      <Txt x={10} y={206}>Yes: the robot&apos;s clock</Txt>
+      <Txt x={10} y={206}>Yes: real-time on the robot</Txt>
       <Zone x={ax} y={172} w={994} h={64} fill={ROBOT.fill} stroke={ROBOT.ink} />
       <Txt x={ax + 10} y={192} bold fill={ROBOT.ink}>Runs on the robot. The cloud delivers it and stops here.</Txt>
       {inA('robot').map((p) => (
@@ -562,7 +562,7 @@ function Wide({ ctx, q }: { ctx: Ctx; q: Questions }) {
       />
 
       {/* Panel C */}
-      <Txt x={cx} y={516} bold size={16}>C. Capacity market</Txt>
+      <Txt x={cx} y={516} bold size={16}>C. Purchase option</Txt>
       <Txt x={cg} y={540} bold fill={EMPHASIS}>{q[4]}</Txt>
       <Lines x={cx} y={556} lines={['6. Must it run', 'on fixed dates?']} bold fill={EMPHASIS} />
       <Lines x={cCol[0] + 10} y={562} lines={['One unit, under', '30 minutes']} />
@@ -587,7 +587,7 @@ function Wide({ ctx, q }: { ctx: Ctx; q: Questions }) {
       <Lines x={cCol[2] + 10} y={788} lines={['No Spot: reserve, or', 'On-Demand']} bold />
       <Lines x={cCol[2] + 10} y={836} lines={['No workload of the', 'fifteen lands here']} fill={MUTED} />
       <Zone x={cx} y={926} w={638} h={58} fill="#ffffff" />
-      <Txt x={cx + 10} y={946} bold fill={MUTED}>No market of its own: it runs on the device, or is bought with the training job</Txt>
+      <Txt x={cx + 10} y={946} bold fill={MUTED}>No purchase option of its own: it runs on the device or in the training job</Txt>
       {dots(inC('none'), { ctx, panel: 'c', x: cx + 22, y: 966, dx: 150, dy: 0, perRow: 4, label: short })}
     </>
   );
@@ -613,7 +613,7 @@ function narrowLayout(ctx: Ctx, q: Questions): { nodes: ReactNode[]; h: number }
       <Marker stage="train" tone="tensor" x={X + 12} y={22} r={11} />
       <Lines x={X + 32} y={20} lines={['Filled: a published count or duration', 'puts it there']} />
       <Marker stage="curate" tone="cpu" x={X + 12} y={66} r={11} hollow />
-      <Lines x={X + 32} y={64} lines={['Hollow: placed by shape, no published', 'count']} />
+      <Lines x={X + 32} y={64} lines={['Hollow: placed by workload type, no', 'published count']} />
       <circle cx={X + 12} cy={112} r={15.5} fill="none" stroke={EMPHASIS} strokeWidth="3" />
       <Marker stage="train" tone="tensor" x={X + 12} y={112} r={11} />
       <Lines x={X + 36} y={110} lines={['Ring: the selected workload, in all', 'three panels']} />
@@ -624,7 +624,7 @@ function narrowLayout(ctx: Ctx, q: Questions): { nodes: ReactNode[]; h: number }
           <Txt x={X + 30 + (i % 3) * 108} y={182.5 + Math.floor(i / 3) * 28}>{s.label}</Txt>
         </g>
       ))}
-      <Txt x={X} y={272} fill={MUTED}>Colour, the part that fills first:</Txt>
+      <Txt x={X} y={272} fill={MUTED}>Colour, the bottleneck:</Txt>
       {(Object.keys(TONES) as Tone[]).map((t, i) => (
         <g key={t}>
           <circle cx={X + 12 + (i === 1 ? 130 : 0)} cy={294 + Math.max(0, i - 1) * 28} r="11" fill={TONES[t].ink} />
@@ -667,7 +667,7 @@ function narrowLayout(ctx: Ctx, q: Questions): { nodes: ReactNode[]; h: number }
     y += h + 8;
   };
   cell({
-    group: "Yes: the robot's clock",
+    group: 'Yes: real-time on the robot',
     title: ['Runs on the robot. The cloud delivers it', 'and stops here.'],
     list: inA('robot'),
     fill: ROBOT.fill,
@@ -675,7 +675,7 @@ function narrowLayout(ctx: Ctx, q: Questions): { nodes: ReactNode[]; h: number }
   });
   A_CELLS.forEach((c, i) =>
     cell({
-      group: i === 0 ? 'No deadline per unit' : undefined,
+      group: i === 0 ? 'No real-time deadline' : undefined,
       head: c.head,
       sub: c.sub,
       title: c.title,
@@ -741,7 +741,7 @@ function narrowLayout(ctx: Ctx, q: Questions): { nodes: ReactNode[]; h: number }
   const c = [X, X + 112, X + 224];
   add(
     <>
-      <Txt x={X} y={y} bold size={16}>C. Capacity market</Txt>
+      <Txt x={X} y={y} bold size={16}>C. Purchase option</Txt>
       <Txt x={X} y={y + 22} bold fill={EMPHASIS}>{q[4]}</Txt>
       <Lines x={c[0] + 8} y={y + 44} lines={['One unit,', 'under 30', 'minutes']} />
       <Lines x={c[1] + 8} y={y + 44} lines={['Hours of', 'one run']} />
@@ -766,7 +766,7 @@ function narrowLayout(ctx: Ctx, q: Questions): { nodes: ReactNode[]; h: number }
       <Lines x={c[2] + 8} y={y + 402} lines={['No Spot:', 'reserve, or', 'On-Demand']} bold />
       <Lines x={c[2] + 8} y={y + 470} lines={['No workload', 'of the fifteen', 'lands here']} fill={MUTED} />
       <Zone x={X} y={y + 544} w={W} h={86} fill="#ffffff" />
-      <Lines x={X + 10} y={y + 564} lines={['No market of its own: on the device,', 'or bought with the training job']} bold fill={MUTED} />
+      <Lines x={X + 10} y={y + 564} lines={['No purchase option of its own: it runs', 'on the device or in the training job']} bold fill={MUTED} />
       {dots(inC('none'), { ctx, panel: 'c', x: X + 24, y: y + 608, dx: 32, dy: 0, perRow: 4 })}
     </>,
   );
@@ -817,12 +817,12 @@ export function PlacementMap({ workloads, questions, initial }: PlacementMapProp
         </select>
       </label>
       <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-labelledby="choosing-map-title" style={{ width: '100%', height: 'auto' }}>
-        <title id="choosing-map-title">Where the fifteen workloads land: machine family, orchestrator and capacity market</title>
+        <title id="choosing-map-title">Where the fifteen workloads land: machine family, orchestrator and purchase option</title>
         <desc>
-          Three linked panels with the same fifteen workloads in each. Panel A places each workload by the part that
-          fills first and by whether it has a deadline per unit, which gives its machine family. Panel B places it by
+          Three linked panels with the same fifteen workloads in each. Panel A places each workload by its bottleneck
+          and by whether each unit of work has a deadline, which gives its machine family. Panel B places it by
           units per submission and by nodes that must start together, which gives its orchestrator. Panel C places it
-          by what is lost if the machine goes and by fixed dates, which gives its capacity market. The workload list
+          by what is lost if the machine goes and by fixed dates, which gives its purchase option. The workload list
           above the drawing selects a workload, and the sentence under the drawing gives its three answers.
         </desc>
         <rect x="0" y="0" width={W} height={H} fill="#fbfbfd" />

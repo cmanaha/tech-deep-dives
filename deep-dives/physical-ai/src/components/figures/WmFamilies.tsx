@@ -218,7 +218,7 @@ function Wide({ s, dim, grow }: LayoutProps) {
         <Frame id="wmf-grid" frame={NOW} x={36} y={236} w={160} h={120} />
         <path d={gridPath(36, 236, 160, 120, 20, 15)} fill="none" stroke="#ffffff" strokeWidth="0.9" opacity={s >= 2 ? 0.95 : 0} />
         <T x={36} y={376} num="derived">
-          a grid of positions, 20 by 15 (our arithmetic)
+          a grid of positions, 20 by 15 (calculated)
         </T>
       </g>
       <g style={dim(3)}>
@@ -371,7 +371,7 @@ function Narrow({ s, dim, grow }: LayoutProps) {
           20 by 15
         </T>
         <T x={190} y={262}>
-          (our arithmetic)
+          (calculated)
         </T>
       </g>
       <g style={dim(3)}>

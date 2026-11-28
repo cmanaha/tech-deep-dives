@@ -31,7 +31,7 @@ export type Market = 'spot' | 'on-demand' | 'reserved' | 'static';
 const MARKET: Record<Market, { label: string; fill: string; ink: string }> = {
   spot: { label: 'Spot', fill: '#fdeedd', ink: '#a85a0a' },
   'on-demand': { label: 'On-Demand', fill: '#e8f1fb', ink: '#1f5fa8' },
-  reserved: { label: 'Reserved', fill: '#efe9fb', ink: '#5b3fa8' },
+  reserved: { label: 'Training plan', fill: '#efe9fb', ink: '#5b3fa8' },
   static: { label: 'Always on', fill: '#eef0f2', ink: '#44505c' },
 };
 
