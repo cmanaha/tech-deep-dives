@@ -2,37 +2,37 @@
  {
   "term": "Unit of work",
   "expansion": null,
-  "meaning": "The thing one stage of the loop hands to the next, such as a decoded frame, a simulation step, a training sample or an action, counted per second to compare machines."
+  "meaning": "What one job in the robot's learning loop hands to the next job, such as a decoded frame, a simulation step, a training sample or an action. You count units of work per second to compare two machines."
  },
  {
-  "term": "Edge machine",
+  "term": "Edge computer",
   "expansion": null,
-  "meaning": "A computer that sits beside the robot, where power is the scarce resource and nothing is billed by the hour."
+  "meaning": "A computer that sits next to the robot instead of in the cloud. You buy it once instead of renting it by the hour, so you compare edge computers on the work they do per unit of energy and on their purchase price."
  },
  {
-  "term": "Stand-in",
+  "term": "Test program",
   "expansion": null,
-  "meaning": "A small program run in place of a real workload, loading a machine the way that workload does without being it."
+  "meaning": "A small program that we ran in place of a real workload. It loads a machine in a similar way to that workload, but it is not the workload itself."
  },
  {
   "term": "Units per joule",
   "expansion": null,
-  "meaning": "Units of work per second divided by watts drawn under load: how much work a machine does with a fixed amount of energy."
+  "meaning": "Units of work per second divided by the watts that a machine draws under load. It tells you how much work the machine does with a fixed amount of energy."
  },
  {
   "term": "Purchase option",
   "expansion": null,
-  "meaning": "How an instance hour is bought: on demand, as Spot capacity that AWS can take back, or reserved ahead; each has its own price."
+  "meaning": "The way you buy an hour of an instance: On-Demand, Spot Instances that AWS can reclaim, or capacity reserved in advance. Each purchase option has its own price."
  },
  {
   "term": "Region",
   "expansion": null,
-  "meaning": "The AWS location an instance runs in; prices differ between Regions."
+  "meaning": "The AWS location that an instance runs in. Prices differ between Regions."
  },
  {
   "term": "Spot",
   "expansion": null,
-  "meaning": "Spare EC2 capacity that AWS may take back; for a batch on Spot, count only the units that finished, since a unit lost when the machine is reclaimed delivers nothing."
+  "meaning": "Spot Instances are spare EC2 capacity that AWS can reclaim. For a batch job on Spot Instances, count only the units that finished, because a unit that is lost when AWS reclaims the instance delivers nothing."
  },
  {
   "term": "GPU-hour",
@@ -42,77 +42,77 @@
  {
   "term": "Kernel (GPU)",
   "expansion": null,
-  "meaning": "A program launched on the GPU; nvidia-smi's utilisation counts the time at least one is running, not how much of the GPU it uses."
+  "meaning": "A program launched on the GPU. The utilisation figure in nvidia-smi counts the time during which at least one kernel is running, not how much of the GPU the kernel uses."
  },
  {
   "term": "Control period",
   "expansion": null,
-  "meaning": "The time between two commands to the motors: 33.3 ms when the arm is driven at 30 Hz. A policy call's deadline is counted in control periods."
+  "meaning": "The time between two commands to the motors. It is 33.3 ms when the arm is driven at 30 Hz, and the deadline of a policy call is counted in control periods."
  },
  {
   "term": "Chunk",
   "expansion": null,
-  "meaning": "Several future actions returned by one policy call, played one per control period while the next call computes."
+  "meaning": "A set of future actions that one policy call returns. The arm plays them one per control period while the next call runs."
  },
  {
   "term": "Asynchronous inference",
   "expansion": null,
-  "meaning": "Starting the next policy call while the current chunk is still playing, so the arm does not stop to wait."
+  "meaning": "Starting the next policy call while the arm is still playing the current chunk, so the arm does not have to stop and wait."
  },
  {
   "term": "p50",
   "expansion": "50th percentile (median)",
-  "meaning": "The time within which half of all calls finish; it describes the typical call."
+  "meaning": "The time within which half of all calls finish. It describes the typical call."
  },
  {
   "term": "p99",
   "expansion": "99th percentile",
-  "meaning": "The time within which ninety-nine calls in every hundred finish; held against the room a chunk leaves when one late call in a hundred is tolerable."
+  "meaning": "The time within which ninety-nine calls in a hundred finish. You compare it with the time that a chunk leaves for a call when one late call in a hundred is acceptable."
  },
  {
-  "term": "Part a workload exhausts first",
+  "term": "Bottleneck",
   "expansion": null,
-  "meaning": "The resource that fills while the rest of the machine sits partly idle; a workload is priced on the instance built around that part. For the policy stand-in on the Jetson core it is memory bandwidth."
+  "meaning": "The resource that a workload runs out of first, while the rest of the machine is partly idle. You price a workload on an instance type built around its bottleneck. For the policy test program on the Jetson core, the bottleneck is memory bandwidth."
  },
  {
   "term": "G family",
   "expansion": null,
-  "meaning": "EC2 GPU instances whose GPUs also carry graphics and video hardware, including RT cores."
+  "meaning": "EC2 GPU instances whose GPUs also have graphics and video hardware, including RT cores."
  },
  {
   "term": "P family",
   "expansion": null,
-  "meaning": "EC2 GPU instances built for training; their GPUs lack RT cores, and the H100 in P5 does not decode AV1."
+  "meaning": "EC2 GPU instances built for training. Their GPUs do not have RT cores, and the H100 GPUs in P5 cannot decode AV1."
  },
  {
   "term": "RT cores",
   "expansion": "ray-tracing cores",
-  "meaning": "GPU units that trace rays, which a ray-traced camera renderer needs."
+  "meaning": "The GPU units that trace rays. A ray-tracing camera renderer needs them."
  },
  {
   "term": "AV1",
   "expansion": "AOMedia Video 1",
-  "meaning": "The video compression LeRobot records in by default; decoding it needs a decoder that supports it, or CPU cores."
+  "meaning": "The video compression format that LeRobot records in by default. Decoding it needs a hardware decoder that supports AV1, or CPU cores."
  },
  {
   "term": "MuJoCo",
   "expansion": null,
-  "meaning": "A robot physics simulator; two releases (4.0.1 and 3.17.0) ran our physics and render stand-ins."
+  "meaning": "A robot physics simulator. Our physics and render test programs ran on two MuJoCo releases, 4.0.1 on the Spark and 3.17.0 on the Jetson."
  },
  {
   "term": "TensorRT",
   "expansion": null,
-  "meaning": "NVIDIA's inference compiler; NVIDIA's GR00T N1.7 median on a Jetson Orin is 149.0 ms with it and 357.9 ms in plain PyTorch."
+  "meaning": "NVIDIA's inference compiler. NVIDIA reports a median GR00T N1.7 call time on a Jetson Orin of 149.0 ms with TensorRT and 357.9 ms in plain PyTorch."
  },
  {
   "term": "tegrastats",
   "expansion": null,
-  "meaning": "The Jetson's built-in monitor, which prints the power drawn on each supply line (rail) of the board; its VDD_IN rail feeds the whole board."
+  "meaning": "The built-in monitor on a Jetson. It prints the power drawn on each supply line (rail) of the board, and its VDD_IN rail feeds the whole board."
  },
  {
   "term": "nvidia-smi",
   "expansion": null,
-  "meaning": "NVIDIA's command-line tool that reports GPU status, including utilisation and GPU power."
+  "meaning": "NVIDIA's command-line tool that reports GPU status, including utilisation and the power of the GPU."
  },
  {
   "term": "Graviton",
@@ -122,61 +122,61 @@
  {
   "term": "EGL",
   "expansion": null,
-  "meaning": "The interface MuJoCo's offscreen renderer used for hardware-accelerated drawing without a display; our render run did not establish how much of each frame the GPU drew."
+  "meaning": "The interface that MuJoCo's offscreen renderer used for hardware-accelerated drawing without a display. Our render run did not establish how much of each frame the GPU drew."
  },
  {
   "term": "Percentile as a miss rate",
   "expansion": null,
-  "meaning": "One call in a hundred is slower than the p99, so holding the p99 against the room a chunk leaves accepts one late call in a hundred; accepting none means holding the worst call."
+  "meaning": "One call in a hundred is slower than the p99. So if you compare the p99 with the time that a chunk leaves for a call, you accept one late call in a hundred. If you accept none, compare the slowest call instead."
  },
  {
   "term": "Purchase figure (edge)",
   "expansion": null,
-  "meaning": "A board's purchase price divided by the units per second it sustains: what each unit per second of capacity cost to buy."
+  "meaning": "The purchase price of a board divided by the units of work per second that it sustains. It tells you what each unit per second of capacity cost to buy."
  },
  {
   "term": "Like-for-like checks",
   "expansion": null,
-  "meaning": "The three conditions under which a ratio of two rates belongs to the two machines: the same unit, the same model and the same software release (and, for a vendor's figure, the same runtime and power mode)."
+  "meaning": "The three conditions under which a ratio of two rates describes the two machines: the same unit, the same model and the same software release. For a vendor's figure, the runtime and the power mode must match too."
  },
  {
   "term": "Per-core speed ratio",
   "expansion": null,
-  "meaning": "The ratio of two rates each measured on one core; it stands for the ratio of the machines only for a job that keeps one core busy."
+  "meaning": "The ratio of two rates that were each measured on one core. It stands for the ratio of the two machines only for a job that keeps one core busy."
  },
  {
   "term": "Rail (power)",
   "expansion": null,
-  "meaning": "One supply line on a board; tegrastats reports power per rail, and on a Jetson the VDD_IN rail feeds the whole board."
+  "meaning": "One supply line on a board. tegrastats reports the power of each rail, and on a Jetson the VDD_IN rail feeds the whole board."
  },
  {
   "term": "VDD_IN",
   "expansion": null,
-  "meaning": "The tegrastats rail that feeds the whole Jetson board; the one to read for whole-board watts."
+  "meaning": "The tegrastats rail that feeds the whole Jetson board. Read this rail to get the power of the whole board."
  },
  {
   "term": "Power mode",
   "expansion": null,
-  "meaning": "The setting a Jetson runs in; NVIDIA's GR00T N1.7 figures were taken in MAXN, our Jetson ran in MAXN_SUPER, and a figure is recorded with its mode."
+  "meaning": "The power setting that a Jetson runs in. NVIDIA took its GR00T N1.7 figures in the MAXN mode, and our Jetson ran in the MAXN_SUPER mode. Record the mode with every figure."
  },
  {
   "term": "vCPU",
   "expansion": "virtual CPU",
-  "meaning": "The CPU unit EC2 lists; on most eight-GPU sizes two vCPUs are two threads of one physical core, on G7 one vCPU is one core."
+  "meaning": "The CPU unit that EC2 lists. On most eight-GPU sizes, two vCPUs are two threads of one physical core. On G7, one vCPU is one physical core."
  },
  {
   "term": "torch.compile",
   "expansion": null,
-  "meaning": "PyTorch's own compiler, one of the runtimes in NVIDIA's GR00T N1.7 latency table."
+  "meaning": "PyTorch's own compiler. It is one of the three runtimes in NVIDIA's GR00T N1.7 latency table."
  },
  {
   "term": "Dense layer",
   "expansion": null,
-  "meaning": "A neural-network layer that multiplies its input by a weight matrix, so every output depends on every input; the policy stand-in is six of them run on one CPU core."
+  "meaning": "A neural-network layer that multiplies its input by a weight matrix, so every output depends on every input. The policy test program is six of them, run on one CPU core."
  },
  {
   "term": "Local real-time chunking",
   "expansion": null,
-  "meaning": "A LeRobot mode that runs the policy in a background thread of the process driving the arm; if the arm runs out of actions, a supported robot holds its last commanded position for up to one second by default, then the run stops with a fault."
+  "meaning": "A LeRobot mode that runs the policy in a background thread of the process that drives the arm. If the arm runs out of actions, a supported robot holds its last commanded position for up to one second by default, and then the run stops with a fault."
  }
 ]

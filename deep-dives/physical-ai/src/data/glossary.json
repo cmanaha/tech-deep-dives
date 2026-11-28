@@ -1010,7 +1010,7 @@
  {
   "term": "Dense layer",
   "expansion": null,
-  "meaning": "A neural-network layer that multiplies its input by a weight matrix, so every output depends on every input; the policy stand-in is six of them run on one CPU core.",
+  "meaning": "A neural-network layer that multiplies its input by a weight matrix, so every output depends on every input. The policy test program is six of them, run on one CPU core.",
   "section": 23
  },
  {
@@ -1188,9 +1188,9 @@
   "section": 25
  },
  {
-  "term": "Edge machine",
+  "term": "Edge computer",
   "expansion": null,
-  "meaning": "A computer that sits beside the robot, where power is the scarce resource and nothing is billed by the hour.",
+  "meaning": "A computer that sits next to the robot instead of in the cloud. You buy it once instead of renting it by the hour, so you compare edge computers on the work they do per unit of energy and on their purchase price.",
   "section": 23
  },
  {
@@ -1598,7 +1598,7 @@
  {
   "term": "G family",
   "expansion": null,
-  "meaning": "EC2 GPU instances whose GPUs also carry graphics and video hardware, including RT cores.",
+  "meaning": "EC2 GPU instances whose GPUs also have graphics and video hardware, including RT cores.",
   "section": 23
  },
  {
@@ -2360,13 +2360,13 @@
  {
   "term": "Like-for-like checks",
   "expansion": null,
-  "meaning": "The three conditions under which a ratio of two rates belongs to the two machines: the same unit, the same model and the same software release (and, for a vendor's figure, the same runtime and power mode).",
+  "meaning": "The three conditions under which a ratio of two rates describes the two machines: the same unit, the same model and the same software release. For a vendor's figure, the runtime and the power mode must match too.",
   "section": 23
  },
  {
   "term": "Local real-time chunking",
   "expansion": null,
-  "meaning": "A LeRobot mode that runs the policy in a background thread of the process driving the arm; if the arm runs out of actions, a supported robot holds its last commanded position for up to one second by default, then the run stops with a fault.",
+  "meaning": "A LeRobot mode that runs the policy in a background thread of the process that drives the arm. If the arm runs out of actions, a supported robot holds its last commanded position for up to one second by default, and then the run stops with a fault.",
   "section": 23
  },
  {
@@ -2792,7 +2792,7 @@
  {
   "term": "nvidia-smi",
   "expansion": null,
-  "meaning": "NVIDIA's command-line tool that reports GPU status, including utilisation and GPU power.",
+  "meaning": "NVIDIA's command-line tool that reports GPU status, including utilisation and the power of the GPU.",
   "section": 23
  },
  {
@@ -2918,7 +2918,7 @@
  {
   "term": "P family",
   "expansion": null,
-  "meaning": "EC2 GPU instances built for training; their GPUs lack RT cores, and the H100 in P5 does not decode AV1.",
+  "meaning": "EC2 GPU instances built for training. Their GPUs do not have RT cores, and the H100 GPUs in P5 cannot decode AV1.",
   "section": 23
  },
  {
@@ -2930,7 +2930,7 @@
  {
   "term": "p50",
   "expansion": "50th percentile (median)",
-  "meaning": "The time within which half of all calls finish; it describes the typical call.",
+  "meaning": "The time within which half of all calls finish. It describes the typical call.",
   "section": 23
  },
  {
@@ -2942,7 +2942,7 @@
  {
   "term": "p99",
   "expansion": "99th percentile",
-  "meaning": "The time within which ninety-nine calls in every hundred finish; held against the room a chunk leaves when one late call in a hundred is tolerable.",
+  "meaning": "The time within which ninety-nine calls in a hundred finish. You compare it with the time that a chunk leaves for a call when one late call in a hundred is acceptable.",
   "section": 23
  },
  {
@@ -2968,12 +2968,6 @@
   "expansion": null,
   "meaning": "A resource a program can run out of, such as a core's arithmetic, memory bandwidth or memory latency; the part a program runs out of first sets its speed.",
   "section": 22
- },
- {
-  "term": "Part a workload exhausts first",
-  "expansion": null,
-  "meaning": "The resource that fills while the rest of the machine sits partly idle; a workload is priced on the instance built around that part. For the policy stand-in on the Jetson core it is memory bandwidth.",
-  "section": 23
  },
  {
   "term": "Partition",
@@ -3026,7 +3020,7 @@
  {
   "term": "Per-core speed ratio",
   "expansion": null,
-  "meaning": "The ratio of two rates each measured on one core; it stands for the ratio of the machines only for a job that keeps one core busy.",
+  "meaning": "The ratio of two rates that were each measured on one core. It stands for the ratio of the two machines only for a job that keeps one core busy.",
   "section": 23
  },
  {
@@ -3038,7 +3032,7 @@
  {
   "term": "Percentile as a miss rate",
   "expansion": null,
-  "meaning": "One call in a hundred is slower than the p99, so holding the p99 against the room a chunk leaves accepts one late call in a hundred; accepting none means holding the worst call.",
+  "meaning": "One call in a hundred is slower than the p99. So if you compare the p99 with the time that a chunk leaves for a call, you accept one late call in a hundred. If you accept none, compare the slowest call instead.",
   "section": 23
  },
  {
@@ -3212,7 +3206,7 @@
  {
   "term": "Power mode",
   "expansion": null,
-  "meaning": "The setting a Jetson runs in; NVIDIA's GR00T N1.7 figures were taken in MAXN, our Jetson ran in MAXN_SUPER, and a figure is recorded with its mode.",
+  "meaning": "The power setting that a Jetson runs in. NVIDIA took its GR00T N1.7 figures in the MAXN mode, and our Jetson ran in the MAXN_SUPER mode. Record the mode with every figure.",
   "section": 23
  },
  {
@@ -3290,7 +3284,7 @@
  {
   "term": "Purchase figure (edge)",
   "expansion": null,
-  "meaning": "A board's purchase price divided by the units per second it sustains: what each unit per second of capacity cost to buy.",
+  "meaning": "The purchase price of a board divided by the units of work per second that it sustains. It tells you what each unit per second of capacity cost to buy.",
   "section": 23
  },
  {
@@ -3350,7 +3344,7 @@
  {
   "term": "Rail (power)",
   "expansion": null,
-  "meaning": "One supply line on a board; tegrastats reports power per rail, and on a Jetson the VDD_IN rail feeds the whole board.",
+  "meaning": "One supply line on a board. tegrastats reports the power of each rail, and on a Jetson the VDD_IN rail feeds the whole board.",
   "section": 23
  },
  {
@@ -3446,7 +3440,7 @@
  {
   "term": "Region",
   "expansion": null,
-  "meaning": "The AWS location an instance runs in; prices differ between Regions.",
+  "meaning": "The AWS location that an instance runs in. Prices differ between Regions.",
   "section": 23
  },
  {
@@ -4382,7 +4376,7 @@
  {
   "term": "torch.compile",
   "expansion": null,
-  "meaning": "PyTorch's own compiler, one of the runtimes in NVIDIA's GR00T N1.7 latency table.",
+  "meaning": "PyTorch's own compiler. It is one of the three runtimes in NVIDIA's GR00T N1.7 latency table.",
   "section": 23
  },
  {
@@ -4514,13 +4508,13 @@
  {
   "term": "Unit of work",
   "expansion": null,
-  "meaning": "The thing one stage of the loop hands to the next, such as a decoded frame, a simulation step, a training sample or an action, counted per second to compare machines.",
+  "meaning": "What one job in the robot's learning loop hands to the next job, such as a decoded frame, a simulation step, a training sample or an action. You count units of work per second to compare two machines.",
   "section": 23
  },
  {
   "term": "Units per joule",
   "expansion": null,
-  "meaning": "Units of work per second divided by watts drawn under load: how much work a machine does with a fixed amount of energy.",
+  "meaning": "Units of work per second divided by the watts that a machine draws under load. It tells you how much work the machine does with a fixed amount of energy.",
   "section": 23
  },
  {
@@ -4604,7 +4598,7 @@
  {
   "term": "VDD_IN",
   "expansion": null,
-  "meaning": "The tegrastats rail that feeds the whole Jetson board; the one to read for whole-board watts.",
+  "meaning": "The tegrastats rail that feeds the whole Jetson board. Read this rail to get the power of the whole board.",
   "section": 23
  },
  {
